@@ -36,9 +36,9 @@ function Home() {
                 <Link
                   to={"/createfeedback"}
                   className="mr-1 v-btn py-2 px-4
-                bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200
-                text-white transition ease-in duration-200 text-center text-base font-medium focus:outline-none focus:ring-2
-                focus:ring-offset-2 rounded-lg flex items-center hover:no-underline"
+                  bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200
+                  text-white transition ease-in duration-200 text-center text-base font-medium focus:outline-none focus:ring-2
+                  focus:ring-offset-2 rounded-lg flex items-center hover:no-underline"
                 >
                   <span className="no-underline mx-auto">
                     Create a feedback NOW{" "}
@@ -47,14 +47,14 @@ function Home() {
                     viewBox="0 0 12 12"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    class="ml-2 w-3 h-3 inline"
+                    className="ml-2 w-3 h-3 inline"
                   >
                     <path
                       d="M1 11L11 1M11 1H1M11 1V11"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     ></path>
                   </svg>
                 </Link>

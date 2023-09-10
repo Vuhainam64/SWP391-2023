@@ -13,7 +13,7 @@ function Navbar() {
                 className="flex-shrink-0 font-semibold hover:no-underline flex items-center router-link-active"
               >
                 <img src={Logo} alt="Logo" className="w-8 h-8" />
-                <span class="ml-2 text-md hidden sm:inline text-black ">
+                <span className="ml-2 text-md hidden sm:inline text-black ">
                   {" "}
                   Get Feedback
                 </span>
@@ -60,14 +60,14 @@ function Navbar() {
                             viewBox="0 0 12 12"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            class="ml-2 w-3 h-3 inline"
+                            className="ml-2 w-3 h-3 inline"
                           >
                             <path
                               d="M1 11L11 1M11 1H1M11 1V11"
                               stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             ></path>
                           </svg>
                         </span>

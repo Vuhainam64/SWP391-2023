@@ -6,6 +6,12 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AiOutlineCheck } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "@firebase/auth";
+import { auth } from "../config/firebase.config";
+import { signInWithGoogle } from "../ultils/helpers";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -16,6 +22,45 @@ function Login() {
   const [alert, setAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
+  const createNewUser = async () => {
+    if (getEmailValidationStatus) {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((userCred) => {
+          if (userCred) {
+            console.log(userCred);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  const loginWithEmailPassword = async () => {
+    if (getEmailValidationStatus) {
+      await signInWithEmailAndPassword(auth, email, password)
+        .then((userCred) => {
+          if (userCred) {
+            console.log(userCred);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.message.includes("user-not-found")) {
+            setAlert(true);
+            setAlertMessage("Invalid Id : User not found");
+          } else if (err.message.includes("wrong-password")) {
+            setAlert(true);
+            setAlertMessage("Password is incorrect");
+          } else {
+            setAlert(true);
+            setAlertMessage("Temporarity disabled due to many failed login");
+          }
+
+          setInterval(() => {
+            setAlert(false);
+          }, 4000);
+        });
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -108,7 +153,7 @@ function Login() {
 
                       {/* login with google */}
                       <motion.div
-                        // onClick={signInWithGoogle}
+                        onClick={signInWithGoogle}
                         whileTap={{ scale: 0.9 }}
                         className="flex items-center justify-center gap-3 bg-[rgba(2566,256,256,0.2)] backdrop-blur-md w-full py-3 rounded-xl hover:bg-[rgba(2566,256,256,0.4)] cursor-pointer border border-gray-500"
                       >
