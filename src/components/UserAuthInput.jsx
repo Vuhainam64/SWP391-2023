@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
 function UserAuthInput({
@@ -39,7 +39,7 @@ function UserAuthInput({
       >
         <Icon className="text-text555 text-2xl" />
         <input
-          type={isPass && showPass ? "password" : "text"}
+          type={isPass && !showPass ? "password" : "text"}
           placeholder={placeHolder}
           className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-lg"
           value={value}

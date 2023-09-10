@@ -3,8 +3,9 @@ import { Footer, Navbar, UserAuthInput } from "../components";
 import { FaEnvelope } from "react-icons/fa6";
 import { MdPassword } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { AiOutlineCheck } from "react-icons/ai";
+import { RxAvatar } from "react-icons/rx";
 import { FcGoogle } from "react-icons/fc";
 import {
   createUserWithEmailAndPassword,
@@ -12,10 +13,13 @@ import {
 } from "@firebase/auth";
 import { auth } from "../config/firebase.config";
 import { signInWithGoogle } from "../ultils/helpers";
+import { fadeInOut } from "../animations";
 
 function Login() {
+  const [Name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [getEmailValidationStatus, setGetEmailValidationStatus] =
     useState(false);
   const [isLogin, setIsLogin] = useState(false);
@@ -66,17 +70,44 @@ function Login() {
       <Navbar />
       <div className="flex-grow">
         <div className="flex mt-6 mb-10">
-          <div className="w-full md:max-w-6xl mx-auto px-4 flex md:flex-row-reverse flex-wrap">
+          <div
+            className={`w-full md:max-w-6xl mx-auto px-4 flex md:flex-row-reverse flex-wrap ${
+              isLogin ? "items-center" : ""
+            }`}
+          >
             <div className="w-full md:w-1/2 md:p-6">
               <div className="border rounded-md p-6 shadow-md sticky top-4">
                 <div>
-                  <h2 className="font-semibold text-2xl">
-                    Login to Get Feedback
-                  </h2>
-                  <small>Welcome back! Please enter your details.</small>
+                  {isLogin ? (
+                    <>
+                      <h2 className="font-semibold text-2xl">
+                        Create an account
+                      </h2>
+                      <small>Sign up in less than 2 minutes.</small>
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="font-semibold text-2xl">
+                        Login to Get Feedback
+                      </h2>
+                      <small>Welcome back! Please enter your details.</small>
+                    </>
+                  )}
 
                   <div>
                     <div className="mt-4">
+                      {isLogin ? (
+                        <UserAuthInput
+                          lable="Name"
+                          placeHolder="Your name"
+                          isPass={false}
+                          key="Name"
+                          setStateFunction={setName}
+                          Icon={RxAvatar}
+                        />
+                      ) : (
+                        ""
+                      )}
                       {/* email  */}
                       <UserAuthInput
                         lable="Email"
@@ -100,42 +131,96 @@ function Login() {
                         Icon={MdPassword}
                       />
 
-                      {/* alert section  */}
+                      {/* confirm password */}
+                      {isLogin ? (
+                        <UserAuthInput
+                          lable="Confirm password"
+                          placeHolder="Confirm your password"
+                          isPass={true}
+                          key="Confirm password"
+                          setStateFunction={setConfirmPassword}
+                          Icon={MdPassword}
+                        />
+                      ) : (
+                        ""
+                      )}
 
-                      {/* policy  */}
-                      <div className="relative flex items-center my-5">
-                        <div className="flex items-center w-full md:w-1/2">
-                          <input
-                            type="checkbox"
-                            className="rounded border-gray-500 cursor-pointer w-3 h-3"
-                          />
-                          <label className="text-gray-700 ml-2">
-                            {" "}
-                            Remember Me{" "}
-                          </label>
-                        </div>
-                        <div className="w-full md:w-1/2 text-right">
-                          <Link
-                            to={"/#"}
-                            className="text-xs hover:underline text-gray-500 sm:text-sm hover:text-gray-700"
+                      {/* alert section  */}
+                      <AnimatePresence>
+                        {alert && (
+                          <motion.p
+                            key={"Alert Message"}
+                            {...fadeInOut}
+                            className="text-red-500"
                           >
-                            Forgot your password?
-                          </Link>
+                            {alertMessage}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                      {/* policy  */}
+                      {isLogin ? (
+                        <div className="relative mb-3">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-500 cursor-pointer w-5 h-5"
+                            />
+                            <label className="text-gray-700 ml-2 text-sm mt-3">
+                              I agree with the{" "}
+                              <Link
+                                to={"/terms-conditions"}
+                                className="text-blue-500"
+                              >
+                                Terms and conditions
+                              </Link>{" "}
+                              and{" "}
+                              <Link
+                                to={"/privacy-policy"}
+                                className="text-blue-500"
+                              >
+                                Privacy policy
+                              </Link>{" "}
+                              of the website and I accept them.
+                            </label>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="relative flex items-center my-5">
+                          <div className="flex items-center w-full md:w-1/2">
+                            <input
+                              type="checkbox"
+                              className="rounded border-gray-500 cursor-pointer w-3 h-3"
+                            />
+                            <label className="text-gray-700 ml-2">
+                              {" "}
+                              Remember Me{" "}
+                            </label>
+                          </div>
+                          <div className="w-full md:w-1/2 text-right">
+                            <Link
+                              to={"/#"}
+                              className="text-xs hover:underline text-gray-500 sm:text-sm hover:text-gray-700"
+                            >
+                              Forgot your password?
+                            </Link>
+                          </div>
+                        </div>
+                      )}
 
                       {/* login button  */}
                       {isLogin ? (
                         <motion.div
-                          //   onClick={loginWithEmailPassword}
+                          onClick={createNewUser}
                           whileTap={{ scale: 0.9 }}
                           className="flex items-center justify-center w-full py-3 rounded-xl hover:bg-blue-500 cursor-pointer bg-blue-600"
                         >
-                          <p className="text-xl text-white">Sign Up</p>
+                          <p className="text-xl text-white">
+                            Create an account
+                          </p>
                         </motion.div>
                       ) : (
                         <motion.div
-                          //   onClick={loginWithEmailPassword}
+                          onClick={loginWithEmailPassword}
                           whileTap={{ scale: 0.9 }}
                           className="flex items-center justify-center w-full py-3 rounded-xl hover:bg-blue-500 cursor-pointer bg-blue-600"
                         >
@@ -194,12 +279,12 @@ function Login() {
             <div className="w-full md:w-1/2 md:p-6 mt-8 md:mt-0">
               <h1 className="font-bold text-3xl">
                 {" "}
-                Create beautiful forms and share them anywhere{" "}
+                Easy to create a feedback - save time for solution{" "}
               </h1>
               <p className="text-gray-900 my-4 text-lg">
                 {" "}
-                It takes seconds, you don't need to know how to code and it's
-                free.{" "}
+                If you have problems about the facilities you can easily send us
+                feedback now because it's free free.{" "}
               </p>
               <div className="flex flex-wrap justify-center">
                 <div className="flex items-center text-gray-400 text-sm  px-3 pb-3 ">
