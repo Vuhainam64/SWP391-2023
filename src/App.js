@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import { Home, Login } from "./containers";
+import { Auth, Home, PageNotFound } from "./containers";
 import { useEffect } from "react";
 import { auth } from "./config/firebase.config";
 
@@ -18,11 +18,12 @@ function App() {
   return (
     <div className="bg-white dark:bg-notion-dark">
       <Routes>
+        <Route path="/404" element={<PageNotFound />} />
         <Route path="/home/*" element={<Home />} />
-        <Route path="/login/*" element={<Login />} />
+        <Route path="/auth/*" element={<Auth />} />
 
         {/* if not matching  */}
-        <Route path="*" element={<Navigate to={"/home"} />} />
+        <Route path="*" element={<Navigate to={"/404"} />} />
       </Routes>
     </div>
   );

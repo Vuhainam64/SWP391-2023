@@ -41,7 +41,7 @@ function Navbar() {
                   <div className="relative inline-block text-left">
                     <div className="flex gap-2">
                       <Link
-                        to={"/login"}
+                        to={"/auth"}
                         className="text-gray-600 hover:text-gray-800 px-0 sm:px-3 py-2 rounded-md text-sm"
                       >
                         {" "}
