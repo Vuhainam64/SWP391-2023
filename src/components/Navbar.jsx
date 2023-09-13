@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Logo } from "../assets";
+import { useSelector } from "react-redux";
+import { UserProfileDetails } from "../components";
 
 function Navbar() {
+  const user = useSelector((state) => state.user?.user);
   return (
     <>
       <nav className="bg-white border-b">
@@ -39,40 +42,44 @@ function Navbar() {
               <div className="flex items-center">
                 <div className="ml-3 mr-4 relative">
                   <div className="relative inline-block text-left">
-                    <div className="flex gap-2">
-                      <Link
-                        to={"/auth"}
-                        className="text-gray-600 hover:text-gray-800 px-0 sm:px-3 py-2 rounded-md text-sm"
-                      >
-                        {" "}
-                        Login{" "}
-                      </Link>
-                      <Link
-                        to={"/createfeedback"}
-                        className="v-btn py-1 px-2
-                      bg-transparent border border-blue-600 hover:bg-blue-600 focus:ring-blue-500 focus:ring-offset-blue-200
-                      text-blue-600 hover:text-white transition ease-in duration-200 text-center text-sm font-medium focus:outline-none focus:ring-2
-                      focus:ring-offset-2 rounded-lg flex items-center hover:no-underline"
-                      >
-                        <span className="no-underline mx-auto">
-                          Create a feedback
-                          <svg
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="ml-2 w-3 h-3 inline"
-                          >
-                            <path
-                              d="M1 11L11 1M11 1H1M11 1V11"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            ></path>
-                          </svg>
-                        </span>
-                      </Link>
-                    </div>
+                    {user ? (
+                      <UserProfileDetails />
+                    ) : (
+                      <div className="flex gap-2">
+                        <Link
+                          to={"/auth"}
+                          className="text-gray-600 hover:text-gray-800 px-0 sm:px-3 py-2 rounded-md text-sm"
+                        >
+                          {" "}
+                          Login{" "}
+                        </Link>
+                        <Link
+                          to={"/createfeedback"}
+                          className="v-btn py-1 px-2
+                    bg-transparent border border-blue-600 hover:bg-blue-600 focus:ring-blue-500 focus:ring-offset-blue-200
+                    text-blue-600 hover:text-white transition ease-in duration-200 text-center text-sm font-medium focus:outline-none focus:ring-2
+                    focus:ring-offset-2 rounded-lg flex items-center hover:no-underline"
+                        >
+                          <span className="no-underline mx-auto">
+                            Create a feedback
+                            <svg
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="ml-2 w-3 h-3 inline"
+                            >
+                              <path
+                                d="M1 11L11 1M11 1H1M11 1V11"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                          </span>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
