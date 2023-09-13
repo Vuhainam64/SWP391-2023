@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import { Auth, Home, PageNotFound } from "./containers";
+import { Auth, Feedbacks, Home, PageNotFound } from "./containers";
 import { useEffect, useState } from "react";
 import { auth, db } from "./config/firebase.config";
 import { doc, setDoc } from "@firebase/firestore";
@@ -46,6 +46,7 @@ function App() {
             <Route path="/404" element={<PageNotFound />} />
             <Route path="/home/*" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/feedback" element={<Feedbacks />} />
 
             {/* if not matching  */}
             <Route path="*" element={<Navigate to={"/404"} />} />

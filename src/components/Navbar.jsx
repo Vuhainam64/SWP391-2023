@@ -54,7 +54,7 @@ function Navbar() {
                           Login{" "}
                         </Link>
                         <Link
-                          to={"/createfeedback"}
+                          to={"/auth"}
                           className="v-btn py-1 px-2
                     bg-transparent border border-blue-600 hover:bg-blue-600 focus:ring-blue-500 focus:ring-offset-blue-200
                     text-blue-600 hover:text-white transition ease-in duration-200 text-center text-sm font-medium focus:outline-none focus:ring-2
