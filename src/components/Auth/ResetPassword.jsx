@@ -11,8 +11,7 @@ import { fadeInOut } from "../../animations";
 
 function ResetPassword(props) {
   const [email, setEmail] = useState("");
-  const [getEmailValidationStatus, setGetEmailValidationStatus] =
-    useState(false);
+  const setGetEmailValidationStatus = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
 
   const [alert, setAlert] = useState(false);
@@ -77,7 +76,7 @@ function ResetPassword(props) {
                       <motion.p
                         key={"Alert Message"}
                         {...fadeInOut}
-                        className="text-red-500"
+                        className="text-red-500 text-start"
                       >
                         {alertMessage}
                       </motion.p>

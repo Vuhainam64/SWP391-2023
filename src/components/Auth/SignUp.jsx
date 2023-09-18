@@ -81,7 +81,7 @@ function SignUp(props) {
       />
       <UserAuthInput
         label="Email"
-        placeholder="Email"
+        placeholder="example@gmail.com"
         isPassword={false}
         setStateFunction={setEmail}
         Icon={FaEnvelope}
@@ -89,7 +89,7 @@ function SignUp(props) {
       />
       <UserAuthInput
         label="Password"
-        placeholder="Your password"
+        placeholder="Password need more than 6 letter"
         isPassword={true}
         setStateFunction={setPassword}
         Icon={MdPassword}

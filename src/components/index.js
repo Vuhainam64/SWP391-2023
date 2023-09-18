@@ -6,3 +6,4 @@ export { default as SignUp } from "./Auth/SignUp";
 export { default as ResetPassword } from "./Auth/ResetPassword";
 export { default as Spinner } from "./Spinner";
 export { default as UserProfileDetails } from "./UserProfileDetails";
+export { default as VerifyPopup } from "./Auth/VerifyPopup";

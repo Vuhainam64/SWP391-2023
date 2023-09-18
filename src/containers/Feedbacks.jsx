@@ -12,7 +12,7 @@ function Feedbacks() {
           <div className="pt-4 pb-0">
             <div className="flex">
               <h2 className="flex-grow text-gray-900 text-2xl font-semibold">
-                Your Forms
+                Your Feedbacks
               </h2>
               <Link
                 to={"/create"}
@@ -23,12 +23,12 @@ function Feedbacks() {
               >
                 <span className="no-underline mx-auto flex items-center">
                   <AiOutlinePlus className="mr-2 text-xl" />
-                  Create a new form
+                  Create a new feedback
                 </span>
               </Link>
             </div>
             <small className="flex text-gray-500">
-              Manage your forms and submissions.
+              Manage your feedbacks and submissions.
             </small>
           </div>
         </div>
@@ -38,12 +38,12 @@ function Feedbacks() {
           <div className="mt-8 pb-0">
             <div className="mb-6 relative">
               <div className="text-gray-700 font-semibold text-sm">
-                Search a form
+                Search a feedback
               </div>
               <div className="flex items-center justify-center gap-3 w-full h-full px-4 rounded-md border-gray-300 border bg-white">
                 <input
                   type="text"
-                  placeholder="Name of form to search"
+                  placeholder="Name of feedback to search"
                   className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-sm"
                 />
               </div>
@@ -53,7 +53,7 @@ function Feedbacks() {
                   <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
                     <div className="flex-grow items-center truncate cursor-pointer">
                       <span className="font-semibold text-gray-900">
-                        My Form
+                        My Feedback
                       </span>
                       <div className="flex items-center justify-between">
                         <ul className="flex text-gray-500">

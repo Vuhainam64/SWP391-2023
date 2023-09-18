@@ -3,24 +3,32 @@ import { Auth, Feedbacks, Home, PageNotFound } from "./containers";
 import { useEffect, useState } from "react";
 import { auth, db } from "./config/firebase.config";
 import { doc, setDoc } from "@firebase/firestore";
-import { Spinner } from "./components";
+import { Spinner, VerifyPopup } from "./components";
 import { useDispatch } from "react-redux";
 import { SET_USER } from "./context/actions/userActions";
 
 function App() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((userCred) => {
       if (userCred) {
+        setIsLogin(true);
         console.log(userCred?.providerData[0]);
         setDoc(doc(db, "user", userCred?.uid), userCred?.providerData[0]).then(
           () => {
-            //dispatch action to store
             dispatch(SET_USER(userCred?.providerData[0]));
-            navigate("/home", { replace: true });
+            if (userCred.emailVerified) {
+              setIsEmailVerified(true);
+              navigate("/home", { replace: true });
+            } else {
+              setIsEmailVerified(false);
+              navigate("/auth", { replace: true });
+            }
           }
         );
       } else {
@@ -45,11 +53,28 @@ function App() {
           <Routes>
             <Route path="/404" element={<PageNotFound />} />
             <Route path="/home/*" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/feedback" element={<Feedbacks />} />
 
-            {/* if not matching  */}
-            <Route path="*" element={<Navigate to={"/404"} />} />
+            {!isLogin && (
+              <>
+                <Route path="/auth/*" element={<Auth />} />
+                <Route path="*" element={<Navigate to="/auth" />} />
+              </>
+            )}
+
+            {isLogin && !isEmailVerified && (
+              <>
+                <Route path="/verify/*" element={<VerifyPopup />} />
+                <Route path="*" element={<Navigate to="/verify" />} />
+              </>
+            )}
+
+            {isLogin && isEmailVerified && (
+              <>
+                <Route path="/feedback/*" element={<Feedbacks />} />
+              </>
+            )}
+
+            <Route path="*" element={<Navigate to="/home" />} />
           </Routes>
         </div>
       )}

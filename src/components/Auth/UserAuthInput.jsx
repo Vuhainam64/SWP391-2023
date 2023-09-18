@@ -19,7 +19,7 @@ function UserAuthInput({
     setValue(inputValue); // Set the local state
     setStateFunction(inputValue); // Update the parent state
 
-    if (placeholder === "Email") {
+    if (placeholder === "example@gmail.com") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+/;
       const isValid = emailRegex.test(inputValue);
       setIsEmailValid(isValid);
@@ -34,7 +34,9 @@ function UserAuthInput({
       </label>
       <div
         className={`flex items-center justify-center gap-3 w-full h-full px-4 py-1 rounded-lg border-gray-300 border bg-white ${
-          !isEmailValid && placeholder === "Email" && value.length > 0
+          !isEmailValid &&
+          placeholder === "example@gmail.com" &&
+          value.length > 0
             ? "border-2 border-red-500"
             : ""
         }`}
