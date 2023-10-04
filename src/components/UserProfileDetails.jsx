@@ -20,7 +20,7 @@ function UserProfileDetails() {
       />
       <p className="ml-2 hidden sm:inline">{user?.displayName}</p>
       <motion.div
-        onClick={() => setIsMenu(!isMenu)}
+        onClick={() => setIsMenu(!isMenu)} 
         whileTap={{ scale: 0.9 }}
         className="p-4 rounded-md flex items-center justify-center cursor-pointer"
       >

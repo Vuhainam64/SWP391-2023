@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Logo } from "../../assets";
 import { auth } from "../../config/firebase.config";
 import { sendEmailVerification } from "firebase/auth";
@@ -41,7 +40,10 @@ function VerifyPopup() {
         <div className="flex justify-center">
           <img src={Logo} alt="logo" className="h-20" />
         </div>
-        <p>We're happy you're here. Let's get your email address verified:</p>
+        <p>
+          We're happy you're here. If you have not received the email, you can
+          press the button below to resend:
+        </p>
         <div className="mt-4">
           <button
             onClick={sendVerificationEmail}
@@ -58,13 +60,6 @@ function VerifyPopup() {
               {alertMessage}
             </motion.p>
           )}
-          <p className="mt-4 text-sm">
-            If you’re having trouble clicking the "Verify Email Address" button,
-            copy and paste the URL below into your web browser:
-            <Link to="" className="text-blue-600 underline ml-2">
-              http://localhost:8000/email/verify/3/1ab7a09a3
-            </Link>
-          </p>
         </div>
       </div>
     </div>
