@@ -5,6 +5,7 @@ import {
   Feedbacks,
   Home,
   PageNotFound,
+  Setting,
   Staff,
   Templates,
 } from "./containers";
@@ -86,6 +87,8 @@ function App() {
               <>
                 <Route path="/feedback" element={<Feedbacks />} />
                 <Route path="/templates" element={<Templates />} />
+                <Route path="/setting/*" element={<Setting />} />
+
                 {userRole === "student" && (
                   <Route path="/feedback" element={<Feedbacks />} />
                 )}

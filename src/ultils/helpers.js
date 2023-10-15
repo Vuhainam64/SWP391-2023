@@ -12,7 +12,7 @@ export const signInWithGoogle = async () => {
 
 export const Menus = [
   { id: uuidv4(), name: "My Feedbacks", uri: "/feedback" },
-  { id: uuidv4(), name: "Settings", uri: "/setting" },
+  { id: uuidv4(), name: "Settings", uri: "/setting/profile" },
 ];
 
 export const signOutAction = async () => {

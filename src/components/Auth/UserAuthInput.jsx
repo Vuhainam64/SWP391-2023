@@ -9,6 +9,7 @@ function UserAuthInput({
   setStateFunction,
   Icon,
   setGetEmailValidationStatus,
+  values,
 }) {
   const [value, setValue] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +47,7 @@ function UserAuthInput({
           type={isPassword && !showPassword ? "password" : "text"}
           placeholder={placeholder}
           className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-lg"
-          value={value} // Use the local state for value
+          value={value || values} // Use the local state for value
           onChange={handleTextChange} // Handle input changes
         />
 

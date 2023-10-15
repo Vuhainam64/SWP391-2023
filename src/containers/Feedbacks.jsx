@@ -4,6 +4,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 
 function Feedbacks() {
+  const isfeedback = false;
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -47,28 +48,68 @@ function Feedbacks() {
                   className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-sm"
                 />
               </div>
-              {/* my form  */}
-              <div className="mb-10">
-                <div>
-                  <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
-                    <div className="flex-grow items-center truncate cursor-pointer">
-                      <span className="font-semibold text-gray-900">
-                        My Feedback
-                      </span>
-                      <div className="flex items-center justify-between">
-                        <ul className="flex text-gray-500">
-                          <li className="pr-1">0 view</li>
-                          <li className="list-disc ml-6 pr-1">0 submission</li>
-                          <li className="list-disc ml-6">Edited 2 days ago</li>
-                        </ul>
-                        <div className="border border-gray-300 hover:bg-gray-200 px-3 py-2 rounded-lg">
-                          <BsThreeDots />
+              {!isfeedback ? (
+                <>
+                  {/* not feedback  */}
+                  <div className="flex bg-white">
+                    <div className="w-full md:w-4/5 lg:w-3/5 md:mx-auto md:max-w-4xl px-4">
+                      <div className="mt-8 pb-0">
+                        <div className="flex flex-wrap justify-center max-w-4xl">
+                          <img
+                            src="https://d3ietpyl4f2d18.cloudfront.net/0c5c10e0-8bac-4312-b450-2ec2495f6035/img/pages/forms/search_notfound.png"
+                            alt="cloud"
+                            className="w-56"
+                          />
+                          <h3 className="w-full mt-4 text-center text-gray-900 font-semibold">
+                            No forms found
+                          </h3>
+                          <Link
+                            to={"/create"}
+                            className="py-2 px-4
+                          bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200
+                          text-white transition ease-in duration-200 text-center text-base font-medium focus:outline-none focus:ring-2
+                            focus:ring-offset-2 rounded-lg flex items-center hover:no-underline"
+                          >
+                            <span className="no-underline mx-auto flex items-center">
+                              <AiOutlinePlus className="mr-2 text-xl" />
+                              Create a new feedback
+                            </span>
+                          </Link>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </>
+              ) : (
+                <>
+                  {/* my form  */}
+                  <div className="mb-10">
+                    <div>
+                      <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
+                        <div className="flex-grow items-center truncate cursor-pointer">
+                          <span className="font-semibold text-gray-900">
+                            My Feedback
+                          </span>
+                          <div className="flex items-center justify-between">
+                            <ul className="flex text-gray-500">
+                              <li className="pr-1">0 view</li>
+                              <li className="list-disc ml-6 pr-1">
+                                0 submission
+                              </li>
+                              <li className="list-disc ml-6">
+                                Edited 2 days ago
+                              </li>
+                            </ul>
+                            <div className="border border-gray-300 hover:bg-gray-200 px-3 py-2 rounded-lg">
+                              <BsThreeDots />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
