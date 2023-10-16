@@ -6,3 +6,4 @@ export { default as Templates } from "./Templates";
 export { default as Staff } from "./Staff";
 export { default as Dashboard } from "./Dashboard";
 export { default as Setting } from "./Setting";
+export { default as CreateFeedback } from "./CreateFeedback";

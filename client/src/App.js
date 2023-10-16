@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Auth,
+  CreateFeedback,
   Dashboard,
   Feedbacks,
   Home,
@@ -88,17 +89,13 @@ function App() {
                 <Route path="/feedback" element={<Feedbacks />} />
                 <Route path="/templates" element={<Templates />} />
                 <Route path="/setting/*" element={<Setting />} />
+                <Route path="/create-feedback" element={<CreateFeedback />} />
 
-                {userRole === "student" && (
-                  <Route path="/feedback" element={<Feedbacks />} />
-                )}
-                {userRole === "staff" && (
+                {userRole === "employee" && (
                   <Route path="/staff" element={<Staff />} />
                 )}
                 {userRole === "admin" && (
-                  <>
-                    <Route path="/admin/*" element={<Dashboard />} />
-                  </>
+                  <Route path="/admin/*" element={<Dashboard />} />
                 )}
               </>
             )}

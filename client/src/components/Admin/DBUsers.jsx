@@ -26,7 +26,8 @@ function DBUsers() {
     }
 
     fetchUsers();
-  }, []);
+  }, [allUsers, dispatch]); // Add allUsers and dispatch as dependencies
+
   return (
     <div>
       <div className="text-gray-900 bg-gray-200">
