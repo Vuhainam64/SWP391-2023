@@ -8,9 +8,11 @@ import { sendPasswordResetEmail } from "@firebase/auth";
 import { auth } from "../../config/firebase.config";
 import { motion } from "framer-motion";
 import { fadeInOut } from "../../animations";
+import { useSelector } from "react-redux";
 
 function ResetPassword(props) {
-  const [email, setEmail] = useState("");
+  const user = useSelector((state) => state?.user?.user);
+  const [email, setEmail] = useState(user.email || "");
   const setGetEmailValidationStatus = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
 
@@ -71,6 +73,7 @@ function ResetPassword(props) {
                       setStateFunction={setEmail}
                       Icon={FaEnvelope}
                       setGetEmailValidationStatus={setGetEmailValidationStatus}
+                      values={email}
                     />
                     {alert && (
                       <motion.p

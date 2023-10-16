@@ -34,7 +34,7 @@ function DBLeftSection() {
           <AiOutlineClose className="cursor-pointer" />
         </motion.div>
       </div>
-      <div className="p-2 w-full">
+      <div className="p-2 w-full mt-5">
         {/* home  */}
         <Link
           to={"/admin/home"}
@@ -86,16 +86,6 @@ function DBLeftSection() {
               }
             >
               User list
-            </NavLink>
-            <NavLink
-              to={"/user-permission"}
-              className={({ isActive }) =>
-                isActive
-                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
-                  : isNotActiveStyles
-              }
-            >
-              User permission
             </NavLink>
           </motion.div>
         </div>

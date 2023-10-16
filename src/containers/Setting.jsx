@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { Footer, Navbar } from "../components";
 import { NavLink, Route, Routes } from "react-router-dom";
-import { Password, Profile } from "../components/Setting";
+import { Account, Password, Profile } from "../components/Setting";
 
 function Setting() {
   const user = useSelector((state) => state?.user?.user);
@@ -63,6 +63,7 @@ function Setting() {
               <Routes>
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/password" element={<Password />} />
+                <Route path="/account" element={<Account />} />
               </Routes>
             </div>
           </div>

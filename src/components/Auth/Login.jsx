@@ -56,6 +56,7 @@ function Login(props) {
         setStateFunction={setEmail}
         Icon={FaEnvelope}
         setGetEmailValidationStatus={setGetEmailValidationStatus}
+        values={email}
       />
       <UserAuthInput
         label="Password"
@@ -63,6 +64,7 @@ function Login(props) {
         isPassword={true}
         setStateFunction={setPassword}
         Icon={MdPassword}
+        values={password}
       />
       <div className="relative flex items-center my-5">
         <div className="flex items-center w-full md:w-1/2">

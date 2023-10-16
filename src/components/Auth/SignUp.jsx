@@ -78,6 +78,7 @@ function SignUp(props) {
         isPassword={false}
         setStateFunction={setName}
         Icon={RxAvatar}
+        values={name}
       />
       <UserAuthInput
         label="Email"
@@ -86,6 +87,7 @@ function SignUp(props) {
         setStateFunction={setEmail}
         Icon={FaEnvelope}
         setGetEmailValidationStatus={setGetEmailValidationStatus}
+        values={email}
       />
       <UserAuthInput
         label="Password"
@@ -93,6 +95,7 @@ function SignUp(props) {
         isPassword={true}
         setStateFunction={setPassword}
         Icon={MdPassword}
+        values={password}
       />
       <UserAuthInput
         label="Confirm Password"
@@ -100,6 +103,7 @@ function SignUp(props) {
         isPassword={true}
         setStateFunction={setConfirmPassword}
         Icon={MdPassword}
+        values={confirmPassword}
       />
       <div className="relative mb-3">
         <div className="flex items-center">
