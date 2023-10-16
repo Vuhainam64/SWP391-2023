@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import DBHeader from "./DBHeader";
 import DBHome from "./DBHome";
 import DBUsers from "./DBUsers";
+import Calendar from "./Calendar";
 
 function DBRightSection() {
   return (
@@ -12,6 +13,8 @@ function DBRightSection() {
         <Routes>
           <Route path="/home" element={<DBHome />} />
           <Route path="/users" element={<DBUsers />} />
+
+          <Route path="/calendar" element={<Calendar />} />
         </Routes>
       </div>
     </div>

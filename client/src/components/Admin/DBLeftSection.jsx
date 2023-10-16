@@ -1,4 +1,5 @@
 import {
+  AiOutlineCalendar,
   AiOutlineClose,
   AiOutlineHome,
   AiOutlineSetting,
@@ -8,8 +9,9 @@ import {
   MdOutlineKeyboardArrowDown,
   MdPeople,
 } from "react-icons/md";
+import { FaUserTie } from "react-icons/fa";
+import { VscFeedback } from "react-icons/vsc";
 import { motion } from "framer-motion";
-
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -89,6 +91,36 @@ function DBLeftSection() {
             </NavLink>
           </motion.div>
         </div>
+        {/* Employee  */}
+        <Link
+          to={"/admin/employee"}
+          className="flex items-center py-2 hover:bg-slate-200 p-2"
+        >
+          <div className="flex items-center">
+            <FaUserTie />
+            <p className="px-1">Employee</p>
+          </div>
+        </Link>
+        {/* View Feedback  */}
+        <Link
+          to={"/admin/feedback"}
+          className="flex items-center py-2 hover:bg-slate-200 p-2"
+        >
+          <div className="flex items-center">
+            <VscFeedback />
+            <p className="px-1">View Feedback</p>
+          </div>
+        </Link>
+        {/* Calendar  */}
+        <Link
+          to={"/admin/calendar"}
+          className="flex items-center py-2 hover:bg-slate-200 p-2"
+        >
+          <div className="flex items-center">
+            <AiOutlineCalendar />
+            <p className="px-1">Calendar</p>
+          </div>
+        </Link>
         {/* setting  */}
         <div>
           <div
@@ -112,7 +144,7 @@ function DBLeftSection() {
             className={`flex flex-col ${!isSetting ? "hidden" : "block"}`}
           >
             <NavLink
-              to={"/setting"}
+              to={"/admin/setting"}
               className={({ isActive }) =>
                 isActive
                   ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
@@ -120,16 +152,6 @@ function DBLeftSection() {
               }
             >
               Setting
-            </NavLink>
-            <NavLink
-              to={"/calendar"}
-              className={({ isActive }) =>
-                isActive
-                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
-                  : isNotActiveStyles
-              }
-            >
-              Calendar
             </NavLink>
           </motion.div>
         </div>
