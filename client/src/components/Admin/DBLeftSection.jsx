@@ -79,16 +79,6 @@ function DBLeftSection() {
             >
               Users
             </NavLink>
-            <NavLink
-              to={"/user-list"}
-              className={({ isActive }) =>
-                isActive
-                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
-                  : isNotActiveStyles
-              }
-            >
-              User list
-            </NavLink>
           </motion.div>
         </div>
         {/* Employee  */}

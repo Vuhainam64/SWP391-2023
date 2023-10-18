@@ -7,13 +7,13 @@ import { signOutAction } from "../../ultils/helpers";
 import { useSelector } from "react-redux";
 
 function DBHeader() {
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state?.user?.user);
   return (
     <div className="w-full flex items-center justify-between gap-3">
       <p className="text-2xl text-headingColor">
         Welcome to Dashboard
-        {user?.name && (
-          <span className="block text-base text-gray-500">{`Hello ${user?.name}...!`}</span>
+        {user && (
+          <span className="block text-base text-gray-500">{`Hello ${user?.displayName}...!`}</span>
         )}
       </p>
 
@@ -39,7 +39,7 @@ function DBHeader() {
           <div className="w-10 h-10 rounded-md shadow-md cursor-pointer overflow-hidden">
             <motion.img
               className="w-full h-full object-cover"
-              src={user?.picture ? user?.picture : Avatar}
+              src={user?.photoURL ? user?.photoURL : Avatar}
               whileHover={{ scale: 1.15 }}
               referrerPolicy="no-referrer"
             />

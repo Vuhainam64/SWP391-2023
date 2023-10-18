@@ -3,6 +3,10 @@ import { buttonClick } from "../animations";
 import { Footer, Navbar } from "../components";
 import { motion } from "framer-motion";
 import { AiOutlineCloudUpload } from "react-icons/ai";
+import { TextEditorBar, modules, formats } from "../components/Styles";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "../components/Styles/Snow.css";
 
 function CreateFeedback() {
   return (
@@ -95,10 +99,22 @@ function CreateFeedback() {
                     </div>
                   </div>
                   <div className="relative mb-3">
-                    <label
-                      htmlFor=""
-                      className="text-gray-700 font-semibold text-sm"
-                    >
+                    <label className="text-gray-700 font-semibold text-sm">
+                      Content
+                    </label>
+                    <div className="p-3 border rounded-xl w-full max-w-[50.5rem] h-fit border-gray-300 bg-white">
+                      <TextEditorBar toolbarId={"t1"} className="" />
+                      <ReactQuill
+                        theme="snow"
+                        placeholder={"Write something awesome..."}
+                        modules={modules("t1")}
+                        formats={formats}
+                        className="max-w-[48.5rem] min-h-[12.5rem] h-[12.5rem] max-h-[12.5rem] overflow-auto"
+                      />
+                    </div>
+                  </div>
+                  <div className="relative mb-3">
+                    <label className="text-gray-700 font-semibold text-sm">
                       Attach Files
                     </label>
 
@@ -140,19 +156,6 @@ function CreateFeedback() {
                   </Link>
                 </p>
               </div>
-            </div>
-          </div>
-        </div>
-        <div className="absolute bottom-0 translate-y-full inset-x-0">
-          <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl -mt-[20px]">
-            <div className="flex items-center justify-center">
-              <motion.div
-                {...buttonClick}
-                className="mx-auto w-full max-w-[300px] py-2 px-4
-                bg-blue-600 rounded-md text-white text-center cursor-pointer"
-              >
-                Use this template
-              </motion.div>
             </div>
           </div>
         </div>

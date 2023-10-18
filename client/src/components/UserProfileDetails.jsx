@@ -37,10 +37,10 @@ function UserProfileDetails() {
               className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
             >
               <div className="flex flex-row gap-5">
-              <div className="text-2xl">
-                <AiOutlineDashboard />
-              </div>
-              <button>Dashboard</button>
+                <div className="text-2xl">
+                  <AiOutlineDashboard />
+                </div>
+                <button>Dashboard</button>
               </div>
               <div className="text-xs">
                 <FaChevronRight />
@@ -54,15 +54,15 @@ function UserProfileDetails() {
                   className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
                 >
                   <div className="flex flex-row gap-5">
-                  <div className="text-2xl">{menu.icon}</div>
-                  <button>{menu.name}</button>
+                    <div className="text-2xl">{menu.icon}</div>
+                    <button>{menu.name}</button>
                   </div>
                   <div className="text-xs">
                     <FaChevronRight />
                   </div>
                 </Link>
               ))}
-            <motion.p
+            <motion.div
               onClick={signOutAction}
               whileTap={{ scale: 0.9 }}
               className="flex flex-row justify-between text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
@@ -71,7 +71,7 @@ function UserProfileDetails() {
               <div className="text-xs ">
                 <FaChevronRight />
               </div>
-            </motion.p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -80,4 +80,3 @@ function UserProfileDetails() {
 }
 
 export default UserProfileDetails;
-

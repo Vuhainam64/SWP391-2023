@@ -2,11 +2,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getAllUsers, setAllUsers } from "../../context/actions/allUsersAction";
 import { getAllUser } from "../../api";
+import { Pagination } from "../Styles";
 
 function DBUsers() {
   const allUsers = useSelector((state) => state?.allUsers?.allUsers);
   const dispatch = useDispatch();
   const [chosenID, setChosenID] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [curentPageShowCourse, setCurentPageShowCourse] = useState([]);
+  const [totalItems, setTotalItems] = useState();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -29,13 +34,46 @@ function DBUsers() {
     fetchUsers();
   }, [allUsers, dispatch]); // Add allUsers and dispatch as dependencies
 
+  useEffect(() => {
+    if (allUsers) {
+      setTotalItems(allUsers.length);
+      setCurentPageShowCourse([]);
+      const firstItem = currentPage * itemsPerPage - itemsPerPage;
+      if (firstItem >= allUsers.length) return;
+      let index = 0;
+      allUsers.length - firstItem > itemsPerPage
+        ? (index = itemsPerPage)
+        : (index = allUsers.length - firstItem);
+      for (let i = 0; i < index; i++) {
+        setCurentPageShowCourse((curentPageShowCourse) => [
+          ...curentPageShowCourse,
+          allUsers[firstItem + i],
+        ]);
+      }
+    }
+  }, [currentPage, itemsPerPage, allUsers]);
+
+  // Số lượng mục trên mỗi trang
+  // Tổng số mục bạn muốn phân trang
+
+  const paginate = (pageNumber) => {
+    console.log(pageNumber);
+    setCurrentPage(pageNumber);
+    // Thực hiện logic lấy dữ liệu cho trang mới
+    // Ví dụ: fetchData(pageNumber);
+  };
+
+  const choseItemPerPage = (itemNumber) => {
+    setItemsPerPage(itemNumber);
+  };
+
   return (
     <div>
       <div className="text-gray-900">
         <div className="p-4 flex">
           <h1 className="text-3xl">Users</h1>
         </div>
-        <div className="px-3 py-4 flex justify-center shadow-2xl">
+        <div className="px-3 py-4 flex justify-center ">
           <table className="table-auto w-full border-collapse">
             <thead className="text-white h-10 px-5 py-1 bg-gray-700">
               <tr className="text-left">
@@ -67,11 +105,14 @@ function DBUsers() {
               </tr>
             </thead>
             <tbody>
-              {allUsers &&
-                allUsers.map((user) => (
-                  <tr className="border-b hover:bg-orange-100 bg-white shadow-lg">
+              {curentPageShowCourse &&
+                curentPageShowCourse.map((user, index) => (
+                  <tr
+                    className="border-b hover:bg-orange-100 bg-white shadow-lg"
+                    key={index}
+                  >
                     <td className="p-3 px-5">
-                      {chosenID === user.id ? (
+                      {chosenID === user.uid ? (
                         <input
                           type="text"
                           value={user.displayName}
@@ -84,7 +125,7 @@ function DBUsers() {
                       )}
                     </td>
                     <td className="p-3 px-5">
-                      {chosenID === user.id ? (
+                      {chosenID === user.uid ? (
                         <input
                           type="text"
                           value={user.email}
@@ -97,7 +138,7 @@ function DBUsers() {
                       )}
                     </td>
                     <td className="p-3 px-5">
-                      {chosenID === user.id ? (
+                      {chosenID === user.uid ? (
                         <input
                           type="text"
                           value={user.emailVerified}
@@ -110,9 +151,9 @@ function DBUsers() {
                       )}
                     </td>
                     <td className="p-3 px-5 text-center">
-                      {chosenID === user.id ? (
+                      {chosenID === user.uid ? (
                         <select
-                          value={user.role}
+                          value={user.role ? 1 : 0}
                           className="bg-transparent border-b-2 border-gray-300 py-2"
                         >
                           <option value="0">Admin</option>
@@ -125,7 +166,7 @@ function DBUsers() {
                       )}
                     </td>
                     <td>
-                      {chosenID === user.id ? (
+                      {chosenID === user.uid ? (
                         <div className="p-3 px-5 flex justify-center items-center gap-3">
                           <button
                             type="button"
@@ -152,7 +193,7 @@ function DBUsers() {
                           <button
                             type="button"
                             className="w-[40%] text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                            onClick={() => setChosenID(user.id)}
+                            onClick={() => setChosenID(user.uid)}
                           >
                             Edit
                           </button>
@@ -163,6 +204,16 @@ function DBUsers() {
                 ))}
             </tbody>
           </table>
+        </div>
+        <div className="w-full p-5">
+          {totalItems && (
+            <Pagination
+              itemsPerPage={itemsPerPage}
+              totalItems={totalItems}
+              paginate={paginate}
+              choseItemPerPage={choseItemPerPage}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -65,7 +65,7 @@ function App() {
           <Spinner />
         </div>
       ) : (
-        <div className="bg-white dark:bg-notion-dark">
+        <div className="bg-white">
           <Routes>
             <Route path="/404" element={<PageNotFound />} />
             <Route path="/home/*" element={<Home />} />
