@@ -7,6 +7,12 @@ import { Pagination } from "../Styles";
 function DBUsers() {
   const allUsers = useSelector((state) => state?.allUsers?.allUsers);
   const dispatch = useDispatch();
+
+  const [Name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [verify, setVerify] = useState(false);
+  const [role, setRole] = useState(1);
+
   const [chosenID, setChosenID] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -66,6 +72,21 @@ function DBUsers() {
   const choseItemPerPage = (itemNumber) => {
     setItemsPerPage(itemNumber);
   };
+  function chooseID({ user }) {
+    console.log(user);
+    if (user) {
+      setChosenID(user.uid);
+      setName(user.displayName);
+      setEmail(user.email);
+      setVerify(user.emailVerified);
+
+      console.log(chooseID);
+      console.log(Name);
+      console.log(email);
+      console.log(verify);
+      console.log(role);
+    }
+  }
 
   return (
     <div>
@@ -115,7 +136,8 @@ function DBUsers() {
                       {chosenID === user.uid ? (
                         <input
                           type="text"
-                          value={user.displayName}
+                          value={Name}
+                          onChange={(e) => setName(e.target.value)}
                           className="bg-transparent border-b-2 border-gray-300 py-2 w-full"
                         />
                       ) : (
@@ -128,7 +150,8 @@ function DBUsers() {
                       {chosenID === user.uid ? (
                         <input
                           type="text"
-                          value={user.email}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                           className="bg-transparent border-b-2 border-gray-300 py-2 w-full"
                         />
                       ) : (
@@ -139,11 +162,14 @@ function DBUsers() {
                     </td>
                     <td className="p-3 px-5">
                       {chosenID === user.uid ? (
-                        <input
-                          type="text"
-                          value={user.emailVerified}
-                          className="bg-transparent border-b-2 border-gray-300 py-2 w-full"
-                        />
+                        <select
+                          value={verify} // You already have a value prop
+                          onChange={(e) => setVerify(e.target.value)} // Add this onChange handler
+                          className="bg-transparent border-b-2 border-gray-300 py-2"
+                        >
+                          <option value="true">Verify</option>
+                          <option value="false">Not Verify</option>
+                        </select>
                       ) : (
                         <div className="bg-transparent border-gray-300 py-2 w-full">
                           {user.emailVerified ? "verify" : "not verify"}
@@ -153,7 +179,8 @@ function DBUsers() {
                     <td className="p-3 px-5 text-center">
                       {chosenID === user.uid ? (
                         <select
-                          value={user.role ? 1 : 0}
+                          value={role} // You already have a value prop
+                          onChange={(e) => setRole(e.target.value)} // Add this onChange handler
                           className="bg-transparent border-b-2 border-gray-300 py-2"
                         >
                           <option value="0">Admin</option>
@@ -193,7 +220,7 @@ function DBUsers() {
                           <button
                             type="button"
                             className="w-[40%] text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                            onClick={() => setChosenID(user.uid)}
+                            onClick={() => chooseID({ user })}
                           >
                             Edit
                           </button>

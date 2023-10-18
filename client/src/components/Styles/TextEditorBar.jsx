@@ -98,11 +98,9 @@ export default function TextEditorBar(props) {
             </button>
           </span>
           <span className="ql-formats">
-            <select className="ql-size">
+            <select className="ql-size" defaultValue={"medium"}>
               <option value="small">Small text</option>
-              <option value="medium" selected>
-                Normal text
-              </option>
+              <option value="medium">Normal text</option>
               <option value="large">Large text</option>
             </select>
           </span>
