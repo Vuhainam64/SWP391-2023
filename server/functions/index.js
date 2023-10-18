@@ -25,6 +25,16 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccountKey),
 });
 
+admin.auth().setCustomUserClaims("wYcLjiaX12V0KLp27eWyOCrf3TC3", {
+    admin: true
+  })
+  .then(() => {
+    console.log("Người dùng 'admin' đã được gán quyền 'admin'.");
+  })
+  .catch((error) => {
+    console.error("Lỗi khi gán quyền 'admin' cho người dùng:", error);
+  });
+
 // api endpoints
 app.get("/", (req, res) => {
   return res.send("hello word");

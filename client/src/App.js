@@ -30,7 +30,7 @@ function App() {
       (userCred) => {
         if (userCred) {
           setIsLogin(true);
-          console.log(userCred?.providerData[0]);
+          console.log(userCred);
           setDoc(
             doc(db, "user", userCred?.uid),
             userCred?.providerData[0]

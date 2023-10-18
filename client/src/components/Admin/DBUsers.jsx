@@ -1,12 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getAllUsers, setAllUsers } from "../../context/actions/allUsersAction";
-import { getAllUser } from "../../api";
+import { getAllUser, updateRole, updateUserRole } from "../../api";
 import { Pagination } from "../Styles";
+import { auth } from "../../config/firebase.config";
 
 function DBUsers() {
   const allUsers = useSelector((state) => state?.allUsers?.allUsers);
   const dispatch = useDispatch();
+  const adminToken = auth.token;
 
   const [Name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -88,6 +90,21 @@ function DBUsers() {
     }
   }
 
+  const updateUser = async () => {
+    try {
+      const response = await updateRole(chosenID, role, adminToken);
+      if (response && response.success) {
+        // Handle success, perhaps update the local state or refresh the data
+        console.log("User role updated successfully.");
+      } else {
+        // Handle errors
+        console.error("Failed to update user role:", response);
+      }
+    } catch (error) {
+      console.error("Error updating user role:", error);
+    }
+  };
+
   return (
     <div>
       <div className="text-gray-900">
@@ -163,8 +180,8 @@ function DBUsers() {
                     <td className="p-3 px-5">
                       {chosenID === user.uid ? (
                         <select
-                          value={verify} // You already have a value prop
-                          onChange={(e) => setVerify(e.target.value)} // Add this onChange handler
+                          value={verify}
+                          onChange={(e) => setVerify(e.target.value)}
                           className="bg-transparent border-b-2 border-gray-300 py-2"
                         >
                           <option value="true">Verify</option>
@@ -179,8 +196,8 @@ function DBUsers() {
                     <td className="p-3 px-5 text-center">
                       {chosenID === user.uid ? (
                         <select
-                          value={role} // You already have a value prop
-                          onChange={(e) => setRole(e.target.value)} // Add this onChange handler
+                          value={role}
+                          onChange={(e) => setRole(e.target.value)}
                           className="bg-transparent border-b-2 border-gray-300 py-2"
                         >
                           <option value="0">Admin</option>
@@ -197,6 +214,7 @@ function DBUsers() {
                         <div className="p-3 px-5 flex justify-center items-center gap-3">
                           <button
                             type="button"
+                            onClick={updateUser}
                             className="w-[40%] text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
                           >
                             Save
