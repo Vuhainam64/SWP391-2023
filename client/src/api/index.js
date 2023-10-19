@@ -18,7 +18,7 @@ export const validateUserJWTToken = async (token) => {
 
 export const getAllUser = async () => {
     try {
-        const res = await axios.get(`${baseURL}/api/users/all-users`);
+        const res = await axios.get(`${baseURL}/api/users/all`);
         return res.data.data;
     } catch (err) {
         return null;
