@@ -7,25 +7,41 @@ const serviceAccountKey = require("./serviceAccountKey.json");
 const express = require("express");
 const app = express();
 
-// Body parser for JSON data
+// Body parser for our JSON data
 app.use(express.json());
 
-// CORS settings
+// cross orgin
 const cors = require("cors");
-app.use(cors());
-
-// Initialize Firebase Admin SDK with service account credentials
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccountKey),
+app.use(cors({
+  origin: true
+}));
+app.use((req, res, next) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  next();
 });
 
+// firebase credentials
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccountKey),
+});
 
-// API endpoints
+admin.auth().setCustomUserClaims("wYcLjiaX12V0KLp27eWyOCrf3TC3", {
+    admin: true
+  })
+  .then(() => {
+    console.log("Người dùng 'admin' đã được gán quyền 'admin'.");
+  })
+  .catch((error) => {
+    console.error("Lỗi khi gán quyền 'admin' cho người dùng:", error);
+  });
+
+// api endpoints
 app.get("/", (req, res) => {
-    return res.send("hello word");
+  return res.send("hello word");
 });
 
 const userRoute = require("./routes/user");
 app.use("/api/users", userRoute);
+
 
 exports.app = functions.https.onRequest(app);
