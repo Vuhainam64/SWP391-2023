@@ -17,6 +17,7 @@ app.use(cors());
 // Initialize Firebase Admin SDK with service account credentials
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccountKey),
+    databaseURL: "https://get-feedback-a0119.firebaseio.com",
 });
 
 
