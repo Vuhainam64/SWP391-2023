@@ -11,52 +11,55 @@ import {
   Templates,
 } from "./containers";
 import { useEffect, useState } from "react";
-import { auth, db } from "./config/firebase.config";
-import { doc, setDoc } from "@firebase/firestore";
+import { auth } from "./config/firebase.config";
 import { Spinner, VerifyPopup } from "./components";
 import { useDispatch } from "react-redux";
 import { SET_USER } from "./context/actions/userActions";
+import { updateUserDocument } from "./ultils/helpers";
+import { getUserRole } from "./api";
 
 function App() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [userRole, setUserRole] = useState("");
   const dispatch = useDispatch();
-  const userRole = "admin";
+
+  const handleAuthStateChanged = async (userCred) => {
+    if (userCred) {
+      setIsLogin(true);
+      const userRole = await getUserRole(userCred.uid, userCred.accessToken);
+      console.log("UserCred: ", userCred);
+      console.log("User role: ", userRole);
+      setUserRole(userRole);
+      const userData = {
+        ...userCred.providerData[0],
+        emailVerified: userCred.emailVerified,
+        creationTime: userCred.metadata.creationTime,
+        lastSignInTime: userCred.metadata.lastSignInTime,
+        role: userRole,
+      };
+      await updateUserDocument(userCred, userData);
+      dispatch(SET_USER(userData));
+      if (userCred.emailVerified) {
+        setIsEmailVerified(true);
+      } else {
+        setIsEmailVerified(false);
+        navigate("/auth", { replace: true });
+      }
+    } else {
+      navigate("/auth", { replace: true });
+    }
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(
-      (userCred) => {
-        if (userCred) {
-          setIsLogin(true);
-          console.log(userCred);
-          setDoc(
-            doc(db, "user", userCred?.uid),
-            userCred?.providerData[0]
-          ).then(() => {
-            dispatch(SET_USER(userCred?.providerData[0]));
-            if (userCred.emailVerified) {
-              setIsEmailVerified(true);
-            } else {
-              setIsEmailVerified(false);
-              navigate("/auth", { replace: true });
-            }
-          });
-        } else {
-          navigate("/auth", { replace: true });
-        }
-
-        setInterval(() => {
-          setIsLoading(false);
-        }, 1000);
-      },
-      [dispatch, navigate]
-    );
-
+    const unsubscribe = auth.onAuthStateChanged(handleAuthStateChanged);
     return () => unsubscribe();
-    // eslint-disable-next-line
-  }, []);
+  }, [dispatch, navigate]);
 
   return (
     <>

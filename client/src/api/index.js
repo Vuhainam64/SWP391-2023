@@ -16,6 +16,20 @@ export const validateUserJWTToken = async (token) => {
     }
 };
 
+export const getUserRole = async (userId, token) => {
+    try {
+        const res = await axios.get(`${baseURL}/api/users/getRole/${userId}`, {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        });
+        return res.data.role;
+    } catch (err) {
+        console.error("Error fetching user role:", err);
+        return null;
+    }
+};
+
 export const getAllUser = async () => {
     try {
         const res = await axios.get(`${baseURL}/api/users/all`);
