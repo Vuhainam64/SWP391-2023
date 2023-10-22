@@ -6,8 +6,6 @@ const serviceAccountKey = require("./serviceAccountKey.json");
 
 const express = require("express");
 const app = express();
-
-// Body parser for JSON data
 app.use(express.json());
 
 // CORS settings
@@ -22,10 +20,18 @@ admin.initializeApp({
 
 // API endpoints
 app.get("/", (req, res) => {
-    return res.send("hello word");
+    return res.send("This is API of Get-Feedback");
 });
 
-const userRoute = require("./routes/user");
-app.use("/api/users", userRoute);
+const userRoute = require('./routes/users');
+const photoRoute = require('./routes/photos');
+const roleRoute = require('./routes/roles');
+const feedbackRoute = require('./routes/feedbacks');
+
+// Sử dụng các router
+app.use('/api/users', userRoute);
+app.use('/api/photos', photoRoute);
+app.use('/api/roles', roleRoute);
+app.use('/api/feedbacks', feedbackRoute);
 
 exports.app = functions.https.onRequest(app);

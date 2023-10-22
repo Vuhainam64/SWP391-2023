@@ -1,4 +1,4 @@
-const userAuthReducer = (state = null, action) => {
+const userReducer = (state = null, action) => {
   switch (action.type) {
     case "SET_USER":
       return {
@@ -15,4 +15,4 @@ const userAuthReducer = (state = null, action) => {
   }
 };
 
-export default userAuthReducer;
+export default userReducer;

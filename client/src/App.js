@@ -11,55 +11,75 @@ import {
   Templates,
 } from "./containers";
 import { useEffect, useState } from "react";
-import { auth } from "./config/firebase.config";
+import { auth, db } from "./config/firebase.config";
 import { Spinner, VerifyPopup } from "./components";
 import { useDispatch } from "react-redux";
 import { SET_USER } from "./context/actions/userActions";
 import { updateUserDocument } from "./ultils/helpers";
-import { getUserRole } from "./api";
+import { createUserRole, getUserRole } from "./api";
+import { doc, setDoc } from "firebase/firestore";
+import { SET_ROLE } from "./context/actions/roleActions";
 
 function App() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [userRole, setUserRole] = useState("");
+  const [userRole, setUserRole] = useState("student");
   const dispatch = useDispatch();
 
-  const handleAuthStateChanged = async (userCred) => {
-    if (userCred) {
-      setIsLogin(true);
-      const userRole = await getUserRole(userCred.uid, userCred.accessToken);
-      console.log("UserCred: ", userCred);
-      console.log("User role: ", userRole);
-      setUserRole(userRole);
-      const userData = {
-        ...userCred.providerData[0],
-        emailVerified: userCred.emailVerified,
-        creationTime: userCred.metadata.creationTime,
-        lastSignInTime: userCred.metadata.lastSignInTime,
-        role: userRole,
-      };
-      await updateUserDocument(userCred, userData);
-      dispatch(SET_USER(userData));
-      if (userCred.emailVerified) {
-        setIsEmailVerified(true);
+  async function fetchUserRole(userCred) {
+    try {
+      const role = await getUserRole(userCred.uid, userCred.accessToken);
+      if (role) {
+        setUserRole(role);
       } else {
-        setIsEmailVerified(false);
-        navigate("/auth", { replace: true });
+        const newRole = await createUserRole(userCred.uid);
+        setUserRole(newRole);
       }
-    } else {
-      navigate("/auth", { replace: true });
+      dispatch(SET_ROLE(role));
+      console.log("role: ", role);
+    } catch (error) {
+      console.error("Error fetching user role:", error);
     }
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
+  }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(handleAuthStateChanged);
+    const unsubscribe = auth.onAuthStateChanged(
+      async (userCred) => {
+        if (userCred) {
+          setIsLogin(true);
+          console.log("userCred: ", userCred);
+          const userData = {
+            ...userCred.providerData[0],
+            displayName: userCred.displayName,
+            emailVerified: userCred.emailVerified,
+            creationTime: userCred.metadata.creationTime,
+            lastSignInTime: userCred.metadata.lastSignInTime,
+            photoURL: userCred.photoURL,
+          };
+          fetchUserRole(userCred);
+          setDoc(doc(db, "user", userCred?.uid), userData).then(() => {
+            dispatch(SET_USER(userData));
+            if (userCred.emailVerified) {
+              setIsEmailVerified(true);
+            } else {
+              setIsEmailVerified(false);
+              navigate("/auth", { replace: true });
+            }
+          });
+        } else {
+          navigate("/auth", { replace: true });
+        }
+
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+      },
+      [dispatch, navigate]
+    );
     return () => unsubscribe();
-  }, [dispatch, navigate]);
+  }, []);
 
   return (
     <>

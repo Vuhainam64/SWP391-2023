@@ -88,10 +88,14 @@ function Profile() {
       }
       await updateDoc(doc(db, "user", userId), {
         displayName: name,
-        photoURL: imageDownloadURL,
+        photoURL: imageDownloadURL || user.photoURL,
       });
       dispatch(
-        SET_USER({ ...user, displayName: name, photoURL: imageDownloadURL })
+        SET_USER({
+          ...user,
+          displayName: name,
+          photoURL: imageDownloadURL || user.photoURL,
+        })
       );
       dispatch(alertSuccess("User data updated successfully"));
       setTimeout(() => {
