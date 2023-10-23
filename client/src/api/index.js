@@ -28,6 +28,15 @@ export const getAllUser = async () => {
 };
 
 //Role
+export const createDefaultRole = async (userId) => {
+    try {
+        const res = await axios.post(`${baseURL}/api/roles/createDefaultRole/${userId}`);
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};
+
 export const getAllRoles = async () => {
     try {
         const res = await axios.get(`${baseURL}/api/roles/getAllRoles`);
@@ -48,9 +57,6 @@ export const updateRole = async (userId, newRoleID) => {
         return null;
     }
 };
-
-
-
 
 export const getUserRole = async (userId, token) => {
     try {

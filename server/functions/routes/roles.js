@@ -2,6 +2,48 @@ const router = require("express").Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
+const DEFAULT_ROLE_ID = "1698024496834"; //student
+// Route tạo role mặc định
+router.post("/createDefaultRole/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        // Truy vấn để lấy tài liệu người dùng
+        const userDoc = await db.collection("user").doc(userId).get();
+
+        if (userDoc.exists) {
+            // Kiểm tra xem người dùng đã có roleId hay chưa
+            if (!userDoc.data().roleId) {
+                // Nếu roleId của người dùng là null hoặc không tồn tại, thực hiện cập nhật
+                await db.collection("user").doc(userId).update({
+                    roleId: DEFAULT_ROLE_ID
+                });
+
+                return res.status(200).send({
+                    success: true,
+                    msg: "Default role created successfully"
+                });
+            } else {
+                // Người dùng đã có roleId, không thực hiện cập nhật
+                return res.status(400).send({
+                    success: false,
+                    msg: "User already has a role."
+                });
+            }
+        } else {
+            return res.status(404).send({
+                success: false,
+                msg: "User not found."
+            });
+        }
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            msg: `Error: ${err}`
+        });
+    }
+});
+
+
 router.post("/createRole/:userId", async (req, res) => {
     const userId = req.params.userId;
     const role_name = req.body.role_name;

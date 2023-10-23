@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { SET_USER } from "./context/actions/userActions";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { SET_ROLE } from "./context/actions/roleActions";
-import { getRoleWithRoleID } from "./api";
+import { createDefaultRole, getRoleWithRoleID } from "./api";
 
 function App() {
   const navigate = useNavigate();
@@ -27,43 +27,54 @@ function App() {
   const [userRole, setUserRole] = useState("");
   const dispatch = useDispatch();
 
+  const getUserDataAndRole = (userCred) => {
+    getDoc(doc(db, "user", userCred.uid)).then((userDoc) => {
+      if (userDoc.exists() && userDoc.data().roleId) {
+        const userData = {
+          ...userCred.providerData[0],
+          displayName: userCred.displayName,
+          emailVerified: userCred.emailVerified,
+          creationTime: userCred.metadata.creationTime,
+          lastSignInTime: userCred.metadata.lastSignInTime,
+          photoURL: userCred.photoURL,
+          roleId: userDoc.data().roleId,
+        };
+        setDoc(doc(db, "user", userCred.uid), userData).then(() => {
+          dispatch(SET_USER(userData));
+          if (userCred.emailVerified) {
+            setIsEmailVerified(true);
+          } else {
+            setIsEmailVerified(false);
+            navigate("/auth", { replace: true });
+          }
+        });
+        const getRole = async () => {
+          const roleId = userDoc.data().roleId;
+          const role = await getRoleWithRoleID(roleId);
+          setUserRole(role);
+          console.log("role_name: ", role);
+          dispatch(SET_ROLE(role));
+        };
+        getRole();
+        console.log("userCred: ", userCred);
+        console.log("roleID: ", userDoc.data().roleId);
+      } else {
+        console.log("Invalid roleId => Update role");
+        setDoc(doc(db, "user", userCred.uid), userCred.providerData[0]);
+        createDefaultRole(userCred.uid).then(() => {
+          // Sau khi cập nhật role, gọi lại hàm getUserDataAndRole để cập nhật dữ liệu mới
+          getUserDataAndRole(userCred);
+        });
+      }
+    });
+  };
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(
       (userCred) => {
         if (userCred) {
           setIsLogin(true);
-          getDoc(doc(db, "user", userCred.uid)).then((userDoc) => {
-            if (userDoc.exists()) {
-              const userData = {
-                ...userCred.providerData[0],
-                displayName: userCred.displayName,
-                emailVerified: userCred.emailVerified,
-                creationTime: userCred.metadata.creationTime,
-                lastSignInTime: userCred.metadata.lastSignInTime,
-                photoURL: userCred.photoURL,
-                roleId: userDoc.data().roleId, // Lấy role ID từ tài liệu người dùng
-              };
-              setDoc(doc(db, "user", userCred.uid), userData).then(() => {
-                dispatch(SET_USER(userData));
-                if (userCred.emailVerified) {
-                  setIsEmailVerified(true);
-                } else {
-                  setIsEmailVerified(false);
-                  navigate("/auth", { replace: true });
-                }
-              });
-              const getRole = async () => {
-                const roleId = userDoc.data().roleId;
-                const role = await getRoleWithRoleID(roleId);
-                setUserRole(role);
-                console.log("role_name: ", role);
-                dispatch(SET_ROLE(role));
-              };
-              getRole();
-              console.log("userCred: ", userCred);
-              console.log("roleID: ", userDoc.data().roleId);
-            }
-          });
+          getUserDataAndRole(userCred);
         } else {
           navigate("/auth", { replace: true });
         }
