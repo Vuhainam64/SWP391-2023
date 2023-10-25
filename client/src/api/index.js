@@ -18,9 +18,9 @@ export const validateUserJWTToken = async (token) => {
     }
 };
 
-export const getAllUser = async () => {
+export const getAllUserAPI = async () => {
     try {
-        const res = await axios.get(`${baseURL}/api/users/all`);
+        const res = await axios.get(`${baseURL}/api/users/getAllUsers`);
         return res.data.data;
     } catch (err) {
         return null;
@@ -37,7 +37,7 @@ export const createDefaultRole = async (userId) => {
     }
 };
 
-export const getAllRoles = async () => {
+export const getAllRolesAPI = async () => {
     try {
         const res = await axios.get(`${baseURL}/api/roles/getAllRoles`);
         return res.data.data;

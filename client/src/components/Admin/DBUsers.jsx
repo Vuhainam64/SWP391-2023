@@ -1,19 +1,21 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getAllUsers, setAllUsers } from "../../context/actions/allUsersAction";
-import { getAllUser, updateRole, updateUserRole } from "../../api";
+import { setAllUsers } from "../../context/actions/allUsersAction";
+import { getAllRolesAPI, getAllUserAPI, updateRole } from "../../api";
 import { Pagination } from "../Styles";
-import { auth } from "../../config/firebase.config";
+import { setAllRoles } from "../../context/actions/allRolesAction";
 
 function DBUsers() {
   const allUsers = useSelector((state) => state?.allUsers?.allUsers);
+  const allRoles = useSelector((state) => state?.allRoles?.allRoles);
   const dispatch = useDispatch();
-  const adminToken = auth.token;
 
   const [Name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [verify, setVerify] = useState(false);
-  const [role, setRole] = useState(1);
+
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("");
 
   const [chosenID, setChosenID] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,24 +25,29 @@ function DBUsers() {
 
   useEffect(() => {
     async function fetchUsers() {
-      dispatch(getAllUsers());
+      try {
+        const userData = await getAllUserAPI();
+        dispatch(setAllUsers(userData));
+      } catch (error) {
+        console.log("Error fetching users:", error);
+        dispatch(setAllUsers([]));
+      }
+    }
 
-      if (!allUsers) {
-        dispatch(getAllUsers());
-
-        try {
-          const data = await getAllUser();
-          dispatch(setAllUsers(data));
-          console.log(data);
-        } catch (error) {
-          console.log("Error fetching users:", error);
-          dispatch(setAllUsers([]));
-        }
+    async function fetchRoles() {
+      try {
+        const rolesData = await getAllRolesAPI();
+        dispatch(setAllRoles(rolesData));
+        setRoles(rolesData);
+      } catch (error) {
+        console.log("Error fetching roles:", error);
+        dispatch(setAllRoles([]));
       }
     }
 
     fetchUsers();
-  }, [allUsers, dispatch]); // Add allUsers and dispatch as dependencies
+    fetchRoles();
+  }, [dispatch]);
 
   useEffect(() => {
     if (allUsers) {
@@ -61,49 +68,53 @@ function DBUsers() {
     }
   }, [currentPage, itemsPerPage, allUsers]);
 
-  // Số lượng mục trên mỗi trang
-  // Tổng số mục bạn muốn phân trang
+  const updateUser = async () => {
+    if (chosenID) {
+      const selectedRoleObject = roles.find(
+        (role) => role.role_name === selectedRole
+      );
+      try {
+        await updateRole(chosenID, selectedRoleObject?.roleId);
+      } catch (error) {
+        console.log("Error updating user:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (allUsers) {
+      setTotalItems(allUsers.length);
+      setCurentPageShowCourse([]);
+      const firstItem = currentPage * itemsPerPage - itemsPerPage;
+      if (firstItem >= allUsers.length) return;
+      let index = 0;
+      allUsers.length - firstItem > itemsPerPage
+        ? (index = itemsPerPage)
+        : (index = allUsers.length - firstItem);
+      for (let i = 0; i < index; i++) {
+        setCurentPageShowCourse((curentPageShowCourse) => [
+          ...curentPageShowCourse,
+          allUsers[firstItem + i],
+        ]);
+      }
+    }
+  }, [currentPage, itemsPerPage, allUsers]);
 
   const paginate = (pageNumber) => {
-    console.log(pageNumber);
     setCurrentPage(pageNumber);
-    // Thực hiện logic lấy dữ liệu cho trang mới
-    // Ví dụ: fetchData(pageNumber);
   };
 
   const choseItemPerPage = (itemNumber) => {
     setItemsPerPage(itemNumber);
   };
   function chooseID({ user }) {
-    console.log(user);
     if (user) {
       setChosenID(user.uid);
       setName(user.displayName);
       setEmail(user.email);
       setVerify(user.emailVerified);
-
-      console.log(chooseID);
-      console.log(Name);
-      console.log(email);
-      console.log(verify);
-      console.log(role);
     }
   }
-
-  const updateUser = async () => {
-    try {
-      const response = await updateRole(chosenID, role, adminToken);
-      if (response && response.success) {
-        // Handle success, perhaps update the local state or refresh the data
-        console.log("User role updated successfully.");
-      } else {
-        // Handle errors
-        console.error("Failed to update user role:", response);
-      }
-    } catch (error) {
-      console.error("Error updating user role:", error);
-    }
-  };
 
   return (
     <div>
@@ -196,19 +207,25 @@ function DBUsers() {
                     <td className="p-3 px-5 text-center">
                       {chosenID === user.uid ? (
                         <select
-                          value={role}
-                          onChange={(e) => setRole(e.target.value)}
+                          value={selectedRole}
+                          onChange={(e) => setSelectedRole(e.target.value)}
                           className="bg-transparent border-b-2 border-gray-300 py-2"
                         >
-                          <option value="0">Admin</option>
-                          <option value="1">User</option>
+                          {allRoles.map((role) => (
+                            <option key={role.id} value={role.role_name}>
+                              {role.role_name}
+                            </option>
+                          ))}
                         </select>
                       ) : (
-                        <div className="bg-transparent border-gray-300 py-2">
-                          {user.role === 0 ? "Admin" : "User"}
+                        <div className="bg-transparent border-gray-300 py-2 w-full">
+                          {roles.map((role) =>
+                            role.roleId === user.roleId ? role.role_name : null
+                          )}
                         </div>
                       )}
                     </td>
+
                     <td>
                       {chosenID === user.uid ? (
                         <div className="p-3 px-5 flex justify-center items-center gap-3">

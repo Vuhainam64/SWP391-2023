@@ -52,19 +52,27 @@ const listAllUsers = async (nextPageToken) => {
     return data;
 };
 
-router.get("/all", async (req, res) => {
+// Route lấy tất cả users
+router.get("/getAllUsers", async (req, res) => {
     try {
-        const allUsers = await listAllUsers();
-        return res.status(200).send({
-            success: true,
-            data: allUsers,
-            dataCount: allUsers.length
+        const usersRef = db.collection("user");
+        const snapshot = await usersRef.get();
+        let users = [];
+        snapshot.forEach(doc => {
+            let user = doc.data();
+            user.id = doc.id;
+            users.push(user);
         });
-    } catch (err) {
-        return res.send({
+        res.status(200).send({
+            success: true,
+            data: users
+        });
+    } catch (error) {
+        res.status(500).send({
             success: false,
-            msg: `Error in listing users: ${err}`,
+            error: error.message
         });
     }
+
 });
 module.exports = router;

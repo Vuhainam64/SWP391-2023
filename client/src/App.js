@@ -124,10 +124,13 @@ function App() {
                 <Route path="/create-feedback" element={<CreateFeedback />} />
 
                 {userRole === "employee" && (
-                  <Route path="/staff" element={<Staff />} />
+                  <Route path="/staff/*" element={<Staff />} />
                 )}
                 {userRole === "admin" && (
-                  <Route path="/admin/*" element={<Dashboard />} />
+                  <>
+                    <Route path="/admin/*" element={<Dashboard />} />
+                    <Route path="/staff/*" element={<Staff />} />
+                  </>
                 )}
               </>
             )}
