@@ -2,17 +2,57 @@ const router = require("express").Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
+// Middleware kiểm tra vai trò
+const checkAdminRole = async (req, res, next) => {
+    const adminId = req.body.adminId; // Lấy userId từ request hoặc thông tin người dùng được lưu trong session
+    try {
+        const userDoc = await db.collection("user").doc(adminId).get();
+        if (userDoc.exists) {
+            const userRoleId = userDoc.data().roleId;
+            if (userRoleId === 1698024103953) { // Kiểm tra xem roleId của "admin" là gì
+                // Nếu vai trò của người dùng là "admin", cho phép tiếp tục
+                next();
+            } else {
+                return res.status(403).send({
+                    success: false,
+                    msg: "Permission denied. User is not an admin.",
+                });
+            }
+        } else {
+            return res.status(404).send({
+                success: false,
+                msg: "User not found.",
+            });
+        }
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            msg: `Error: ${err}`,
+        });
+    }
+};
+
 // Lấy danh sách feedback
-router.get("/getAllFeedbacks", async (req, res) => {
+router.post("/getAllFeedbacks", checkAdminRole, async (req, res) => {
     try {
         const feedbacksSnapshot = await db.collection("feedbacks").get();
 
         const feedbacks = [];
 
-        feedbacksSnapshot.forEach((doc) => {
+        for (const doc of feedbacksSnapshot.docs) {
             const feedbackData = doc.data();
-            feedbacks.push(feedbackData);
-        });
+            const feedbackId = doc.id;
+
+            // Tìm trạng thái của phản hồi dựa trên statusId
+            const statusDoc = await db.collection("status").doc(feedbackData.statusId).get();
+            const statusData = statusDoc.data();
+
+            feedbacks.push({
+                feedbackId,
+                ...feedbackData,
+                status: statusData
+            });
+        }
 
         return res.status(200).send({
             success: true,
@@ -25,6 +65,7 @@ router.get("/getAllFeedbacks", async (req, res) => {
         });
     }
 });
+
 
 // Tạo mới feedback
 router.post('/createFeedback/:userId', async (req, res) => {
@@ -106,6 +147,36 @@ router.get("/getFeedback/:userId", async (req, res) => {
         return res.status(200).send({
             success: true,
             data: feedbacks,
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            msg: `Error: ${err}`
+        });
+    }
+});
+
+// Update the status of a feedback
+router.post("/verifyFeedback/:statusId", checkAdminRole, async (req, res) => {
+    const statusId = req.params.statusId;
+
+    if (!statusId) {
+        return res.status(400).send({
+            success: false,
+            msg: "statusId is required."
+        });
+    }
+
+    try {
+        // Truy vấn để cập nhật vai trò của người dùng
+        await db.collection("status").doc(statusId).update({
+            Status: "Verified", // Cập nhật trường newStatus với vai trò mới
+            updatedAt: Date.now()
+        });
+
+        return res.status(200).send({
+            success: true,
+            msg: "New status updated successfully."
         });
     } catch (err) {
         return res.status(500).send({

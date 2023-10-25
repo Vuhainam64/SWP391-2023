@@ -7,6 +7,7 @@ import userReducer from "./userReducer";
 import roleReducer from "./roleReducer";
 import allRolesReducer from "./allRolesReducer";
 import feedbackReducer from "./feedbackReducer";
+import allFeedbackReducer from "./allFeedbackReducer";
 
 const myReducer = combineReducers({
   user: userReducer,
@@ -15,6 +16,7 @@ const myReducer = combineReducers({
   allUsers: allUserReducer,
   allRoles: allRolesReducer,
   feedback: feedbackReducer,
+  allFeedbacks: allFeedbackReducer,
 });
 
 export default myReducer;

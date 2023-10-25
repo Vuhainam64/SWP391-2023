@@ -108,6 +108,28 @@ export const getFeedbackWithUser = async (userId) => {
     }
 };
 
+export const getAllFeedbacks = async () => {
+    try {
+        const res = await axios.post(`${baseURL}/api/feedbacks/getAllFeedbacks`, {
+            adminId: `${adminId}`
+        });
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};
+
+
+export const updateFeedbackStatus = async (statusId) => {
+    try {
+        const res = await axios.post(`${baseURL}/api/feedbacks/verifyFeedback/${statusId}`, {
+            adminId: `${adminId}`,
+        });
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};
 //photos
 export const updateProfilePhoto = async (userId, file, token) => {
     try {
