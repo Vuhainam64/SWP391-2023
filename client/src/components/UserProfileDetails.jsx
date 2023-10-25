@@ -6,6 +6,7 @@ import { Menus, signOutAction } from "../ultils/helpers";
 import { Link } from "react-router-dom";
 import { Avatar } from "../assets";
 import { useState } from "react";
+import { BiTask } from "react-icons/bi";
 
 function UserProfileDetails() {
   const user = useSelector((state) => state.user?.user);
@@ -44,6 +45,22 @@ function UserProfileDetails() {
                     <AiOutlineDashboard />
                   </div>
                   <button>Dashboard</button>
+                </div>
+                <div className="text-xs">
+                  <FaChevronRight />
+                </div>
+              </Link>
+            )}
+            {role === "employee" && (
+              <Link
+                to={"/employee/feedbacks"}
+                className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
+              >
+                <div className="flex flex-row gap-5">
+                  <div className="text-2xl">
+                    <BiTask />
+                  </div>
+                  <button>Task</button>
                 </div>
                 <div className="text-xs">
                   <FaChevronRight />

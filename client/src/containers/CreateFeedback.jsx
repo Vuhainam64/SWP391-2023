@@ -1,14 +1,110 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { buttonClick } from "../animations";
-import { Footer, Navbar } from "../components";
+import { Footer, Navbar, Spinner } from "../components";
 import { motion } from "framer-motion";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { TextEditorBar, modules, formats } from "../components/Styles";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../components/Styles/Snow.css";
+import { useState } from "react";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { storage } from "../config/firebase.config";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  alertDanger,
+  alertNULL,
+  alertSuccess,
+} from "../context/actions/alertActions";
+import { createFeedback, getFeedbackWithUser } from "../api";
+import { MdDelete } from "react-icons/md";
+import { setFeedback } from "../context/actions/feedbackActions";
 
 function CreateFeedback() {
+  const user = useSelector((state) => state?.user?.user);
+
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [content, setContent] = useState("");
+
+  const [isLoading, setisLoading] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [imageDownloadURL, setImageDownloadURL] = useState(null);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const uploadImage = (e) => {
+    setisLoading(true);
+    const imageFile = e.target.files[0];
+    const storageRef = ref(storage, `Images/${Date.now()}_${imageFile.name}`);
+
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      },
+      (error) => {
+        dispatch(alertDanger(`Error : ${error}`));
+        setTimeout(() => {
+          dispatch(alertNULL());
+        }, 3000);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageDownloadURL(downloadURL);
+          setisLoading(false);
+          setProgress(null);
+          dispatch(alertSuccess("Image Uploaded to the cloud"));
+          setTimeout(() => {
+            dispatch(alertNULL());
+          }, 3000);
+        });
+      }
+    );
+  };
+
+  const deleteImageFromFirebase = () => {
+    setisLoading(true);
+    const deleteRef = ref(storage, imageDownloadURL);
+
+    deleteObject(deleteRef).then(() => {
+      setImageDownloadURL(null);
+      setisLoading(false);
+      dispatch(alertSuccess("Image removed from the cloud"));
+      setTimeout(() => {
+        dispatch(alertNULL());
+      }, 3000);
+    });
+  };
+
+  const submitFeedback = async () => {
+    const userId = user.uid;
+    const feedbackData = {
+      title,
+      content,
+      location,
+      imageURL: imageDownloadURL,
+    };
+    const response = await createFeedback(userId, feedbackData);
+
+    if (response) {
+      console.log("Feedback created successfully:", response);
+    } else {
+      console.error("Failed to create feedback.");
+    }
+    getFeedbackWithUser(user?.uid).then((data) => {
+      dispatch(setFeedback(data));
+    });
+    navigate("/feedback", { replace: true });
+  };
+
   return (
     <div className="flex flex-col">
       <Navbar />
@@ -18,18 +114,18 @@ function CreateFeedback() {
           <div className="flex flex-col items-center justify-center max-w-4xl gap-8 mx-auto md:gap-12 md:flex-row">
             <div className="aspect-[4/3] shrink-0 rounded-lg shadow-sm overflow-hidden group max-w-xs">
               <img
-                src="https://images.unsplash.com/photo-1555399784-17946f55db19?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MjIwOTV8MHwxfHNlYXJjaHwxfHxjeWJlcnNlY3VyaXR5JTIwaW5jaWRlbnR8ZW58MHx8fHwxNjk0MTkyMDI0fDA&ixlib=rb-4.0.3&q=80&w=600"
+                src="https://ftmaintenance.com/wp-content/uploads/2020/01/shutterstock_1147700213-600x400.jpg"
                 alt="img"
                 className="object-cover w-full h-full transition-all duration-200 group-hover:scale-110"
               />
             </div>
             <div className="flex-1 text-center md:text-left relative">
               <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Cybersecurity Incident Report Form Template
+                Facitylity Report Form Template
               </h1>
               <div className="mt-2 text-lg font-normal text-gray-600">
-                Report and document cybersecurity incidents easily with our
-                Cybersecurity Incident Report Form template.
+                Report and document facitylity incidents easily with our
+                Facitylity Report Form template.
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3 mt-4 md:justify-start">
                 <span className="inline-flex items-center rounded-full bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
@@ -55,14 +151,14 @@ function CreateFeedback() {
             </div>
             <div className="open-complete-form mb-4 p-4 bg-gray-50 border border-gray-200 border-dashed rounded-lg">
               <h1 className="mb-4 px-2 font-semibold text-2xl">
-                Cybersecurity Incident Report Form
+                Facitylity Report Form
               </h1>
               <div>
                 <div className="form-description mb-4 text-gray-700 whitespace-pre-wrap px-2">
                   <div>
-                    Please fill out this form to report any cybersecurity
-                    incidents that you have encountered. Your cooperation is
-                    greatly appreciated.
+                    Please fill out this form to report any facitylity incidents
+                    that you have encountered. Your cooperation is greatly
+                    appreciated.
                   </div>
                 </div>
                 <form action="">
@@ -76,6 +172,8 @@ function CreateFeedback() {
                         type="text"
                         placeholder="Title"
                         className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-lg"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                       />
                     </div>
                   </div>
@@ -89,6 +187,8 @@ function CreateFeedback() {
                         type="text"
                         placeholder="Class, area like 711 or Hall A"
                         className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-lg"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
                       />
                     </div>
                   </div>
@@ -104,6 +204,8 @@ function CreateFeedback() {
                         modules={modules("t1")}
                         formats={formats}
                         className="max-w-[48.5rem] min-h-[12.5rem] h-[12.5rem] max-h-[12.5rem] overflow-auto"
+                        value={content}
+                        onChange={(value) => setContent(value)}
                       />
                     </div>
                   </div>
@@ -112,27 +214,88 @@ function CreateFeedback() {
                       Attach Files
                     </label>
 
-                    <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-5">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <AiOutlineCloudUpload className="text-2xl" />
-                          <div className="mb-2 text-sm text-gray-500">
-                            <span className="font-semibold">
-                              Click to upload
-                            </span>{" "}
-                            or drag and drop
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            SVG, PNG, JPG or GIF (MAX. 800x400px)
-                          </div>
+                    <div className="w-full bg-card backdrop-blur-md h-370 rounded-md border-2 border-dotted border-gray-300 cursor-pointer">
+                      {isLoading ? (
+                        <div className="w-full h-full flex flex-col items-center justify-evenly px-24">
+                          <Spinner />
+                          {Math.round(progress > 0) && (
+                            <div className=" w-full flex flex-col items-center justify-center gap-2">
+                              <div className="flex justify-between w-full">
+                                <span className="text-base font-medium text-textColor">
+                                  Progress
+                                </span>
+                                <span className="text-sm font-medium text-textColor">
+                                  {Math.round(progress) > 0 && (
+                                    <>{`${Math.round(progress)}%`}</>
+                                  )}
+                                </span>
+                              </div>
+
+                              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div
+                                  className="bg-red-600 h-2.5 rounded-full transition-all duration-300 ease-in-out"
+                                  style={{
+                                    width: `${Math.round(progress)}%`,
+                                  }}
+                                ></div>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <input type="file" className="hidden" />
-                      </label>
+                      ) : (
+                        <>
+                          {!imageDownloadURL ? (
+                            <>
+                              <label>
+                                <div className=" flex flex-col items-center justify-center h-full w-full cursor-pointer">
+                                  <div className="flex flex-col justify-center items-center cursor-pointer">
+                                    <p className="font-bold text-4xl">
+                                      <AiOutlineCloudUpload className="-rotate-0" />
+                                    </p>
+                                    <p className="text-lg text-textColor">
+                                      Click to upload an image
+                                    </p>
+                                  </div>
+                                </div>
+                                <input
+                                  type="file"
+                                  name="upload-image"
+                                  accept="image/*"
+                                  onChange={uploadImage}
+                                  className=" w-0 h-0"
+                                />
+                              </label>
+                            </>
+                          ) : (
+                            <>
+                              <div className="relative w-full h-full overflow-hidden rounded-md">
+                                <motion.img
+                                  whileHover={{ scale: 1.15 }}
+                                  src={imageDownloadURL}
+                                  className=" w-full h-full object-cover"
+                                />
+
+                                <motion.button
+                                  {...buttonClick}
+                                  type="button"
+                                  className="absolute top-3 right-3 p-3 rounded-full bg-red-500 text-xl cursor-pointer outline-none hover:shadow-md duration-500 transition-all ease-in-out"
+                                  onClick={() =>
+                                    deleteImageFromFirebase(imageDownloadURL)
+                                  }
+                                >
+                                  <MdDelete className="-rotate-0" />
+                                </motion.button>
+                              </div>
+                            </>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap justify-center w-full">
                     <motion.div
                       {...buttonClick}
+                      onClick={submitFeedback}
                       className="px-4 py-2 border rounded-md text-white bg-gray-500 hover:bg-gray-600 font-semibold shadow-md cursor-pointer"
                     >
                       Submit
@@ -160,8 +323,8 @@ function CreateFeedback() {
                   Introduction
                 </h2>
                 <div>
-                  This form is designed for reporting cybersecurity incidents.
-                  It provides a structured way to collect necessary information
+                  This form is designed for reporting facitylity incidents. It
+                  provides a structured way to collect necessary information
                   regarding any security breaches or incidents that have
                   occurred.
                 </div>
@@ -169,8 +332,8 @@ function CreateFeedback() {
                   Purpose
                 </h2>
                 <div>
-                  This form is designed for reporting cybersecurity incidents.
-                  It provides a structured way to collect necessary information
+                  This form is designed for reporting facitylity incidents. It
+                  provides a structured way to collect necessary information
                   regarding any security breaches or incidents that have
                   occurred.
                 </div>

@@ -3,11 +3,11 @@ import {
   Auth,
   CreateFeedback,
   Dashboard,
+  Employee,
   Feedbacks,
   Home,
   PageNotFound,
   Setting,
-  Staff,
   Templates,
 } from "./containers";
 import { useEffect, useState } from "react";
@@ -125,12 +125,12 @@ function App() {
                 <Route path="/create-feedback" element={<CreateFeedback />} />
 
                 {userRole === "employee" && (
-                  <Route path="/staff/*" element={<Staff />} />
+                  <Route path="/employee/*" element={<Employee />} />
                 )}
                 {userRole === "admin" && (
                   <>
                     <Route path="/admin/*" element={<Dashboard />} />
-                    <Route path="/staff/*" element={<Staff />} />
+                    <Route path="/employee/*" element={<Employee />} />
                   </>
                 )}
               </>

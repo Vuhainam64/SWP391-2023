@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const admin = require("firebase-admin");
-let data = [];
 const db = admin.firestore();
 db.settings({
     ignoreUndefinedProperties: true
