@@ -19,7 +19,7 @@ function Feedbacks() {
         dispatch(setFeedback(data));
       });
     }
-  }, []);
+  }, [dispatch, feedback, user?.uid]);
 
   return (
     <div className="min-h-screen flex flex-col">
