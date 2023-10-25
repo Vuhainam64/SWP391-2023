@@ -56,6 +56,7 @@ function App() {
           dispatch(SET_ROLE(role));
         };
         getRole();
+        localStorage.setItem("userId", userCred.uid);
         console.log("userCred: ", userCred);
         console.log("roleID: ", userDoc.data().roleId);
       } else {

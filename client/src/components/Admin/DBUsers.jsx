@@ -10,18 +10,24 @@ function DBUsers() {
   const allRoles = useSelector((state) => state?.allRoles?.allRoles);
   const dispatch = useDispatch();
 
-  const [Name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [verify, setVerify] = useState(false);
-
   const [roles, setRoles] = useState([]);
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState(0);
 
   const [chosenID, setChosenID] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [curentPageShowCourse, setCurentPageShowCourse] = useState([]);
   const [totalItems, setTotalItems] = useState();
+
+  const fetchAllUsers = async () => {
+    try {
+      const userData = await getAllUserAPI();
+      dispatch(setAllUsers(userData));
+    } catch (error) {
+      console.log("Error fetching users:", error);
+      dispatch(setAllUsers([]));
+    }
+  };
 
   useEffect(() => {
     async function fetchUsers() {
@@ -49,35 +55,22 @@ function DBUsers() {
     fetchRoles();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (allUsers) {
-      setTotalItems(allUsers.length);
-      setCurentPageShowCourse([]);
-      const firstItem = currentPage * itemsPerPage - itemsPerPage;
-      if (firstItem >= allUsers.length) return;
-      let index = 0;
-      allUsers.length - firstItem > itemsPerPage
-        ? (index = itemsPerPage)
-        : (index = allUsers.length - firstItem);
-      for (let i = 0; i < index; i++) {
-        setCurentPageShowCourse((curentPageShowCourse) => [
-          ...curentPageShowCourse,
-          allUsers[firstItem + i],
-        ]);
+  const updateUserRole = async () => {
+    const updatedRole = parseInt(selectedRole);
+    try {
+      const updatedUser = await updateRole(chosenID, updatedRole);
+      if (updatedUser) {
+        console.log(
+          "Vai trò của người dùng đã được cập nhật thành công:",
+          updatedUser
+        );
+        fetchAllUsers();
+        setChosenID(0);
+      } else {
+        console.error("Lỗi khi cập nhật vai trò của người dùng");
       }
-    }
-  }, [currentPage, itemsPerPage, allUsers]);
-
-  const updateUser = async () => {
-    if (chosenID) {
-      const selectedRoleObject = roles.find(
-        (role) => role.role_name === selectedRole
-      );
-      try {
-        await updateRole(chosenID, selectedRoleObject?.roleId);
-      } catch (error) {
-        console.log("Error updating user:", error);
-      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API cập nhật vai trò của người dùng:", error);
     }
   };
 
@@ -109,10 +102,7 @@ function DBUsers() {
   };
   function chooseID({ user }) {
     if (user) {
-      setChosenID(user.uid);
-      setName(user.displayName);
-      setEmail(user.email);
-      setVerify(user.emailVerified);
+      setChosenID(user.id);
     }
   }
 
@@ -161,58 +151,28 @@ function DBUsers() {
                     key={index}
                   >
                     <td className="p-3 px-5">
-                      {chosenID === user.uid ? (
-                        <input
-                          type="text"
-                          value={Name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="bg-transparent border-b-2 border-gray-300 py-2 w-full"
-                        />
-                      ) : (
-                        <div className="bg-transparent border-gray-300 py-2 w-full">
-                          {user.displayName}
-                        </div>
-                      )}
+                      <div className="bg-transparent border-gray-300 py-2 w-full">
+                        {user.displayName}
+                      </div>
                     </td>
                     <td className="p-3 px-5">
-                      {chosenID === user.uid ? (
-                        <input
-                          type="text"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="bg-transparent border-b-2 border-gray-300 py-2 w-full"
-                        />
-                      ) : (
-                        <div className="bg-transparent border-gray-300 py-2 w-full">
-                          {user.email}
-                        </div>
-                      )}
+                      <div className="bg-transparent border-gray-300 py-2 w-full">
+                        {user.email}
+                      </div>
                     </td>
                     <td className="p-3 px-5">
-                      {chosenID === user.uid ? (
-                        <select
-                          value={verify}
-                          onChange={(e) => setVerify(e.target.value)}
-                          className="bg-transparent border-b-2 border-gray-300 py-2"
-                        >
-                          <option value="true">Verify</option>
-                          <option value="false">Not Verify</option>
-                        </select>
-                      ) : (
-                        <div className="bg-transparent border-gray-300 py-2 w-full">
-                          {user.emailVerified ? "verify" : "not verify"}
-                        </div>
-                      )}
+                      <div className="bg-transparent border-gray-300 py-2 w-full">
+                        {user.emailVerified ? "verify" : "not verify"}
+                      </div>
                     </td>
                     <td className="p-3 px-5 text-center">
-                      {chosenID === user.uid ? (
+                      {chosenID === user.id ? (
                         <select
-                          value={selectedRole}
                           onChange={(e) => setSelectedRole(e.target.value)}
-                          className="bg-transparent border-b-2 border-gray-300 py-2"
+                          defaultValue={user.roleId}
                         >
-                          {allRoles.map((role) => (
-                            <option key={role.id} value={role.role_name}>
+                          {allRoles.map((role, index) => (
+                            <option key={index} value={role.roleId}>
                               {role.role_name}
                             </option>
                           ))}
@@ -220,18 +180,20 @@ function DBUsers() {
                       ) : (
                         <div className="bg-transparent border-gray-300 py-2 w-full">
                           {roles.map((role) =>
-                            role.roleId === user.roleId ? role.role_name : null
+                            role.roleId === user.roleId ? (
+                              <span key={role.roleId}>{role.role_name}</span>
+                            ) : null
                           )}
                         </div>
                       )}
                     </td>
 
                     <td>
-                      {chosenID === user.uid ? (
+                      {chosenID === user.id ? (
                         <div className="p-3 px-5 flex justify-center items-center gap-3">
                           <button
                             type="button"
-                            onClick={updateUser}
+                            onClick={updateUserRole}
                             className="w-[40%] text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
                           >
                             Save

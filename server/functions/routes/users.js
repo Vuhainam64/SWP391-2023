@@ -40,20 +40,38 @@ router.get("/jwtVerfication", async (req, res) => {
     }
 });
 
-const listAllUsers = async (nextPageToken) => {
-    const usersRef = db.collection("user");
-
-    const querySnapshot = await usersRef.get();
-
-    querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-    });
-
-    return data;
+// Middleware kiểm tra vai trò
+const checkAdminRole = async (req, res, next) => {
+    const adminId = req.body.adminId; // Lấy userId từ request hoặc thông tin người dùng được lưu trong session
+    try {
+        const userDoc = await db.collection("user").doc(adminId).get();
+        if (userDoc.exists) {
+            const userRoleId = userDoc.data().roleId;
+            if (userRoleId === 1698024103953) { // Kiểm tra xem roleId của "admin" là gì
+                // Nếu vai trò của người dùng là "admin", cho phép tiếp tục
+                next();
+            } else {
+                return res.status(403).send({
+                    success: false,
+                    msg: "Permission denied. User is not an admin.",
+                });
+            }
+        } else {
+            return res.status(404).send({
+                success: false,
+                msg: "User not found.",
+            });
+        }
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            msg: `Error: ${err}`,
+        });
+    }
 };
 
 // Route lấy tất cả users
-router.get("/getAllUsers", async (req, res) => {
+router.post("/getAllUsers", checkAdminRole, async (req, res) => {
     try {
         const usersRef = db.collection("user");
         const snapshot = await usersRef.get();

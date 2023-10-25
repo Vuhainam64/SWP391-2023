@@ -43,38 +43,37 @@ router.post("/createDefaultRole/:userId", async (req, res) => {
   }
 });
 
-// // Middleware kiểm tra vai trò
-// const checkAdminRole = async (req, res, next) => {
-//     const userId = req.params.userId; // Lấy userId từ request hoặc thông tin người dùng được lưu trong session
-//     try {
-//         const userDoc = await db.collection("user").doc(userId).get();
-//         if (userDoc.exists) {
-//             const userRoleId = userDoc.data().roleId;
-//             if (userRoleId === "1698024103953") { // Kiểm tra xem roleId của "admin" là gì
-//                 // Nếu vai trò của người dùng là "admin", cho phép tiếp tục
-//                 next();
-//             } else {
-//                 return res.status(403).send({
-//                     success: false,
-//                     msg: "Permission denied. User is not an admin.",
-//                 });
-//             }
-//         } else {
-//             return res.status(404).send({
-//                 success: false,
-//                 msg: "User not found.",
-//             });
-//         }
-//     } catch (err) {
-//         return res.status(500).send({
-//             success: false,
-//             msg: `Error: ${err}`,
-//         });
-//     }
-// };
+// Middleware kiểm tra vai trò
+const checkAdminRole = async (req, res, next) => {
+  const adminId = req.body.adminId; // Lấy userId từ request hoặc thông tin người dùng được lưu trong session
+  try {
+    const userDoc = await db.collection("user").doc(adminId).get();
+    if (userDoc.exists) {
+      const userRoleId = userDoc.data().roleId;
+      if (userRoleId === 1698024103953) { // Kiểm tra xem roleId của "admin" là gì
+        // Nếu vai trò của người dùng là "admin", cho phép tiếp tục
+        next();
+      } else {
+        return res.status(403).send({
+          success: false,
+          msg: "Permission denied. User is not an admin.",
+        });
+      }
+    } else {
+      return res.status(404).send({
+        success: false,
+        msg: "User not found.",
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      msg: `Error: ${err}`,
+    });
+  }
+};
 
-router.post("/createRole/:userId", async (req, res) => {
-  const userId = req.params.userId;
+router.post("/createRole", checkAdminRole, async (req, res) => {
   const role_name = req.body.role_name;
 
   if (!role_name) {
@@ -142,7 +141,7 @@ router.get("/getAllRoles", async (req, res) => {
   }
 });
 
-router.post("/updateUserRole/:userId", async (req, res) => {
+router.post("/updateUserRole/:userId", checkAdminRole, async (req, res) => {
   const userId = req.params.userId;
   const newRoleId = req.body.newRoleId; // Sử dụng newRoleId để lấy vai trò mới
 
