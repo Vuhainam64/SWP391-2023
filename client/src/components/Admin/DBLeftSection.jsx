@@ -78,16 +78,6 @@ function DBLeftSection() {
             >
               Users
             </NavLink>
-            <NavLink
-              to={"/admin/roles"}
-              className={({ isActive }) =>
-                isActive
-                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
-                  : isNotActiveStyles
-              }
-            >
-              Roles
-            </NavLink>
           </motion.div>
         </div>
         {/* View Feedback  */}
