@@ -38,7 +38,7 @@ function Sidebar() {
         </NavLink>
         {/* Pending  */}
         <NavLink
-          to={"/employee/tasks"}
+          to={"/employee/pendings"}
           className={({ isActive }) =>
             isActive
               ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold flex`
@@ -47,7 +47,7 @@ function Sidebar() {
         >
           <div className="flex items-center">
             <MdPendingActions className="text-xl" />
-            <p className="px-1">Tasks</p>
+            <p className="px-1">Pendings</p>
           </div>
         </NavLink>
         {/* complete  */}
