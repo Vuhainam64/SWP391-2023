@@ -141,6 +141,7 @@ router.get("/getAllRoles", async (req, res) => {
   }
 });
 
+
 router.post("/updateUserRole/:userId", checkAdminRole, async (req, res) => {
   const userId = req.params.userId;
   const newRoleId = req.body.newRoleId; // Sử dụng newRoleId để lấy vai trò mới
@@ -153,14 +154,43 @@ router.post("/updateUserRole/:userId", checkAdminRole, async (req, res) => {
   }
 
   try {
-    // Truy vấn để cập nhật vai trò của người dùng
-    await db.collection("user").doc(userId).update({
-      roleId: newRoleId, // Cập nhật trường roleId với vai trò mới
-    });
+    const userRef = db.collection("user").doc(userId);
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) {
+      return res.status(404).send({
+        success: false,
+        msg: "User not found."
+      });
+    }
+
+    // Lấy giá trị uid của người dùng để làm giá trị cho employeeStatusId
+    const userUid = userDoc.data().uid;
+
+    // Khởi tạo một đối tượng chứa thông tin cần cập nhật
+    const updateData = {
+      roleId: newRoleId // Cập nhật trường roleId với vai trò mới
+    };
+
+    if (newRoleId === 1698200208313) {
+      // Tạo hoặc cập nhật tài liệu trong bảng "employeeStatus" với employeeStatusId bằng uid của người dùng
+      const employeeStatusRef = db.collection("employeeStatus").doc(userUid);
+      const employeeStatusData = {
+        lastUpdate: Date.now(),
+        status: "Ready",
+        userID: userId // Thêm trường userID là giá trị userId
+      };
+
+      await employeeStatusRef.set(employeeStatusData, {
+        merge: true
+      });
+    }
+
+    // Cập nhật trường "roleId" trong bảng "user"
+    await userRef.update(updateData);
 
     return res.status(200).send({
       success: true,
-      msg: "User role updated successfully."
+      msg: "User role and employee status updated successfully."
     });
   } catch (err) {
     return res.status(500).send({
@@ -169,6 +199,7 @@ router.post("/updateUserRole/:userId", checkAdminRole, async (req, res) => {
     });
   }
 });
+
 
 router.get("/getRole/:roleId", async (req, res) => {
   const roleId = req.params.roleId;
