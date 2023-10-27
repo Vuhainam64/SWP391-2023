@@ -4,6 +4,8 @@ export const baseURL =
     // "http://127.0.0.1:5001/get-feedback-a0119/us-central1/app";
     "https://us-central1-get-feedback-a0119.cloudfunctions.net/app";
 
+const adminId = localStorage.getItem('userId')
+
 //User
 export const validateUserJWTToken = async (token) => {
     try {
@@ -20,12 +22,16 @@ export const validateUserJWTToken = async (token) => {
 
 export const getAllUserAPI = async () => {
     try {
-        const res = await axios.get(`${baseURL}/api/users/getAllUsers`);
+        const res = await axios.post(`${baseURL}/api/users/getAllUsers`, {
+            adminId: `${adminId}`
+        });
+        console.log("adminId: ", adminId)
         return res.data.data;
     } catch (err) {
         return null;
     }
 };
+
 
 //Role
 export const createDefaultRole = async (userId) => {
@@ -49,6 +55,7 @@ export const getAllRolesAPI = async () => {
 export const updateRole = async (userId, newRoleID) => {
     try {
         const res = await axios.post(`${baseURL}/api/roles/updateUserRole/${userId}`, {
+            adminId: `${adminId}`,
             newRoleId: newRoleID
         });
         return res.data;
@@ -81,6 +88,48 @@ export const getRoleWithRoleID = async (roleId) => {
     }
 };
 
+//feedbacks
+export const createFeedback = async (userId, feedbackData) => {
+    try {
+        const res = await axios.post(`${baseURL}/api/feedbacks/createFeedback/${userId}`, feedbackData);
+        return res.data;
+    } catch (err) {
+        console.error("Error creating feedback:", err);
+        return null;
+    }
+};
+
+export const getFeedbackWithUser = async (userId) => {
+    try {
+        const res = await axios.get(`${baseURL}/api/feedbacks/getFeedback/${userId}`);
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};
+
+export const getAllFeedbacks = async () => {
+    try {
+        const res = await axios.post(`${baseURL}/api/feedbacks/getAllFeedbacks`, {
+            adminId: `${adminId}`
+        });
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};
+
+
+export const updateFeedbackStatus = async (statusId) => {
+    try {
+        const res = await axios.post(`${baseURL}/api/feedbacks/verifyFeedback/${statusId}`, {
+            adminId: `${adminId}`,
+        });
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};
 //photos
 export const updateProfilePhoto = async (userId, file, token) => {
     try {

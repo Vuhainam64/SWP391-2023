@@ -3,11 +3,11 @@ import {
   Auth,
   CreateFeedback,
   Dashboard,
+  Employee,
   Feedbacks,
   Home,
   PageNotFound,
   Setting,
-  Staff,
   Templates,
 } from "./containers";
 import { useEffect, useState } from "react";
@@ -56,6 +56,7 @@ function App() {
           dispatch(SET_ROLE(role));
         };
         getRole();
+        localStorage.setItem("userId", userCred.uid);
         console.log("userCred: ", userCred);
         console.log("roleID: ", userDoc.data().roleId);
       } else {
@@ -124,12 +125,12 @@ function App() {
                 <Route path="/create-feedback" element={<CreateFeedback />} />
 
                 {userRole === "employee" && (
-                  <Route path="/staff/*" element={<Staff />} />
+                  <Route path="/employee/*" element={<Employee />} />
                 )}
                 {userRole === "admin" && (
                   <>
                     <Route path="/admin/*" element={<Dashboard />} />
-                    <Route path="/staff/*" element={<Staff />} />
+                    <Route path="/employee/*" element={<Employee />} />
                   </>
                 )}
               </>

@@ -12,7 +12,7 @@ function Calendar() {
     <div className="flex flex-col items-center w-full">
       <div className="flex items-center bg-slate-700 w-full p-4">
         <div className="text-white font-semibold text-2xl relative">
-          Training Calendar
+          Repair Schedule
           <div className="absolute top-0 -right-6 w-3 h-3 text-sm text-gray-700 rounded-full bg-white flex items-center justify-center">
             i
           </div>

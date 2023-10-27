@@ -4,6 +4,7 @@ import DBHeader from "./DBHeader";
 import DBHome from "./DBHome";
 import DBUsers from "./DBUsers";
 import Calendar from "./Calendar";
+import ViewFeedback from "./ViewFeedback";
 
 function DBRightSection() {
   return (
@@ -13,6 +14,8 @@ function DBRightSection() {
         <Routes>
           <Route path="/home" element={<DBHome />} />
           <Route path="/users" element={<DBUsers />} />
+
+          <Route path="/feedback" element={<ViewFeedback />} />
 
           <Route path="/calendar" element={<Calendar />} />
         </Routes>

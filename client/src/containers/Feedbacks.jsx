@@ -2,9 +2,25 @@ import { Link } from "react-router-dom";
 import { Footer, Navbar } from "../components";
 import { AiOutlinePlus } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { setFeedback } from "../context/actions/feedbackActions";
+import { useEffect } from "react";
+import { getFeedbackWithUser } from "../api";
 
 function Feedbacks() {
-  const isfeedback = false;
+  const user = useSelector((state) => state?.user?.user);
+  const feedback = useSelector((state) => state?.feedback?.feedback);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!feedback) {
+      getFeedbackWithUser(user?.uid).then((data) => {
+        dispatch(setFeedback(data));
+      });
+    }
+  }, [dispatch, feedback, user?.uid]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -48,7 +64,7 @@ function Feedbacks() {
                   className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-sm"
                 />
               </div>
-              {!isfeedback ? (
+              {!feedback ? (
                 <>
                   {/* not feedback  */}
                   <div className="flex bg-white">
@@ -61,7 +77,7 @@ function Feedbacks() {
                             className="w-56"
                           />
                           <h3 className="w-full mt-4 text-center text-gray-900 font-semibold">
-                            No forms found
+                            No feedback found
                           </h3>
                           <Link
                             to={"/create"}
@@ -84,29 +100,36 @@ function Feedbacks() {
                 <>
                   {/* my form  */}
                   <div className="mb-10">
-                    <div>
-                      <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
-                        <div className="flex-grow items-center truncate cursor-pointer">
-                          <span className="font-semibold text-gray-900">
-                            My Feedback
-                          </span>
-                          <div className="flex items-center justify-between">
-                            <ul className="flex text-gray-500">
-                              <li className="pr-1">0 view</li>
-                              <li className="list-disc ml-6 pr-1">
-                                0 submission
-                              </li>
-                              <li className="list-disc ml-6">
-                                Edited 2 days ago
-                              </li>
-                            </ul>
-                            <div className="border border-gray-300 hover:bg-gray-200 px-3 py-2 rounded-lg">
-                              <BsThreeDots />
+                    {feedback && feedback.length > 0 ? (
+                      feedback.map((item) => (
+                        <div key={item.feedbackId}>
+                          <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
+                            <div className="flex-grow items-center truncate cursor-pointer">
+                              <span className="font-semibold text-gray-900">
+                                {item.title}
+                              </span>
+                              <div className="flex items-center justify-between">
+                                <ul className="flex text-gray-500">
+                                  <li className="pr-1">Status</li>
+                                  <li className="list-disc ml-6 pr-1">
+                                    {item.status.Status}
+                                  </li>
+                                  <li className="list-disc ml-6">
+                                    Created:{" "}
+                                    {new Date(item.createdAt).toLocaleString()}
+                                  </li>
+                                </ul>
+                                <div className="border border-gray-300 hover:bg-gray-200 px-3 py-2 rounded-lg">
+                                  <BsThreeDots />
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
+                      ))
+                    ) : (
+                      <p>No feedbacks found.</p>
+                    )}
                   </div>
                 </>
               )}
