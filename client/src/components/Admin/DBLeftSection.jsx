@@ -9,7 +9,6 @@ import {
   MdOutlineKeyboardArrowDown,
   MdPeople,
 } from "react-icons/md";
-import { FaUserTie } from "react-icons/fa";
 import { VscFeedback } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import { Link, NavLink } from "react-router-dom";
@@ -91,16 +90,6 @@ function DBLeftSection() {
             </NavLink>
           </motion.div>
         </div>
-        {/* Employee  */}
-        <Link
-          to={"/admin/employee"}
-          className="flex items-center py-2 hover:bg-slate-200 p-2"
-        >
-          <div className="flex items-center">
-            <FaUserTie />
-            <p className="px-1">Employee</p>
-          </div>
-        </Link>
         {/* View Feedback  */}
         <Link
           to={"/admin/feedback"}
