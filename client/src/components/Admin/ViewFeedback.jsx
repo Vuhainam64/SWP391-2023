@@ -22,7 +22,7 @@ function ViewFeedback() {
   }, [dispatch, allFeedbacks]);
 
   const notVerifiedFeedbacks = allFeedbacks?.filter(
-    (item) => item.status?.Status === "Not Verify"
+    (item) => item.feedbackstatus?.Status === "Not Verify"
   );
 
   const acceptFeedback = async (statusId) => {
@@ -64,7 +64,7 @@ function ViewFeedback() {
                 </div>
                 <div>
                   Last Updated:
-                  {new Date(item.status.updatedAt).toLocaleString()}
+                  {new Date(item.feedbackstatus.updatedAt).toLocaleString()}
                 </div>
                 <div className="absolute bottom-0 right-0 flex">
                   <motion.div

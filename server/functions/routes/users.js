@@ -92,4 +92,81 @@ router.post("/getAllUsers", checkAdminRole, async (req, res) => {
     }
 
 });
+
+// Route lấy tất cả employees và status của họ
+router.get("/getAllEmployeesWithStatus", async (req, res) => {
+    try {
+        const usersRef = db.collection("user");
+        const usersSnapshot = await usersRef.where("roleId", "==", 1698200208313).get();
+
+        const employeesWithStatus = [];
+
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data();
+            const userId = userDoc.id;
+
+            const employeeStatusId = userData.uid; // Lấy uid từ thông tin người dùng
+
+            if (employeeStatusId) {
+                const employeeStatusDoc = await db.collection("employeeStatus").doc(employeeStatusId).get();
+                const employeeStatusData = employeeStatusDoc.data();
+
+                // Kết hợp thông tin user và status
+                const employeeWithStatus = {
+                    id: userId,
+                    ...userData,
+                    status: employeeStatusData || {
+                        lastUpdated: null,
+                        status: null
+                    }
+                };
+
+                employeesWithStatus.push(employeeWithStatus);
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            data: employeesWithStatus
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+
+router.get("/getAllEmployees", async (req, res) => {
+    try {
+        const usersRef = db.collection("user");
+        const usersSnapshot = await usersRef.get();
+
+        const employees = [];
+
+        usersSnapshot.forEach(doc => {
+            const userData = doc.data();
+            if (userData.roleId === 1698200208313) {
+                // Kiểm tra nếu vai trò của người dùng là nhân viên (sử dụng roleID)
+                employees.push({
+                    id: doc.id,
+                    ...userData
+                });
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            data: employees
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+
 module.exports = router;
