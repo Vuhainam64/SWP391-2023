@@ -23,17 +23,15 @@ app.get("/", (req, res) => {
     return res.send("This is API of Get-Feedback");
 });
 
-const feedbackRoute = require('./routes/feedbacks');
-const notificationRoute = require('./routes/notifications');
-const roleRoute = require('./routes/roles');
-const taskRoute = require('./routes/tasks');
 const userRoute = require('./routes/users');
+const photoRoute = require('./routes/photos');
+const roleRoute = require('./routes/roles');
+const feedbackRoute = require('./routes/feedbacks');
 
 // Sử dụng các router
-app.use('/api/feedbacks', feedbackRoute);
-app.use('/api/notify', notificationRoute);
-app.use('/api/roles', roleRoute);
-app.use('/api/tasks', taskRoute);
 app.use('/api/users', userRoute);
+app.use('/api/photos', photoRoute);
+app.use('/api/roles', roleRoute);
+app.use('/api/feedbacks', feedbackRoute);
 
 exports.app = functions.https.onRequest(app);

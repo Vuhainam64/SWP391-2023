@@ -128,7 +128,10 @@ function App() {
                   <Route path="/employee/*" element={<Employee />} />
                 )}
                 {userRole === "admin" && (
-                  <Route path="/admin/*" element={<Dashboard />} />
+                  <>
+                    <Route path="/admin/*" element={<Dashboard />} />
+                    <Route path="/employee/*" element={<Employee />} />
+                  </>
                 )}
               </>
             )}

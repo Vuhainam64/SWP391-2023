@@ -44,13 +44,13 @@ router.post("/getAllFeedbacks", checkAdminRole, async (req, res) => {
             const feedbackId = doc.id;
 
             // Tìm trạng thái của phản hồi dựa trên statusId
-            const statusDoc = await db.collection("feedbackstatus").doc(feedbackData.statusId).get();
+            const statusDoc = await db.collection("status").doc(feedbackData.statusId).get();
             const statusData = statusDoc.data();
 
             feedbacks.push({
                 feedbackId,
                 ...feedbackData,
-                feedbackstatus: statusData
+                status: statusData
             });
         }
 
@@ -90,7 +90,7 @@ router.post('/createFeedback/:userId', async (req, res) => {
             Status: "Not Verify",
             updatedAt: Date.now()
         }
-        const docStatusRef = await db.collection('feedbackstatus').add(newStatus);
+        const docStatusRef = await db.collection('status').add(newStatus);
 
         // Create the feedback document with the status reference
         const newFeedback = {
@@ -134,7 +134,7 @@ router.get("/getFeedback/:userId", async (req, res) => {
             const feedbackId = doc.id;
 
             // Tìm trạng thái của phản hồi dựa trên statusId
-            const statusDoc = await db.collection("feedbackstatus").doc(feedbackData.statusId).get();
+            const statusDoc = await db.collection("status").doc(feedbackData.statusId).get();
             const statusData = statusDoc.data();
 
             feedbacks.push({
@@ -169,7 +169,7 @@ router.post("/verifyFeedback/:statusId", checkAdminRole, async (req, res) => {
 
     try {
         // Truy vấn để cập nhật vai trò của người dùng
-        await db.collection("feedbackstatus").doc(statusId).update({
+        await db.collection("status").doc(statusId).update({
             Status: "Verified", // Cập nhật trường newStatus với vai trò mới
             updatedAt: Date.now()
         });

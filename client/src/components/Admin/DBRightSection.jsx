@@ -7,7 +7,6 @@ import Calendar from "./Calendar";
 import ViewFeedback from "./ViewFeedback";
 import DBRoles from "./DBRoles";
 
-
 function DBRightSection() {
   return (
     <div className="flex flex-col py-12 px-12 flex-1 h-full">
