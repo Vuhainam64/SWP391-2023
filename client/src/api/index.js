@@ -34,7 +34,7 @@ export const getAllUserAPI = async () => {
 
 export const getAllEmployeesWithStatus = async () => {
     try {
-        const res = await axios.post(`${baseURL}/api/users/getAllEmployeesWithStatus`, {
+        const res = await axios.get(`${baseURL}/api/users/getAllEmployeesWithStatus`, {
             adminId: `${adminId}`
         });
         return res.data.data;
@@ -42,6 +42,19 @@ export const getAllEmployeesWithStatus = async () => {
         return null;
     }
 };
+
+//employee
+export const updateEmployeeStatus = async (employeeUid, status) => {
+    try {
+        const res = await axios.post(`${baseURL}/api/users/updateEmployeeStatus/${employeeUid}`, {
+            status
+        });
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};
+
 
 //Role
 export const createDefaultRole = async (userId) => {
@@ -140,23 +153,17 @@ export const updateFeedbackStatus = async (statusId) => {
         return null;
     }
 };
-//photos
-export const updateProfilePhoto = async (userId, file, token) => {
+
+//task
+export const createTask = async (useruid, feedbackStatus, feedbackId) => {
     try {
-        const formData = new FormData();
-        formData.append("photo", file);
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data",
-            },
-        };
-
-        const res = await axios.post(`${baseURL}/api/photos/uploadPhoto/${userId}`, formData, config);
+        const res = await axios.post(`${baseURL}/api/tasks/createTask/${useruid}`, {
+            adminId: `${adminId}`,
+            feedbackStatus,
+            feedbackId,
+        });
         return res.data;
     } catch (err) {
-        console.error("Error updating profile photo:", err);
         return null;
     }
 };

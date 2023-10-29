@@ -1,49 +1,49 @@
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { buttonClick } from "../../animations";
 import { Logo } from "../../assets";
 import { motion } from "framer-motion";
-import { getAllFeedbacks, updateFeedbackStatus } from "../../api";
+import { createTask, getAllFeedbacks, updateEmployeeStatus } from "../../api";
 import { setAllFeedbacks } from "../../context/actions/allFeedbackActions";
-import { useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { IoReturnDownBackOutline } from "react-icons/io5";
 
-function ViewFeedback() {
+function Task() {
   const allFeedbacks = useSelector(
     (state) => state?.allFeedbacks?.allFeedbacks
   );
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { employeeId } = useParams();
+  const [hasFetchedFeedbacks, setHasFetchedFeedbacks] = useState(false);
 
   useEffect(() => {
-    getAllFeedbacks().then((data) => {
-      dispatch(setAllFeedbacks(data));
-    });
-  }, [dispatch, allFeedbacks]);
+    if (!hasFetchedFeedbacks) {
+      getAllFeedbacks().then((data) => {
+        dispatch(setAllFeedbacks(data));
+        setHasFetchedFeedbacks(true);
+      });
+    }
+    console.log("employeeId: ", employeeId);
+  }, [dispatch, allFeedbacks, employeeId, hasFetchedFeedbacks]);
 
   const notVerifiedFeedbacks = allFeedbacks?.filter(
     (item) => item.feedbackstatus?.Status === "Not Verify"
   );
 
-  const acceptFeedback = async (statusId) => {
-    try {
-      const verifyFeedback = await updateFeedbackStatus(statusId);
-      if (verifyFeedback) {
-        console.log(
-          "Trạng thái của feedback cập nhật thành công:",
-          verifyFeedback
-        );
-        getAllFeedbacks().then((data) => {
-          dispatch(setAllFeedbacks(data));
-        });
-      } else {
-        console.error("Lỗi khi cập nhật feedback của người dùng");
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API cập nhật feedback của người dùng:", error);
-    }
+  const handleAssignClick = async (feedbackstatus, feedbackId) => {
+    await createTask(employeeId, feedbackstatus, feedbackId);
+    await updateEmployeeStatus(employeeId, "Working");
+    navigate("/admin/employee");
   };
 
   return (
     <div className="mt-10">
+      <Link to={"/admin/employee"} className="flex items-center">
+        <IoReturnDownBackOutline className="mr-4" />
+        Return to employee
+      </Link>
       {notVerifiedFeedbacks && notVerifiedFeedbacks.length > 0 ? (
         notVerifiedFeedbacks.map((item) => (
           <div className="bg-blue-400 rounded-md" key={item.feedbackId}>
@@ -57,6 +57,7 @@ function ViewFeedback() {
               <div className="flex-col ml-10 text-white relative w-full my-4">
                 <div>Title: {item.title}</div>
                 <div>Location: {item.location}</div>
+                <div>Status: {item.feedbackstatus.Status}</div>
                 <div>
                   Create At: {new Date(item.createdAt).toLocaleString()}
                 </div>
@@ -67,16 +68,15 @@ function ViewFeedback() {
                 <div className="absolute bottom-0 right-0 flex">
                   <motion.div
                     {...buttonClick}
-                    onClick={() => acceptFeedback(item.statusId)}
+                    onClick={() =>
+                      handleAssignClick(
+                        item.feedbackstatus.Status,
+                        item.feedbackId
+                      )
+                    }
                     className="bg-green-400 px-2 py-1 rounded-md mx-2 cursor-pointer"
                   >
-                    Accept
-                  </motion.div>
-                  <motion.div
-                    {...buttonClick}
-                    className="bg-red-400 px-2 py-1 rounded-md mx-2 cursor-pointer"
-                  >
-                    Reject
+                    Assign
                   </motion.div>
                 </div>
               </div>
@@ -90,4 +90,4 @@ function ViewFeedback() {
   );
 }
 
-export default ViewFeedback;
+export default Task;

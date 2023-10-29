@@ -168,5 +168,24 @@ router.get("/getAllEmployees", async (req, res) => {
     }
 });
 
+// API cập nhật status employee 
+router.post('/updateEmployeeStatus/:empId', async (req, res) => {
+    const empId = req.params.empId;
+    const newStatus = req.body.status;
+    try {
+        await db.collection('employeeStatus')
+            .doc(empId)
+            .update({
+                status: newStatus
+            });
+
+        return res.status(200).json({
+            message: "Employee status updated successfully"
+        });
+
+    } catch (error) {
+        // handle error 
+    }
+});
 
 module.exports = router;

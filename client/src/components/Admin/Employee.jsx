@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { getAllEmployeesWithStatus } from "../../api";
 import { Pagination } from "../Styles";
 import { setAllEmployee } from "../../context/actions/allEmployeeActions";
+import { useNavigate } from "react-router-dom";
 
 function Employee() {
   const allEmployee = useSelector((state) => state?.allEmployee?.allEmployee);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -110,6 +112,7 @@ function Employee() {
                     <td>
                       <div className="p-3 px-5 flex justify-center items-center">
                         <button
+                          onClick={() => navigate(`/admin/task/${user.uid}`)}
                           type="button"
                           className="w-[40%] text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
                         >
