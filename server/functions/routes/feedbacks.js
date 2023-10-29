@@ -224,4 +224,81 @@ router.get("/getFeedbackWithId/:feedbackId", async (req, res) => {
     }
 });
 
+router.post("/feedbackHandle/:feedbackId", async (req, res) => {
+    const feedbackId = req.params.feedbackId;
+    const {
+        employeeComment
+    } = req.body;
+
+    try {
+        const feedbackDoc = await db.collection("feedbacks").doc(feedbackId).get();
+
+        if (!feedbackDoc.exists) {
+            return res.status(404).send({
+                error: "Feedback not found"
+            });
+        }
+
+        let description, status;
+
+        switch (employeeComment) {
+            case "check done":
+                description = `Verified feedback ${feedbackId}`;
+                status = "Verified";
+                break;
+
+            case "check not":
+                description = `Not verified feedback ${feedbackId}`;
+                status = "Not Verify";
+                break;
+
+            case "nothing":
+                description = `Rejected feedback ${feedbackId}`;
+                status = "Rejected";
+                break;
+
+            default:
+                return res.status(400).send({
+                    error: "Invalid employee comment"
+                });
+        }
+
+        // Cập nhật trạng thái của phản hồi
+        await db.collection("feedbacks").doc(feedbackId).update({
+            description: description,
+            updatedAt: Date.now()
+        });
+
+        await db.collection("tasks")
+            .where("feedbackId", "==", feedbackId)
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    doc.ref.update({
+                        description: description,
+                        status: status,
+                        updatedAt: Date.now()
+                    });
+                });
+            });
+
+        // Cập nhật trạng thái của phản hồi trong collection "feedbackstatus"
+        await db.collection("feedbackstatus").doc(feedbackDoc.data().statusId).update({
+            Status: status,
+            updatedAt: Date.now()
+        });
+
+        res.send({
+            success: true,
+            data: `Feedback ${feedbackId} updated with status: ${status}`
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            error: "Error updating feedback"
+        });
+    }
+});
+
+
 module.exports = router;

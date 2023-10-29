@@ -7,6 +7,7 @@ import Calendar from "./Calendar";
 import ViewFeedback from "./ViewFeedback";
 import Employee from "./Employee";
 import Task from "./Task";
+import DBRoles from "./DBRoles";
 
 function DBRightSection() {
   return (
@@ -19,6 +20,7 @@ function DBRightSection() {
           <Route path="/employee" element={<Employee />} />
           <Route path="/task/:employeeId" element={<Task />} />
           <Route path="/feedback" element={<ViewFeedback />} />
+          <Route path="/roles" element={<DBRoles />} />
 
           <Route path="/calendar" element={<Calendar />} />
         </Routes>
