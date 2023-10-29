@@ -1,10 +1,11 @@
 import axios from "axios";
 
 export const baseURL =
-    // "http://127.0.0.1:5001/get-feedback-a0119/us-central1/app";
-    "https://us-central1-get-feedback-a0119.cloudfunctions.net/app";
+    "http://127.0.0.1:5001/get-feedback-a0119/us-central1/app";
+// "https://us-central1-get-feedback-a0119.cloudfunctions.net/app";
 
 const adminId = localStorage.getItem('userId')
+const uid = localStorage.getItem('uid')
 
 //User
 export const validateUserJWTToken = async (token) => {
@@ -154,6 +155,15 @@ export const updateFeedbackStatus = async (statusId) => {
     }
 };
 
+export const getFeedbackWithId = async (feedbackId) => {
+    try {
+        const res = await axios.get(`${baseURL}/api/feedbacks/getFeedbackWithId/${feedbackId}`);
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};
+
 //task
 export const createTask = async (useruid, feedbackStatus, feedbackId) => {
     try {
@@ -163,6 +173,15 @@ export const createTask = async (useruid, feedbackStatus, feedbackId) => {
             feedbackId,
         });
         return res.data;
+    } catch (err) {
+        return null;
+    }
+};
+
+export const getAllTaskOfEmployee = async () => {
+    try {
+        const res = await axios.get(`${baseURL}/api/tasks/getAllTaskOfEmployee/${uid}`);
+        return res.data.data;
     } catch (err) {
         return null;
     }

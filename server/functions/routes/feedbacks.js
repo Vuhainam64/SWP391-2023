@@ -186,4 +186,42 @@ router.post("/verifyFeedback/:statusId", checkAdminRole, async (req, res) => {
     }
 });
 
+router.get("/getFeedbackWithId/:feedbackId", async (req, res) => {
+    try {
+        const feedbackId = req.params.feedbackId;
+
+        // Tìm phản hồi theo feedbackId
+        const feedbackDoc = await db.collection("feedbacks").doc(feedbackId).get();
+
+        if (!feedbackDoc.exists) {
+            return res.status(404).send({
+                success: false,
+                msg: "Feedback not found.",
+            });
+        }
+
+        const feedbackData = feedbackDoc.data();
+
+        // Tìm trạng thái của phản hồi dựa trên statusId
+        const statusDoc = await db.collection("feedbackstatus").doc(feedbackData.statusId).get();
+        const statusData = statusDoc.data();
+
+        const response = {
+            feedbackId: feedbackId,
+            ...feedbackData,
+            feedbackstatus: statusData
+        };
+
+        return res.status(200).send({
+            success: true,
+            data: response,
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            msg: `Error: ${err}`
+        });
+    }
+});
+
 module.exports = router;

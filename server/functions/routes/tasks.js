@@ -96,5 +96,37 @@ router.post('/createTask/:userId', checkAdminRole, async (req, res) => {
     }
 });
 
+// Route lấy tất cả các task của một nhân viên dựa trên userId
+router.get("/getAllTaskOfEmployee/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        const tasksSnapshot = await db.collection("tasks")
+            .where("employeeId", "==", userId)
+            .get();
+
+        const tasks = [];
+
+        tasksSnapshot.forEach(doc => {
+            const taskData = doc.data();
+            const taskId = doc.id;
+
+            tasks.push({
+                taskId, // Thêm taskId để biết ID của task
+                ...taskData
+            });
+        });
+
+        return res.status(200).send({
+            success: true,
+            data: tasks,
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            msg: `Error: ${err}`
+        });
+    }
+});
 
 module.exports = router;

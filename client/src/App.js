@@ -57,8 +57,10 @@ function App() {
         };
         getRole();
         localStorage.setItem("userId", userCred.uid);
+        localStorage.setItem("uid", userCred.providerData[0].uid);
         console.log("userCred: ", userCred);
         console.log("roleID: ", userDoc.data().roleId);
+        console.log("uid: ", userCred.providerData[0].uid);
       } else {
         console.log("Invalid roleId => Update role");
         setDoc(doc(db, "user", userCred.uid), userCred.providerData[0]);

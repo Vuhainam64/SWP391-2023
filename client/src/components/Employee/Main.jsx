@@ -14,7 +14,7 @@ function Main() {
           <Route path="/" element={<Feedbacks />} />
           <Route path="/feedbacks" element={<Feedbacks />} />
           <Route path="/tasks" element={<Tasks />} />
-          <Route path="/tasks/id" element={<TaskDetails />} />
+          <Route path="/tasks/:feedbackId" element={<TaskDetails />} />
           <Route path="/completes" element={<Completes />} />
         </Routes>
       </div>

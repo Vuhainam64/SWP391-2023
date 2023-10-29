@@ -9,6 +9,8 @@ import allRolesReducer from "./allRolesReducer";
 import feedbackReducer from "./feedbackReducer";
 import allFeedbackReducer from "./allFeedbackReducer";
 import allEmployeeReducer from "./allEmployeeReducer";
+import allTasksReducer from "./allTaskReducer";
+import taskDetailsReducer from "./taskDetailsReducer";
 
 const myReducer = combineReducers({
   user: userReducer,
@@ -19,6 +21,8 @@ const myReducer = combineReducers({
   feedback: feedbackReducer,
   allFeedbacks: allFeedbackReducer,
   allEmployee: allEmployeeReducer,
+  allTasks: allTasksReducer,
+  taskDetails: taskDetailsReducer,
 });
 
 export default myReducer;
