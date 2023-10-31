@@ -49,7 +49,7 @@ export default function TaskDetails() {
               <div className="col-span-1">
                 <img
                   src={taskDetails.imageURL || Logo}
-                  className="m-4 object-cover"
+                  className="w-80 m-4 object-cover"
                   alt="Feedback"
                 />
               </div>

@@ -73,14 +73,16 @@ router.post('/createFeedback/:userId', async (req, res) => {
     const {
         title,
         content,
-        location,
+        campusId,
+        roomId,
+        facilityId,
         imageURL,
     } = req.body;
 
     // Validate input
-    if (!title || !content) {
+    if (!title || !content || !campusId || !roomId || !facilityId) {
         return res.status(400).json({
-            message: 'Title and content are required'
+            message: 'Title and content,... are required'
         })
     }
 
@@ -96,7 +98,9 @@ router.post('/createFeedback/:userId', async (req, res) => {
         const newFeedback = {
             title,
             content,
-            location,
+            campusId,
+            roomId,
+            facilityId,
             imageURL,
             statusId: docStatusRef.id,
             createdBy: userId,

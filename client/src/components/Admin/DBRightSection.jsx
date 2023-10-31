@@ -8,6 +8,9 @@ import ViewFeedback from "./ViewFeedback";
 import Employee from "./Employee";
 import Task from "./Task";
 import DBRoles from "./DBRoles";
+import Facility from "./Facility";
+import Room from "./Room";
+import Campus from "./Campus";
 
 function DBRightSection() {
   return (
@@ -18,9 +21,12 @@ function DBRightSection() {
           <Route path="/home" element={<DBHome />} />
           <Route path="/users" element={<DBUsers />} />
           <Route path="/employee" element={<Employee />} />
-          <Route path="/task/:employeeId" element={<Task />} />
-          <Route path="/feedback" element={<ViewFeedback />} />
           <Route path="/roles" element={<DBRoles />} />
+          <Route path="/feedback" element={<ViewFeedback />} />
+          <Route path="/task/:employeeId" element={<Task />} />
+          <Route path="/campus" element={<Campus />} />
+          <Route path="/room" element={<Room />} />
+          <Route path="/facility" element={<Facility />} />
 
           <Route path="/calendar" element={<Calendar />} />
         </Routes>

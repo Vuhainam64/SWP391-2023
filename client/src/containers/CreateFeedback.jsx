@@ -7,7 +7,7 @@ import { TextEditorBar, modules, formats } from "../components/Styles";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../components/Styles/Snow.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   deleteObject,
   getDownloadURL,
@@ -21,7 +21,13 @@ import {
   alertNULL,
   alertSuccess,
 } from "../context/actions/alertActions";
-import { createFeedback, getFeedbackWithUser } from "../api";
+import {
+  createFeedback,
+  getAllCampuses,
+  getAllFacilityInRoom,
+  getAllRoomsInCampus,
+  getFeedbackWithUser,
+} from "../api";
 import { MdDelete } from "react-icons/md";
 import { setFeedback } from "../context/actions/feedbackActions";
 
@@ -29,12 +35,18 @@ function CreateFeedback() {
   const user = useSelector((state) => state?.user?.user);
 
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
   const [content, setContent] = useState("");
 
   const [isLoading, setisLoading] = useState(false);
   const [progress, setProgress] = useState(null);
   const [imageDownloadURL, setImageDownloadURL] = useState(null);
+
+  const [campuses, setCampuses] = useState([]);
+  const [selectedCampus, setSelectedCampus] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState("");
+  const [facilities, setFacilities] = useState([]);
+  const [selectedFacility, setSelectedFacility] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -89,7 +101,9 @@ function CreateFeedback() {
     const feedbackData = {
       title,
       content,
-      location,
+      campusId: selectedCampus,
+      roomId: selectedRoom,
+      facilityId: selectedFacility,
       imageURL: imageDownloadURL,
     };
     const response = await createFeedback(userId, feedbackData);
@@ -105,6 +119,40 @@ function CreateFeedback() {
     navigate("/feedback", { replace: true });
   };
 
+  const handleCampusChange = async (campusId) => {
+    setSelectedCampus(campusId);
+    const roomsData = await getAllRoomsInCampus(campusId);
+    if (roomsData) {
+      setRooms(roomsData);
+    } else {
+      setRooms([]);
+    }
+    setFacilities([]); // Reset facilities when campus changes
+  };
+
+  const handleRoomChange = async (roomId) => {
+    setSelectedRoom(roomId);
+    const facilitiesData = await getAllFacilityInRoom(roomId);
+    if (facilitiesData) {
+      setFacilities(facilitiesData);
+    } else {
+      setFacilities([]);
+    }
+  };
+
+  const handleFacilityChange = async (facilityId) => {
+    setSelectedFacility(facilityId);
+  };
+
+  useEffect(() => {
+    async function fetchCampuses() {
+      const campusesData = await getAllCampuses();
+      if (campusesData) {
+        setCampuses(campusesData);
+      }
+    }
+    fetchCampuses();
+  }, []);
   return (
     <div className="flex flex-col">
       <Navbar />
@@ -177,21 +225,71 @@ function CreateFeedback() {
                       />
                     </div>
                   </div>
-                  <div className="relative mb-3">
-                    <label className="text-gray-700 font-semibold text-sm">
-                      Location
-                      <span className="text-red-500 required-dot">*</span>
-                    </label>
-                    <div className="flex items-center justify-center gap-3 w-full h-full px-4 py-1 rounded-lg border-gray-300 border bg-white">
-                      <input
-                        type="text"
-                        placeholder="Class, area like 711 or Hall A"
-                        className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-lg"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                      />
+
+                  {/* campus  */}
+                  <label className="block mb-2 text-sm font-medium text-gray-900">
+                    Select a Campus
+                    <span className="text-red-500 required-dot">*</span>
+                  </label>
+                  <select
+                    className="w-full border rounded-md py-2 px-3 mb-3 focus:outline-none focus:ring focus:border-blue-300"
+                    value={selectedCampus}
+                    onChange={(e) => handleCampusChange(e.target.value)}
+                  >
+                    <option value="">Select a Campus</option>
+                    {campuses.map((campus) => (
+                      <option key={campus.campusId} value={campus.campusId}>
+                        {campus.campusName}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* select room  */}
+                  {rooms.length > 0 && (
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-900">
+                        Select a Room
+                        <span className="text-red-500 required-dot">*</span>
+                      </label>
+                      <select
+                        className="w-full border rounded-md py-2 px-3 mb-3 focus:outline-none focus:ring focus:border-blue-300"
+                        value={selectedRoom}
+                        onChange={(e) => handleRoomChange(e.target.value)}
+                      >
+                        <option value="">Select a Room</option>
+                        {rooms.map((room) => (
+                          <option key={room.roomId} value={room.roomId}>
+                            {room.roomName}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  </div>
+                  )}
+
+                  {/* facility  */}
+                  {facilities.length > 0 && (
+                    <div>
+                      <label className="block mb-2 text-sm font-medium text-gray-900">
+                        Select a Facility
+                        <span className="text-red-500 required-dot">*</span>
+                      </label>
+                      <select
+                        className="w-full border rounded-md py-2 px-3 mb-3 focus:outline-none focus:ring focus:border-blue-300"
+                        value={selectedFacility}
+                        onChange={(e) => handleFacilityChange(e.target.value)}
+                      >
+                        <option value="">Select a Facility</option>
+                        {facilities.map((facility) => (
+                          <option
+                            key={facility.facilityId}
+                            value={facility.facilityId}
+                          >
+                            {facility.facilityName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   <div className="relative mb-3">
                     <label className="text-gray-700 font-semibold text-sm">
                       Content

@@ -8,6 +8,7 @@ import {
   MdOutlineArrowBackIosNew,
   MdOutlineKeyboardArrowDown,
   MdPeople,
+  MdSpaceDashboard,
 } from "react-icons/md";
 import { VscFeedback } from "react-icons/vsc";
 import { motion } from "framer-motion";
@@ -23,6 +24,7 @@ import { Logo } from "../../assets";
 
 function DBLeftSection() {
   const [isUser, setIsUser] = useState(false);
+  const [isFacility, setIsFacility] = useState(false);
   const [isSetting, setIsSetting] = useState(false);
   return (
     <div className="flex flex-col items-center pt-4 pl-4 text-sky-800 bg-slate-100 h-full">
@@ -110,6 +112,60 @@ function DBLeftSection() {
             <p className="px-1">View Feedback</p>
           </div>
         </Link>
+        {/* facility  */}
+        <div>
+          <div
+            onClick={() => {
+              setIsFacility(!isFacility);
+            }}
+            className="flex flex-wrap items-center justify-between py-2 hover:bg-slate-200 p-2"
+          >
+            <div className="flex items-center">
+              <MdSpaceDashboard className="text-xl" />
+              <p className="px-1">Facility management</p>
+            </div>
+            {isFacility ? (
+              <MdOutlineKeyboardArrowDown className="text-2xl" />
+            ) : (
+              <MdOutlineArrowBackIosNew />
+            )}
+          </div>
+          <motion.div
+            {...slideUpOut}
+            className={`flex flex-col ${!isFacility ? "hidden" : "block"}`}
+          >
+            <NavLink
+              to={"/admin/campus"}
+              className={({ isActive }) =>
+                isActive
+                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
+                  : isNotActiveStyles
+              }
+            >
+              Campus
+            </NavLink>
+            <NavLink
+              to={"/admin/room"}
+              className={({ isActive }) =>
+                isActive
+                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
+                  : isNotActiveStyles
+              }
+            >
+              Room
+            </NavLink>
+            <NavLink
+              to={"/admin/facility"}
+              className={({ isActive }) =>
+                isActive
+                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
+                  : isNotActiveStyles
+              }
+            >
+              Facility
+            </NavLink>
+          </motion.div>
+        </div>
         {/* Calendar  */}
         <Link
           to={"/admin/calendar"}

@@ -28,6 +28,7 @@ const notificationRoute = require('./routes/notifications');
 const roleRoute = require('./routes/roles');
 const taskRoute = require('./routes/tasks');
 const userRoute = require('./routes/users');
+const facilityRoute = require('./routes/facility');
 
 // Sử dụng các router
 app.use('/api/feedbacks', feedbackRoute);
@@ -35,5 +36,6 @@ app.use('/api/notify', notificationRoute);
 app.use('/api/roles', roleRoute);
 app.use('/api/tasks', taskRoute);
 app.use('/api/users', userRoute);
+app.use('/api/facility', facilityRoute);
 
 exports.app = functions.https.onRequest(app);
