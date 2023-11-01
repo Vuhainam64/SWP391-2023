@@ -1,10 +1,36 @@
 import { Link } from "react-router-dom";
 import { Logo } from "../assets";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserProfileDetails } from "../components";
+import { BsFillBellFill } from "react-icons/bs";
+import { useEffect } from "react";
+import { getNotifications } from "../api";
+import { setAllNotify } from "../context/actions/allNotifyActions";
 
 function Navbar() {
   const user = useSelector((state) => state.user?.user);
+  const allNotify = useSelector((state) => state.allNotify?.allNotify);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function fetchNotify() {
+      try {
+        const notiData = await getNotifications();
+        dispatch(setAllNotify(notiData));
+      } catch (error) {
+        console.log("Error fetching notify:", error);
+        dispatch(setAllNotify([]));
+      }
+    }
+    fetchNotify();
+  }, [dispatch]);
+
+  // Filter the 3 most recent notifications
+  const recentNotifications = allNotify
+    ? allNotify.sort((a, b) => b.createdAt - a.createdAt).slice(0, 3) // Get the first 3 notifications
+    : [];
+
   return (
     <>
       <nav className="bg-white border-b">
@@ -36,6 +62,28 @@ function Navbar() {
               >
                 Help
               </Link>
+            </div>
+            <div className="flex items-center ml-8 group relative">
+              <BsFillBellFill className="hover:text-blue-600" />
+              <div className="hidden group-hover:block absolute top-10 -right-4 border rounded-2xl bg-white shadow-md z-10">
+                <div className="bg-white w-72 m-4">
+                  {recentNotifications.map((notification) => (
+                    <div key={notification.notifyId} className="border-b my-2">
+                      <div className="font-semibold flex items-center">
+                        <BsFillBellFill className="mx-2" />
+                        <div className="text-[14px]">
+                          {notification.description}
+                        </div>
+                      </div>
+                      <div className="ml-8">{notification.feedbackName}</div>
+                      <div className="text-[12px] flex w-full flex-row-reverse opacity-70">
+                        Created At:{" "}
+                        {new Date(notification.createdAt).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="hidden md:block pl-5 border-gray-300 border-r h-5"></div>
             <div className="block">

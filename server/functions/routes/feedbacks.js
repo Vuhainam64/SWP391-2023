@@ -40,18 +40,47 @@ router.post("/getAllFeedbacks", checkAdminRole, async (req, res) => {
         const feedbacks = [];
 
         for (const doc of feedbacksSnapshot.docs) {
-            const feedbackData = doc.data();
+            const feedback = doc.data();
             const feedbackId = doc.id;
 
-            // Tìm trạng thái của phản hồi dựa trên statusId
-            const statusDoc = await db.collection("feedbackstatus").doc(feedbackData.statusId).get();
+            // Lấy campus name
+            const campusDoc = await db.collection("campus").doc(feedback.campusId).get();
+            const campusName = campusDoc.data().campusName;
+
+            // Lấy room name
+            const roomDoc = await db.collection("room").doc(feedback.roomId).get();
+            const roomName = roomDoc.data().roomName;
+
+            // Lấy facility name  
+            const facilityDoc = await db.collection("facility").doc(feedback.facilityId).get();
+            const facilityName = facilityDoc.data().facilityName;
+
+            // Lấy status của feedback
+            const statusDoc = await db.collection("feedbackstatus").doc(feedback.statusId).get();
             const statusData = statusDoc.data();
+
+            // Lấy thông tin người gửi
+            const userDocs = await db.collection("user")
+                .where("uid", "==", feedback.createdBy)
+                .get();
+
+            const users = [];
+
+            userDocs.forEach((userDoc) => {
+                const user = userDoc.data();
+                users.push(user);
+            });
 
             feedbacks.push({
                 feedbackId,
-                ...feedbackData,
-                feedbackstatus: statusData
+                campusName,
+                roomName,
+                facilityName,
+                feedbackstatus: statusData,
+                user: users,
+                ...feedback
             });
+
         }
 
         return res.status(200).send({
@@ -108,11 +137,23 @@ router.post('/createFeedback/:userId', async (req, res) => {
         }
         const docFeedbackRef = await db.collection('feedbacks').add(newFeedback);
 
+        // Tạo thông báo (notify)
+        const notify = {
+            userId: userId,
+            feedbackId: docFeedbackRef.id,
+            feedbackName: title,
+            description: "New Feedback had been creeated",
+            createdAt: Date.now()
+        }
+        const notifyDocRef = await db.collection('notifies').add(notify);
+
         res.status(201).json({
             feedbackId: docFeedbackRef.id,
             statusId: docStatusRef.id,
+            notifyId: notifyDocRef.id, // Trả về notifyId
             message: 'Feedback created successfully'
         });
+
 
     } catch (error) {
         res.status(500).json({

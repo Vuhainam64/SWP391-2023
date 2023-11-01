@@ -264,3 +264,13 @@ export const getAllFacilityInRoom = async (roomId) => {
         return null;
     }
 };
+
+//notify
+export const getNotifications = async () => {
+    try {
+        const res = await axios.get(`${baseURL}/api/notify/getNotifications/${uid}`);
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};

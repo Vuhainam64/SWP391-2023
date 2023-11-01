@@ -11,6 +11,7 @@ import allFeedbackReducer from "./allFeedbackReducer";
 import allEmployeeReducer from "./allEmployeeReducer";
 import allTasksReducer from "./allTaskReducer";
 import taskDetailsReducer from "./taskDetailsReducer";
+import allNotifyReducer from "./allNotifyReducer";
 
 const myReducer = combineReducers({
   user: userReducer,
@@ -23,6 +24,7 @@ const myReducer = combineReducers({
   allEmployee: allEmployeeReducer,
   allTasks: allTasksReducer,
   taskDetails: taskDetailsReducer,
+  allNotify: allNotifyReducer,
 });
 
 export default myReducer;
