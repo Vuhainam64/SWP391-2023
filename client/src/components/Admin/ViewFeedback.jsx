@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import {
-  getAllFeedbacks,
-  updateFeedbackStatus,
-  findAvailableEmployees,
-} from "../../api";
+import { getAllFeedbacks, findAvailableEmployees, createTask } from "../../api";
 import { setAllFeedbacks } from "../../context/actions/allFeedbackActions";
 import { Logo } from "../../assets";
 import { buttonClick } from "../../animations";
@@ -29,6 +25,8 @@ function ViewFeedback() {
     const currentHour = new Date().getHours();
     return currentHour;
   });
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employeeId, setEmployeeId] = useState("");
 
   const closingHour = 17; // Giờ nghỉ làm là 17:00
   const currentHour = currentDate.getHours();
@@ -52,10 +50,6 @@ function ViewFeedback() {
     (item) => item.feedbackstatus?.Status === "Not Verify"
   );
 
-  const acceptFeedback = async (statusId) => {
-    // Your acceptFeedback logic
-  };
-
   const closeDeliveryTask = () => {
     setOpenDeliveryTaskForFeedbackId(null);
   };
@@ -75,6 +69,47 @@ function ViewFeedback() {
     console.log("selectedHour: ", selectedHour);
     console.log("selectedDateTimestamp: ", selectedDateTimestamp);
     console.log("availableEmployees: ", availableEmployees);
+  };
+
+  const handleEmployeeClick = (employee) => {
+    setEmployeeId(employee.uid);
+    console.log(employee);
+    if (selectedEmployee) {
+      const previousEmployeeElement = document.getElementById(
+        selectedEmployee.uid
+      );
+      previousEmployeeElement.style.border = "1px solid black";
+      previousEmployeeElement.style.background = "white";
+    }
+    setSelectedEmployee(employee);
+    const currentEmployeeElement = document.getElementById(employee.uid);
+    currentEmployeeElement.style.border = "2px solid blue";
+    currentEmployeeElement.style.background = "lightgray";
+  };
+
+  const assignTaskToEmployee = async (feedbackStatus, feedbackId) => {
+    if (selectedEmployee) {
+      const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
+      const selectedDateTimestamp = moment
+        .tz(dateTimeString, "Asia/Ho_Chi_Minh")
+        .valueOf();
+
+      // Gọi hàm API để tạo nhiệm vụ và gán cho người dùng
+      const taskResponse = await createTask(
+        employeeId,
+        selectedDateTimestamp,
+        feedbackStatus,
+        feedbackId
+      );
+
+      if (taskResponse) {
+        // Giao việc thành công, cập nhật giao diện nếu cần
+        console.log("Task assigned successfully", taskResponse);
+      } else {
+        // Xử lý lỗi nếu giao việc không thành công
+        console.error("Error assigning task");
+      }
+    }
   };
 
   return (
@@ -111,13 +146,6 @@ function ViewFeedback() {
                   {new Date(item.feedbackstatus.updatedAt).toLocaleString()}
                 </div>
                 <div className="absolute bottom-0 right-0 flex">
-                  <motion.div
-                    {...buttonClick}
-                    onClick={() => acceptFeedback(item.statusId)}
-                    className="bg-green-400 px-2 py-1 rounded-md mx-2 cursor-pointer"
-                  >
-                    Accept
-                  </motion.div>
                   <motion.div
                     {...buttonClick}
                     onClick={() =>
@@ -205,7 +233,9 @@ function ViewFeedback() {
                             availableEmployees.map((employee) => (
                               <div
                                 key={employee.uid}
+                                id={employee.uid}
                                 className="m-4 border rounded-md bg-white flex items-center"
+                                onClick={() => handleEmployeeClick(employee)} // Xử lý khi ấn vào người
                               >
                                 <div className="p-2">
                                   <img
@@ -215,7 +245,9 @@ function ViewFeedback() {
                                   />
                                 </div>
                                 <div className="">
-                                  <div>Name: {employee.displayName}</div>
+                                  <div>
+                                    Employee Name: {employee.displayName}
+                                  </div>
                                   <div>
                                     Last Sign: {employee.lastSignInTime}
                                   </div>
@@ -231,6 +263,12 @@ function ViewFeedback() {
                     <div className="flex flex-row-reverse cursor-pointer">
                       <motion.div
                         {...buttonClick}
+                        onClick={() =>
+                          assignTaskToEmployee(
+                            item.feedbackstatus.Status,
+                            item.feedbackId
+                          )
+                        }
                         className="bg-green-400 px-2 py-1 rounded-md mx-2"
                       >
                         Delivery

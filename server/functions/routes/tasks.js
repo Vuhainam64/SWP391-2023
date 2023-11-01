@@ -36,10 +36,10 @@ const checkAdminRole = async (req, res, next) => {
 router.post('/findAvailableEmployees', checkAdminRole, async (req, res) => {
     try {
         // Lấy thời gian createdAt từ request
-        const createdAt = req.body.createdAt;
+        const startTimeAt = req.body.startTimeAt;
 
         // Lấy tất cả các tasks tạo vào thời gian createdAt
-        const tasksSnapshot = await db.collection("task").where("createdAt", "==", createdAt).get();
+        const tasksSnapshot = await db.collection("task").where("startTimeAt", "==", startTimeAt).get();
         const tasks = [];
 
         tasksSnapshot.forEach(doc => {
@@ -85,11 +85,13 @@ router.post('/findAvailableEmployees', checkAdminRole, async (req, res) => {
 
 
 // Route tạo task 
-router.post('/createTask/:userId', checkAdminRole, async (req, res) => {
+router.post('/createTask/:employeeId', checkAdminRole, async (req, res) => {
 
-    const userId = req.params.userId;
+    const employeeId = req.params.employeeId;
 
     const {
+        adminId,
+        startTimeAt,
         feedbackStatus,
         feedbackId,
     } = req.body;
@@ -120,15 +122,17 @@ router.post('/createTask/:userId', checkAdminRole, async (req, res) => {
         }
 
         const newTask = {
-            employeeId: userId,
+            adminId: adminId,
+            employeeId: employeeId,
+            startTimeAt,
             feedbackId,
             description,
-            status: 'Processing',
+            status: 'Pending',
             createdAt: new Date().getTime(),
             updatedAt: new Date().getTime()
         };
 
-        const taskDocRef = await db.collection('tasks').add(newTask);
+        const taskDocRef = await db.collection('task').add(newTask);
 
         const feedbackDoc = await db.collection('feedbacks').doc(feedbackId).get();
         const {
