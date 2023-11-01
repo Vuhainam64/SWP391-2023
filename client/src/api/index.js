@@ -211,6 +211,15 @@ export const findAvailableEmployees = async (startTimeAt) => {
     }
 };
 
+export const countTasksByStatus = async () => {
+    try {
+        const res = await axios.get(`${baseURL}/api/tasks/countTasksByStatus`);
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};
+
 //facility
 export const createCampus = async (campusName, tag) => {
     try {

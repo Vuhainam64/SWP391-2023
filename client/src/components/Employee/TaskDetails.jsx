@@ -17,8 +17,10 @@ export default function TaskDetails() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Thêm useEffect để tự động cập nhật taskDetails khi feedbackId thay đổi
   useEffect(() => {
-    if (!taskDetails) {
+    if (!taskDetails || taskDetails.feedbackId !== feedbackId) {
+      // Lấy dữ liệu taskDetails nếu taskDetails chưa tồn tại hoặc feedbackId đã thay đổi
       getFeedbackWithId(feedbackId).then((data) => {
         dispatch(setTaskDetails(data));
       });
@@ -32,6 +34,7 @@ export default function TaskDetails() {
     });
     navigate("/employee/tasks");
   };
+
   return (
     <div>
       <Link to={"/employee/tasks"} className="flex items-center mt-8">
@@ -54,35 +57,36 @@ export default function TaskDetails() {
                 />
               </div>
               <div className="col-span-2">
-                <div className="grid grid-cols-6 p-5 hover:bg-green-300">
+                <div className="grid grid-cols-6 p-5 hover-bg-green-300">
                   <div className="col-span-2 font-semibold">Title:</div>
                   <div className="col-span-4 text-left">
                     {taskDetails.title}
                   </div>
                 </div>
                 <hr />
-                <div className="grid grid-cols-6 p-5 hover:bg-blue-300">
+                <div className="grid grid-cols-6 p-5 hover-bg-blue-300">
                   <div className="col-span-2 font-semibold">Received on:</div>
                   <div className="col-span-4 text-left">
                     {new Date(taskDetails.createdAt).toLocaleDateString()}
                   </div>
                 </div>
                 <hr />
-                <div className="grid grid-cols-6 p-5 hover:bg-green-300">
+                <div className="grid grid-cols-6 p-5 hover-bg-green-300">
                   <div className="col-span-2 font-semibold">Description:</div>
                   <div className="col-span-4 text-left">
                     {taskDetails.content}
                   </div>
                 </div>
                 <hr />
-                <div className="grid grid-cols-6 p-5 hover:bg-blue-300">
+                <div className="grid grid-cols-6 p-5 hover-bg-blue-300">
                   <div className="col-span-2 font-semibold">Location:</div>
                   <div className="col-span-4 text-left">
-                    {taskDetails.location}
+                    {taskDetails.campusName} - Room no: {taskDetails.roomName} -{" "}
+                    {taskDetails.facilityName}
                   </div>
                 </div>
                 <hr />
-                <div className="grid grid-cols-6 p-5 hover:bg-green-300">
+                <div className="grid grid-cols-6 p-5 hover-bg-green-300">
                   <div className="col-span-2 font-semibold">
                     Current status:
                   </div>
@@ -91,7 +95,7 @@ export default function TaskDetails() {
                   </div>
                 </div>
                 <hr />
-                <div className="grid grid-cols-6 p-5 hover:bg-blue-300">
+                <div className="grid grid-cols-6 p-5 hover-bg-blue-300">
                   <div className="col-span-2 font-semibold">Update At:</div>
                   <div className="col-span-4 text-left">
                     {new Date(
@@ -125,14 +129,14 @@ export default function TaskDetails() {
                   onClick={() => handleCommitment("check not")}
                   className="rounded-full p-2 m-2 bg-red-400"
                 >
-                  {/* check not  */}I have checked but couldn't{" "}
+                  I have checked but couldn't{" "}
                   {taskDetails.feedbackstatus.Status}
                 </button>
                 <button
                   onClick={() => handleCommitment("nothing")}
                   className="rounded-full p-2 m-2 bg-purple-400"
                 >
-                  {/* nothing  */}I have checked and there is nothing to be{" "}
+                  I have checked and there is nothing to be{" "}
                   {taskDetails.feedbackstatus.Status}
                 </button>
               </div>

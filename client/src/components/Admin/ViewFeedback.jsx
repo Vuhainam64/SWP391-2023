@@ -103,7 +103,9 @@ function ViewFeedback() {
       );
 
       if (taskResponse) {
-        // Giao việc thành công, cập nhật giao diện nếu cần
+        await getAllFeedbacks().then((data) => {
+          dispatch(setAllFeedbacks(data));
+        });
         console.log("Task assigned successfully", taskResponse);
       } else {
         // Xử lý lỗi nếu giao việc không thành công

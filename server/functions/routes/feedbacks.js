@@ -246,6 +246,17 @@ router.get("/getFeedbackWithId/:feedbackId", async (req, res) => {
         }
 
         const feedbackData = feedbackDoc.data();
+        // Lấy campus name
+        const campusDoc = await db.collection("campus").doc(feedbackData.campusId).get();
+        const campusName = campusDoc.data().campusName;
+
+        // Lấy room name
+        const roomDoc = await db.collection("room").doc(feedbackData.roomId).get();
+        const roomName = roomDoc.data().roomName;
+
+        // Lấy facility name  
+        const facilityDoc = await db.collection("facility").doc(feedbackData.facilityId).get();
+        const facilityName = facilityDoc.data().facilityName;
 
         // Tìm trạng thái của phản hồi dựa trên statusId
         const statusDoc = await db.collection("feedbackstatus").doc(feedbackData.statusId).get();
@@ -253,6 +264,9 @@ router.get("/getFeedbackWithId/:feedbackId", async (req, res) => {
 
         const response = {
             feedbackId: feedbackId,
+            campusName,
+            roomName,
+            facilityName,
             ...feedbackData,
             feedbackstatus: statusData
         };
@@ -314,7 +328,7 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
             updatedAt: Date.now()
         });
 
-        await db.collection("tasks")
+        await db.collection("task")
             .where("feedbackId", "==", feedbackId)
             .get()
             .then((querySnapshot) => {
@@ -332,6 +346,16 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
             Status: status,
             updatedAt: Date.now()
         });
+
+        // Tạo thông báo (notify)
+        const notify = {
+            userId: feedbackDoc.data().createdBy,
+            feedbackId: feedbackId,
+            feedbackName: feedbackDoc.data().title,
+            description: "The Feedback had been updated",
+            createdAt: Date.now()
+        }
+        await db.collection('notifies').add(notify);
 
         res.send({
             success: true,

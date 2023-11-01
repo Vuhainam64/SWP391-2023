@@ -157,7 +157,7 @@ router.get("/getAllTaskOfEmployee/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 
-        const tasksSnapshot = await db.collection("tasks")
+        const tasksSnapshot = await db.collection("task")
             .where("employeeId", "==", userId)
             .get();
 
@@ -181,6 +181,117 @@ router.get("/getAllTaskOfEmployee/:userId", async (req, res) => {
         return res.status(500).send({
             success: false,
             msg: `Error: ${err}`
+        });
+    }
+});
+
+// Thêm một route để huỷ các task quá 2 tiếng ở trạng thái "Pending"
+const cancelOverdueTasks = async () => {
+    try {
+        // Lấy thời gian hiện tại
+        const currentTime = new Date().getTime();
+
+        // Tìm các task cần huỷ (quá 2 tiếng ở trạng thái "Pending")
+        const tasksSnapshot = await db.collection("task")
+            .where("status", "==", "Pending")
+            .get();
+
+        const tasksToCancel = [];
+
+        tasksSnapshot.forEach(doc => {
+            const taskData = doc.data();
+            const taskStartTime = taskData.startTimeAt;
+
+            // Kiểm tra thời gian đã trôi qua (hiện tại - startTimeAt) >= 2 giờ
+            if (currentTime - taskStartTime >= 2 * 60 * 60 * 1000) {
+                tasksToCancel.push({
+                    taskId: doc.id,
+                    ...taskData
+                });
+            }
+        });
+
+        // Cập nhật trạng thái và thông báo cho các task bị huỷ
+        const promises = tasksToCancel.map(async (task) => {
+            const description = "Task canceled due to overdue";
+            await db.collection('task').doc(task.taskId).update({
+                status: 'Canceled',
+                description,
+                updatedAt: currentTime
+            });
+
+            // Cập nhật trạng thái của phản hồi (feedback) nếu cần
+            if (task.feedbackId) {
+                const feedback = await db.collection('feedbacks').doc(task.feedbackId).update({
+                    description,
+                    updatedAt: currentTime
+                });
+
+                // Cập nhật trạng thái của feedbackstatus dựa trên trạng thái hiện tại của task
+                let newFeedbackStatus;
+                switch (task.status) {
+                    case "Pending":
+                        newFeedbackStatus = "Not Verify";
+                        break;
+                    case "Validating":
+                        newFeedbackStatus = "Not Verify";
+                        break;
+                    case "Processing":
+                        newFeedbackStatus = "Validated";
+                        break;
+                        // Thêm các trường hợp khác tại đây nếu cần
+                    default:
+                        newFeedbackStatus = "Not Verify"; // Trạng thái mặc định
+                }
+                // Cập nhật trạng thái của feedbackstatus
+                await db.collection('feedbackstatus').doc(feedback.statusId).update({
+                    Status: newFeedbackStatus,
+                    updatedAt: currentTime,
+                    processingCount: task.processingCount + 1 // Tăng số lần xử lý lên 1
+                });
+
+            }
+        });
+
+        await Promise.all(promises);
+
+        console.log('Overdue tasks canceled and feedbacks updated.');
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const taskUpdateInterval = 60 * 60 * 1000; // 1 tiếng (trong mili giây)
+
+setInterval(() => {
+    cancelOverdueTasks();
+}, taskUpdateInterval);
+
+// Route đếm số lượng task theo trạng thái
+router.get('/countTasksByStatus', async (req, res) => {
+    try {
+        const taskStatusCounts = {
+            Canceled: 0,
+            Pending: 0,
+            Verified: 0
+        };
+
+        const tasksSnapshot = await db.collection("task").get();
+
+        tasksSnapshot.forEach(doc => {
+            const taskData = doc.data();
+            const status = taskData.status;
+
+            if (taskStatusCounts.hasOwnProperty(status)) {
+                taskStatusCounts[status]++;
+            }
+        });
+
+        res.status(200).json(taskStatusCounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Lỗi server'
         });
     }
 });
