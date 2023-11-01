@@ -1,24 +1,46 @@
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { buttonClick } from "../../animations";
-import { Logo } from "../../assets";
 import { motion } from "framer-motion";
-import { getAllFeedbacks, updateFeedbackStatus } from "../../api";
+import {
+  getAllFeedbacks,
+  updateFeedbackStatus,
+  findAvailableEmployees,
+} from "../../api";
 import { setAllFeedbacks } from "../../context/actions/allFeedbackActions";
-import { useEffect, useState } from "react";
+import { Logo } from "../../assets";
+import { buttonClick } from "../../animations";
+import moment from "moment-timezone";
 
 function ViewFeedback() {
   const allFeedbacks = useSelector(
     (state) => state?.allFeedbacks?.allFeedbacks
   );
-
   const dispatch = useDispatch();
 
   const [openDeliveryTaskForFeedbackId, setOpenDeliveryTaskForFeedbackId] =
     useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedHour, setSelectedHour] = useState(7);
+  const [availableEmployees, setAvailableEmployees] = useState([]); // Initialize as an empty array
 
-  const hours = Array.from({ length: 10 }, (_, i) => i + 7);
+  const currentDate = new Date();
+  const [selectedDate, setSelectedDate] = useState(
+    currentDate.toISOString().split("T")[0]
+  );
+  const [selectedHour, setSelectedHour] = useState(() => {
+    const currentHour = new Date().getHours();
+    return currentHour;
+  });
+
+  const closingHour = 17; // Giờ nghỉ làm là 17:00
+  const currentHour = currentDate.getHours();
+  const selectedDateObj = new Date(selectedDate);
+  const selectedDateIsToday =
+    currentDate.toISOString().split("T")[0] ===
+    selectedDateObj.toISOString().split("T")[0];
+
+  const hours = Array.from(
+    { length: closingHour - (selectedDateIsToday ? currentHour : 7) + 1 },
+    (_, i) => (selectedDateIsToday ? currentHour : 7) + i
+  );
 
   useEffect(() => {
     getAllFeedbacks().then((data) => {
@@ -36,6 +58,23 @@ function ViewFeedback() {
 
   const closeDeliveryTask = () => {
     setOpenDeliveryTaskForFeedbackId(null);
+  };
+
+  const handleFindEmployee = async () => {
+    // Chuyển ngày và giờ thành định dạng Moment.js hiểu
+    const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
+    const selectedDateTimestamp = moment
+      .tz(dateTimeString, "Asia/Ho_Chi_Minh")
+      .valueOf();
+    // Gọi API để tìm nhân viên dựa trên selectedDateTimestamp
+    const availableEmployees = await findAvailableEmployees(
+      selectedDateTimestamp
+    );
+    setAvailableEmployees(availableEmployees); // Use setAvailableEmployees to update the state
+    console.log("selectedDate: ", selectedDate);
+    console.log("selectedHour: ", selectedHour);
+    console.log("selectedDateTimestamp: ", selectedDateTimestamp);
+    console.log("availableEmployees: ", availableEmployees);
   };
 
   return (
@@ -68,7 +107,7 @@ function ViewFeedback() {
                   Create At: {new Date(item.createdAt).toLocaleString()}
                 </div>
                 <div>
-                  Last Updated:
+                  Last Updated:{" "}
                   {new Date(item.feedbackstatus.updatedAt).toLocaleString()}
                 </div>
                 <div className="absolute bottom-0 right-0 flex">
@@ -110,6 +149,7 @@ function ViewFeedback() {
                             type="date"
                             className="border border-gray-400 p-2 rounded w-full"
                             value={selectedDate}
+                            min={currentDate.toISOString().split("T")[0]}
                             onChange={(e) => setSelectedDate(e.target.value)}
                           />
                         </div>
@@ -140,6 +180,7 @@ function ViewFeedback() {
                     <div className="flex flex-row-reverse cursor-pointer">
                       <motion.div
                         {...buttonClick}
+                        onClick={handleFindEmployee}
                         className="bg-blue-400 px-2 py-1 rounded-md mx-2"
                       >
                         Find Employee
@@ -158,32 +199,32 @@ function ViewFeedback() {
                         </div>
                       </div>
                       <div>
-                        <div className="m-4 border rounded-md bg-white flex items-center">
-                          <div className="p-2">
-                            <img src={Logo} alt="" className="w-10 h-10" />
-                          </div>
-                          <div className="">
-                            <div>Employee Name:</div>
-                            <div>Employee Status:</div>
-                          </div>
-                        </div>
-                        <div className="m-4 border rounded-md bg-white flex items-center">
-                          <div className="p-2">
-                            <img src={Logo} alt="" className="w-10 h-10" />
-                          </div>
-                          <div className="">
-                            <div>Employee Name:</div>
-                            <div>Employee Status:</div>
-                          </div>
-                        </div>
-                        <div className="m-4 border rounded-md bg-white flex items-center">
-                          <div className="p-2">
-                            <img src={Logo} alt="" className="w-10 h-10" />
-                          </div>
-                          <div className="">
-                            <div>Employee Name:</div>
-                            <div>Employee Status:</div>
-                          </div>
+                        <div>
+                          {availableEmployees &&
+                          availableEmployees.length > 0 ? (
+                            availableEmployees.map((employee) => (
+                              <div
+                                key={employee.uid}
+                                className="m-4 border rounded-md bg-white flex items-center"
+                              >
+                                <div className="p-2">
+                                  <img
+                                    src={employee.photoURL || Logo}
+                                    alt=""
+                                    className="w-10 h-10"
+                                  />
+                                </div>
+                                <div className="">
+                                  <div>Name: {employee.displayName}</div>
+                                  <div>
+                                    Last Sign: {employee.lastSignInTime}
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p>No available employees found.</p>
+                          )}
                         </div>
                       </div>
                     </div>

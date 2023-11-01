@@ -32,6 +32,58 @@ const checkAdminRole = async (req, res, next) => {
     }
 };
 
+// Định nghĩa một API route để tìm employee rảnh không có công việc vào thời gian createdAt
+router.post('/findAvailableEmployees', checkAdminRole, async (req, res) => {
+    try {
+        // Lấy thời gian createdAt từ request
+        const createdAt = req.body.createdAt;
+
+        // Lấy tất cả các tasks tạo vào thời gian createdAt
+        const tasksSnapshot = await db.collection("task").where("createdAt", "==", createdAt).get();
+        const tasks = [];
+
+        tasksSnapshot.forEach(doc => {
+            const taskData = doc.data();
+            const taskId = doc.id;
+            tasks.push({
+                taskId,
+                ...taskData
+            });
+        });
+
+        // Lấy tất cả nhân viên
+        const employeesSnapshot = await db.collection("user").where("roleId", "==", 1698200208313).get();
+        const employees = [];
+
+        employeesSnapshot.forEach(doc => {
+            const userData = doc.data();
+            const userId = doc.uid;
+            employees.push({
+                uid: userId,
+                ...userData
+            });
+        });
+
+        // Tạo danh sách các nhân viên rảnh
+        const availableEmployees = employees.filter((employee) => {
+            // Kiểm tra xem employee có công việc nào vào thời gian createdAt không
+            const hasTask = tasks.some((task) => {
+                return task.employeeId === employee.uid;
+            });
+
+            return !hasTask;
+        });
+
+        res.json(availableEmployees);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Lỗi server'
+        });
+    }
+});
+
+
 // Route tạo task 
 router.post('/createTask/:userId', checkAdminRole, async (req, res) => {
 
