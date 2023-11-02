@@ -220,6 +220,17 @@ export const countTasksByStatus = async () => {
     }
 };
 
+export const getAllTasksWithDetails = async () => {
+    try {
+        const res = await axios.post(`${baseURL}/api/tasks/getAllTasksWithDetails`, {
+            adminId: `${adminId}`
+        });
+        console.log("data: ", res.data.data)
+        return res.data.data;
+    } catch (err) {
+        return null;
+    }
+};
 //facility
 export const createCampus = async (campusName, tag) => {
     try {

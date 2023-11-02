@@ -18,7 +18,7 @@ function DBRightSection() {
       <DBHeader />
       <div className="flex flex-col flex-1 overflow-y-scroll scrollbar-none ">
         <Routes>
-          <Route path="/home" element={<DBHome />} />
+          <Route path="/" element={<DBHome />} />
           <Route path="/users" element={<DBUsers />} />
           <Route path="/employee" element={<Employee />} />
           <Route path="/roles" element={<DBRoles />} />

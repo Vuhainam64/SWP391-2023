@@ -1,13 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdFilterList, MdSearch } from "react-icons/md";
 import { motion } from "framer-motion";
 import { buttonClick } from "../../animations";
 import CalenderData from "./CalenderData";
 import Filter from "./Filter";
+import { getAllTasksWithDetails } from "../../api";
+import { useDispatch, useSelector } from "react-redux";
+import { setAllTasks } from "../../context/actions/allTasksActions";
 
 function Calendar() {
   const [isFilter, setIsFilter] = useState(false);
   const [isWeek, setIsWeek] = useState(false);
+
+  const tasks = useSelector((state) => state?.allTasks?.allTasks);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function fetchTasks() {
+      try {
+        const taskData = await getAllTasksWithDetails();
+        const formattedTasks = taskData.map((task) => ({
+          taskId: task.taskId,
+          employeeName: task.employeeName,
+          startedAt: new Date(task.startedAt).toISOString(),
+          campusName: task.campusName,
+          roomName: task.roomName,
+          facilityName: task.facilityName,
+          adminName: task.adminName,
+          status: task.status,
+        }));
+
+        dispatch(setAllTasks(formattedTasks));
+      } catch (error) {
+        console.log("Error fetching users:", error);
+        dispatch(setAllTasks([]));
+      }
+    }
+    fetchTasks();
+  }, [dispatch]);
   return (
     <div className="flex flex-col items-center w-full">
       <div className="flex items-center bg-slate-700 w-full p-4">
@@ -85,7 +115,7 @@ function Calendar() {
         )}
         <div className="w-full">
           <div className="w-full bg-gray-200 pt-[1px] my-2"></div>
-          <CalenderData week={isWeek} />
+          <CalenderData week={isWeek} tasks={tasks} />
         </div>
       </div>
     </div>

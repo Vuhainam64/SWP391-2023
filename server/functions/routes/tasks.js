@@ -296,4 +296,62 @@ router.get('/countTasksByStatus', async (req, res) => {
     }
 });
 
+router.post("/getAllTasksWithDetails", checkAdminRole, async (req, res) => {
+    try {
+        const tasksRef = db.collection("task");
+        const tasksSnapshot = await tasksRef.get();
+
+        const tasksWithDetails = [];
+
+        for (const taskDoc of tasksSnapshot.docs) {
+            const taskData = taskDoc.data();
+            const taskId = taskDoc.id;
+
+            const feedbackDoc = await db.collection("feedbacks").doc(taskData.feedbackId).get();
+            const feedbackData = feedbackDoc.data();
+
+            // Retrieve employee details
+            const employeeDoc = await db.collection("user").where("uid", "==", taskData.employeeId).get();
+            const employeeName = employeeDoc.docs[0].data().displayName;
+
+            // Retrieve campus name
+            const campusDoc = await db.collection("campus").doc(feedbackData.campusId).get();
+            const campusName = campusDoc.data().campusName;
+
+            // Retrieve room name
+            const roomDoc = await db.collection("room").doc(feedbackData.roomId).get();
+            const roomName = roomDoc.data().roomName;
+
+            // // Retrieve facility name
+            const facilityDoc = await db.collection("facility").doc(feedbackData.facilityId).get();
+            const facilityName = facilityDoc.data().facilityName;
+
+            // Retrieve admin name
+            const adminDoc = await db.collection("user").doc(taskData.adminId).get();
+            const adminName = adminDoc.data().displayName;
+
+            tasksWithDetails.push({
+                taskId,
+                employeeName,
+                startedAt: taskData.startTimeAt,
+                campusName,
+                roomName,
+                facilityName,
+                adminName,
+                status: taskData.status
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: tasksWithDetails,
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            msg: `Error: ${err}`,
+        });
+    }
+});
+
 module.exports = router;

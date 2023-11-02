@@ -17,20 +17,19 @@ import {
 import { useState } from "react";
 import {
   colStartClasses,
-  meetings,
   months,
+  tasks,
 } from "../../ultils/DataCalenderExample";
 import Meeting from "./Meeting";
 import { motion } from "framer-motion";
 import { AiOutlineStar } from "react-icons/ai";
 import { MdOutlineRecordVoiceOver } from "react-icons/md";
 import { buttonClick } from "../../animations";
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function CalenderData({ week }) {
+function CalenderData({ week }) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = useState(today);
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
@@ -64,8 +63,8 @@ export default function CalenderData({ week }) {
     setCurrentMonth(format(nextMonthDate, "MMM-yyyy"));
   }
 
-  const selectedDayMeetings = meetings.filter((meeting) =>
-    isSameDay(parseISO(meeting.startDatetime), selectedDay)
+  const selectedDayMeetings = tasks.filter((task) =>
+    isSameDay(task.startedAt, selectedDay)
   );
 
   function handleYearChange(year) {
@@ -196,9 +195,10 @@ export default function CalenderData({ week }) {
                 </button>
 
                 <div className="w-1 h-1 mx-auto mt-1">
-                  {meetings.some((meeting) =>
-                    isSameDay(parseISO(meeting.startDatetime), day)
-                  ) && <div className="w-1 h-1 rounded-full bg-sky-500"></div>}
+                  {tasks.some((task) => {
+                    isSameDay(parseISO(task.startDatetime), day);
+                    console.log(task.startDatetime);
+                  }) && <div className="w-1 h-1 rounded-full bg-sky-500"></div>}
                 </div>
               </div>
             ))}
@@ -222,7 +222,7 @@ export default function CalenderData({ week }) {
                 />
               ))
             ) : (
-              <p>No meetings for today.</p>
+              <p>No tasks for today.</p>
             )}
           </ol>
         </section>
@@ -701,3 +701,4 @@ export default function CalenderData({ week }) {
     </div>
   );
 }
+export default CalenderData;
