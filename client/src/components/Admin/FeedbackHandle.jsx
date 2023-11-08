@@ -8,9 +8,9 @@ import { buttonClick } from "../../animations";
 import moment from "moment-timezone";
 import Spinner from "../Spinner";
 import { Link } from "react-router-dom";
-import { BiRightArrow } from "react-icons/bi";
+import { BiLeftArrow } from "react-icons/bi";
 
-function ViewFeedback() {
+function FeedbackHandle() {
   const allFeedbacks = useSelector(
     (state) => state?.allFeedbacks?.allFeedbacks
   );
@@ -53,7 +53,7 @@ function ViewFeedback() {
   }, [dispatch]);
 
   const notVerifiedFeedbacks = allFeedbacks?.filter(
-    (item) => item.feedbackstatus?.Status === "Not Verify"
+    (item) => item.feedbackstatus?.Status === "Verified"
   );
 
   const closeDeliveryTask = () => {
@@ -131,16 +131,13 @@ function ViewFeedback() {
       ) : (
         <>
           <div className="mt-10">
-            <motion.div
-              {...buttonClick}
-              className="w-full flex flex-row-reverse"
-            >
+            <motion.div {...buttonClick} className="w-full flex">
               <Link
-                to={"/admin/feedback-handle"}
+                to={"/admin/verify-feedback"}
                 className="px-2 py-1 bg-blue-500 rounded-md hover:bg-blue-600 text-white flex items-center text-center"
               >
-                Feedback Handle
-                <BiRightArrow />
+                <BiLeftArrow />
+                Verify Feedback
               </Link>
             </motion.div>
             {notVerifiedFeedbacks && notVerifiedFeedbacks.length > 0 ? (
@@ -327,4 +324,4 @@ function ViewFeedback() {
   );
 }
 
-export default ViewFeedback;
+export default FeedbackHandle;

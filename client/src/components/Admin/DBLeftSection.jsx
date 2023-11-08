@@ -24,6 +24,7 @@ import { Logo } from "../../assets";
 
 function DBLeftSection() {
   const [isUser, setIsUser] = useState(false);
+  const [isFeedback, setIsFeedback] = useState(false);
   const [isFacility, setIsFacility] = useState(false);
   const [isSetting, setIsSetting] = useState(false);
   return (
@@ -103,15 +104,50 @@ function DBLeftSection() {
           </motion.div>
         </div>
         {/* View Feedback  */}
-        <Link
-          to={"/admin/feedback"}
-          className="flex items-center py-2 hover:bg-slate-200 p-2"
-        >
-          <div className="flex items-center">
-            <VscFeedback />
-            <p className="px-1">View Feedback</p>
+        <div>
+          <div
+            onClick={() => {
+              setIsFeedback(!isFeedback);
+            }}
+            className="flex flex-wrap items-center justify-between py-2 hover:bg-slate-200 p-2"
+          >
+            <div className="flex items-center">
+              <VscFeedback />
+
+              <p className="px-1">View Feedback</p>
+            </div>
+            {isFeedback ? (
+              <MdOutlineKeyboardArrowDown className="text-2xl" />
+            ) : (
+              <MdOutlineArrowBackIosNew />
+            )}
           </div>
-        </Link>
+          <motion.div
+            {...slideUpOut}
+            className={`flex flex-col ${!isFeedback ? "hidden" : "block"}`}
+          >
+            <NavLink
+              to={"/admin/verify-feedback"}
+              className={({ isActive }) =>
+                isActive
+                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
+                  : isNotActiveStyles
+              }
+            >
+              Verify Feedback
+            </NavLink>
+            <NavLink
+              to={"/admin/feedback-handle"}
+              className={({ isActive }) =>
+                isActive
+                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
+                  : isNotActiveStyles
+              }
+            >
+              Feedback Handle
+            </NavLink>
+          </motion.div>
+        </div>
         {/* facility  */}
         <div>
           <div

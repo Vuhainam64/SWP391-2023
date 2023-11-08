@@ -108,9 +108,9 @@ router.post('/createTask/:employeeId', checkAdminRole, async (req, res) => {
                 description = `Verify feedback ${feedbackId}`
                 newFeedbackStatus = "Validating"
                 break;
-            case "Verify":
-                description = `Processing feedback ${feedbackId}`
-                newFeedbackStatus = "Validated"
+            case "Verified":
+                description = `Handle feedback ${feedbackId}`
+                newFeedbackStatus = "Processing"
                 break;
             default:
                 break;
@@ -227,19 +227,16 @@ const cancelOverdueTasks = async () => {
                     updatedAt: currentTime
                 });
 
-                // Cập nhật trạng thái của feedbackstatus dựa trên trạng thái hiện tại của task
+                const feedbackStatusDoc = await db.collection('feedbackstatus').doc(feedback.statusId).get()
+                const feedbackStatusData = feedbackStatusDoc.data()
                 let newFeedbackStatus;
-                switch (task.status) {
-                    case "Pending":
-                        newFeedbackStatus = "Not Verify";
-                        break;
+                switch (feedbackStatusData.Status) {
                     case "Validating":
                         newFeedbackStatus = "Not Verify";
                         break;
                     case "Processing":
-                        newFeedbackStatus = "Validated";
+                        newFeedbackStatus = "Verified";
                         break;
-                        // Thêm các trường hợp khác tại đây nếu cần
                     default:
                         newFeedbackStatus = "Not Verify"; // Trạng thái mặc định
                 }
