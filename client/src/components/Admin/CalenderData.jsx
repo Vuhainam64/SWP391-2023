@@ -15,21 +15,17 @@ import {
   startOfToday,
 } from "date-fns";
 import { useState } from "react";
-import {
-  colStartClasses,
-  months,
-  tasks,
-} from "../../ultils/DataCalenderExample";
-import Meeting from "./Meeting";
+import { colStartClasses, months } from "../../ultils/DataCalenderExample";
 import { motion } from "framer-motion";
 import { AiOutlineStar } from "react-icons/ai";
 import { MdOutlineRecordVoiceOver } from "react-icons/md";
 import { buttonClick } from "../../animations";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function CalenderData({ week }) {
+export default function CalenderData({ week, tasks }) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = useState(today);
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
@@ -37,7 +33,6 @@ function CalenderData({ week }) {
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
   const [isMorning, setIsMorning] = useState(true);
   const [isNoon, setIsNoon] = useState(true);
-  const [isNight, setIsNight] = useState(true);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, index) => currentYear - index);
@@ -63,17 +58,78 @@ function CalenderData({ week }) {
     setCurrentMonth(format(nextMonthDate, "MMM-yyyy"));
   }
 
-  const selectedDayMeetings = tasks.filter((task) =>
-    isSameDay(task.startedAt, selectedDay)
-  );
+  const selectedDayMeetings = tasks.filter((task) => {
+    const taskDate = parseISO(task.startedAt);
+    const taskYear = taskDate.getFullYear();
+    const taskMonth = taskDate.getMonth();
+    const taskDay = taskDate.getDate();
+
+    const selectedYear = selectedDay.getFullYear();
+    const selectedMonth = selectedDay.getMonth();
+    const selectedDayOfMonth = selectedDay.getDate();
+
+    return (
+      taskYear === selectedYear &&
+      taskMonth === selectedMonth &&
+      taskDay === selectedDayOfMonth
+    );
+  });
+
+  console.log("Selected Day Meetings:", selectedDayMeetings);
 
   function handleYearChange(year) {
     setSelectedYear(year);
-
     // Cập nhật lại tháng và ngày
     const newDate = new Date(year, selectedMonth, 1);
     setSelectedDay(newDate);
     setCurrentMonth(format(newDate, "MMM-yyyy"));
+  }
+
+  function renderTasksForTimeRange(startHour, endHour) {
+    return selectedDayMeetings
+      .filter((task) => {
+        const taskDate = parseISO(task.startedAt);
+        const taskHour = taskDate.getHours();
+        return taskHour >= startHour && taskHour < endHour;
+      })
+      .map((task) => (
+        <div
+          key={task.taskId}
+          className="flex relative items-center justify-start mx-2"
+        >
+          <div className="group flex relative items-center justify-start mx-2">
+            <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
+              <div className="px-2">{task.campusName}</div>
+              <div className="px-[0.25px] m-1 bg-white "></div>
+              <div className="px-2">{task.status}</div>
+            </div>
+            <div className="hidden group-hover:block absolute top-8 left-0 w-full bg-blue-500 bg-opacity-90 rounded-t-sm rounded-b-md min-h-[200px] z-10">
+              <div className="m-2">
+                <div className="text-sm font-medium">{task.facilityName}</div>
+                <div className="grid grid-cols-2">
+                  <div className="flex items-center w-full">
+                    <BiBuildingHouse />
+                    <p className="px-2">Location</p>
+                  </div>
+                  <p>Room: {task.roomName}</p>
+                  <div className="flex items-center w-full">
+                    <MdOutlineRecordVoiceOver />
+                    <p className="px-2">Employee</p>
+                  </div>
+                  <p className="underline text-slate-700">
+                    {task.employeeName}
+                  </p>
+                  <div className="flex items-center w-full">
+                    <AiOutlineStar />
+                    <p className="px-2">Admin</p>
+                  </div>
+                  <p className="underline text-slate-700">{task.adminName}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ));
   }
   return (
     <div className="w-full">
@@ -195,16 +251,15 @@ function CalenderData({ week }) {
                 </button>
 
                 <div className="w-1 h-1 mx-auto mt-1">
-                  {tasks.some((task) => {
-                    isSameDay(parseISO(task.startDatetime), day);
-                    console.log(task.startDatetime);
-                  }) && <div className="w-1 h-1 rounded-full bg-sky-500"></div>}
+                  {tasks.some((task) =>
+                    isSameDay(parseISO(task.startedAt), day)
+                  ) && <div className="w-1 h-1 rounded-full bg-sky-500"></div>}
                 </div>
               </div>
             ))}
           </div>
         </div>
-        {/* meeting  */}
+        {/* task  */}
         <section className="mt-12 md:mt-0 md:pl-14">
           <h2 className="font-semibold text-gray-900">
             Schedule for{" "}
@@ -214,19 +269,15 @@ function CalenderData({ week }) {
           </h2>
           <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
             {selectedDayMeetings.length > 0 ? (
-              selectedDayMeetings.map((meeting) => (
-                <Meeting
-                  meeting={meeting}
-                  key={meeting.id}
-                  classNames={classNames}
-                />
+              selectedDayMeetings.map((task) => (
+                <div key={task.taskId}>{task.employeeName}</div>
               ))
             ) : (
               <p>No tasks for today.</p>
             )}
           </ol>
         </section>
-        {/* meeting end  */}
+        {/* task end  */}
         <div className="w-full flex flex-col items-center">
           {/* morning  */}
           <div className="w-full p-2">
@@ -241,146 +292,18 @@ function CalenderData({ week }) {
             </motion.div>
             {isMorning && (
               <div className="m-2 mx-4 flex flex-col items-center">
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      8:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      8:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      9:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-                    <div className="group flex relative items-center justify-start mx-2">
-                      <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
-                        <div className="px-2">HCM22.BA_02</div>
-                        <div className="px-[0.25px] m-1 bg-white "></div>
-                        <div className="px-2">Business Foundation</div>
+                {[8, 9, 10, 11, 12].map((hour) => (
+                  <div key={hour} className="w-full">
+                    <div className="flex">
+                      <div className="w-20 flex justify-between">
+                        {`${hour}:00`}{" "}
+                        <span className="px-[0.25px] bg-gray-300"></span>
                       </div>
-                      <div className="hidden group-hover:block absolute top-8 left-0 w-full bg-blue-500 bg-opacity-50 rounded-t-sm rounded-b-md min-h-[200px]">
-                        <div className="m-2">
-                          <div className="text-sm font-medium">
-                            Day 10 of 20
-                          </div>
-                          <div className="grid grid-cols-2">
-                            <div className="flex items-center w-full">
-                              <BiBuildingHouse />
-                              <p className="px-2">Location</p>
-                            </div>
-                            <p>HN.Fville</p>
-                            <div className="flex items-center w-full">
-                              <MdOutlineRecordVoiceOver />
-                              <p className="px-2">Trainer</p>
-                            </div>
-                            <p className="underline text-slate-700">
-                              Dinh Vu Quoc Trung
-                            </p>
-                            <div className="flex items-center w-full">
-                              <AiOutlineStar />
-                              <p className="px-2">Admin</p>
-                            </div>
-                            <p className="underline text-slate-700">
-                              Ly Lien Dung
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      {renderTasksForTimeRange(hour, hour + 1)}
                     </div>
-                    <div className="flex relative items-center justify-start mx-2">
-                      <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
-                        <div className="px-2">HCM22.BA_02</div>
-                        <div className="px-[0.25px] m-1 bg-white "></div>
-                        <div className="px-2">Business Foundation</div>
-                      </div>
-                    </div>
-                    {/* end content  */}
+                    <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
                   </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      9:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      10:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      10:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      11:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      11:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      12:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
+                ))}
               </div>
             )}
           </div>
@@ -397,302 +320,18 @@ function CalenderData({ week }) {
             </motion.div>
             {isNoon && (
               <div className="m-2 mx-4 flex flex-col items-center">
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      13:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      13:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      14:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-                    <div className="group flex relative items-center justify-start mx-2">
-                      <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
-                        <div className="px-2">HCM22.BA_02</div>
-                        <div className="px-[0.25px] m-1 bg-white "></div>
-                        <div className="px-2">Business Foundation</div>
+                {[13, 14, 15, 16, 17].map((hour) => (
+                  <div key={hour} className="w-full">
+                    <div className="flex">
+                      <div className="w-20 flex justify-between">
+                        {`${hour}:00`}{" "}
+                        <span className="px-[0.25px] bg-gray-300"></span>
                       </div>
-                      <div className="hidden group-hover:block absolute top-8 left-0 w-full bg-blue-500 bg-opacity-50 rounded-t-sm rounded-b-md min-h-[200px]">
-                        <div className="m-2">
-                          <div className="text-sm font-medium">
-                            Day 10 of 20
-                          </div>
-                          <div className="grid grid-cols-2">
-                            <div className="flex items-center w-full">
-                              <BiBuildingHouse />
-                              <p className="px-2">Location</p>
-                            </div>
-                            <p>HN.Fville</p>
-                            <div className="flex items-center w-full">
-                              <MdOutlineRecordVoiceOver />
-                              <p className="px-2">Trainer</p>
-                            </div>
-                            <p className="underline text-slate-700">
-                              Dinh Vu Quoc Trung
-                            </p>
-                            <div className="flex items-center w-full">
-                              <AiOutlineStar />
-                              <p className="px-2">Admin</p>
-                            </div>
-                            <p className="underline text-slate-700">
-                              Ly Lien Dung
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      {renderTasksForTimeRange(hour, hour + 1)}
                     </div>
-                    <div className="flex relative items-center justify-start mx-2">
-                      <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
-                        <div className="px-2">HCM22.BA_02</div>
-                        <div className="px-[0.25px] m-1 bg-white "></div>
-                        <div className="px-2">Business Foundation</div>
-                      </div>
-                    </div>
-                    {/* end content  */}
+                    <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
                   </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      14:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      15:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      15:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      16:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      16:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      17:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-              </div>
-            )}
-          </div>
-          {/* night  */}
-          <div className="w-full p-2">
-            <motion.div
-              {...buttonClick}
-              onClick={() => {
-                setIsNight(!isNight);
-              }}
-              className="bg-slate-700 text-white px-4 py-1 rounded-md cursor-pointer"
-            >
-              Night (18:00 - 22:00)
-            </motion.div>
-            {isNight && (
-              <div className="m-2 mx-4 flex flex-col items-center">
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      18:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      18:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      19:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-                    <div className="group flex relative items-center justify-start mx-2">
-                      <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
-                        <div className="px-2">HCM22.BA_02</div>
-                        <div className="px-[0.25px] m-1 bg-white "></div>
-                        <div className="px-2">Business Foundation</div>
-                      </div>
-                      <div className="hidden group-hover:block absolute top-8 left-0 w-full bg-blue-500 bg-opacity-50 rounded-t-sm rounded-b-md min-h-[200px]">
-                        <div className="m-2">
-                          <div className="text-sm font-medium">
-                            Day 10 of 20
-                          </div>
-                          <div className="grid grid-cols-2">
-                            <div className="flex items-center w-full">
-                              <BiBuildingHouse />
-                              <p className="px-2">Location</p>
-                            </div>
-                            <p>HN.Fville</p>
-                            <div className="flex items-center w-full">
-                              <MdOutlineRecordVoiceOver />
-                              <p className="px-2">Trainer</p>
-                            </div>
-                            <p className="underline text-slate-700">
-                              Dinh Vu Quoc Trung
-                            </p>
-                            <div className="flex items-center w-full">
-                              <AiOutlineStar />
-                              <p className="px-2">Admin</p>
-                            </div>
-                            <p className="underline text-slate-700">
-                              Ly Lien Dung
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex relative items-center justify-start mx-2">
-                      <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
-                        <div className="px-2">HCM22.BA_02</div>
-                        <div className="px-[0.25px] m-1 bg-white "></div>
-                        <div className="px-2">Business Foundation</div>
-                      </div>
-                    </div>
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      19:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      20:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      20:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      11:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      21:30 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
-                <div className="w-full">
-                  <div className="flex">
-                    <div className="w-20 flex justify-between">
-                      22:00 <span className="px-[0.25px] bg-gray-300"></span>
-                    </div>
-                    {/* content  */}
-
-                    {/* end content  */}
-                  </div>
-                  <div className="w-full my-2 py-[0.25px] bg-gray-300"></div>
-                </div>
+                ))}
               </div>
             )}
           </div>
@@ -701,4 +340,3 @@ function CalenderData({ week }) {
     </div>
   );
 }
-export default CalenderData;
