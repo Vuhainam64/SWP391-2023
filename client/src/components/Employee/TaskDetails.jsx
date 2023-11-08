@@ -115,30 +115,41 @@ export default function TaskDetails() {
               </div>
             </div>
             <div className="mt-10">
-              <div className="grid grid-cols-3">
-                <div className="col-span-3 font-bold text-3xl">
+              <div className="grid grid-cols-2">
+                <div className="col-span-6 font-bold text-3xl">
                   Your commitment:
                 </div>
-                <button
-                  onClick={() => handleCommitment("check done")}
-                  className="rounded-full p-2 m-2 bg-blue-400"
-                >
-                  I have checked and {taskDetails.feedbackstatus.Status}
-                </button>
-                <button
-                  onClick={() => handleCommitment("check not")}
-                  className="rounded-full p-2 m-2 bg-red-400"
-                >
-                  I have checked but couldn't{" "}
-                  {taskDetails.feedbackstatus.Status}
-                </button>
-                <button
-                  onClick={() => handleCommitment("nothing")}
-                  className="rounded-full p-2 m-2 bg-purple-400"
-                >
-                  I have checked and there is nothing to be{" "}
-                  {taskDetails.feedbackstatus.Status}
-                </button>
+                {taskDetails.feedbackstatus.Status === "Processing" ? (
+                  <>
+                    <button
+                      onClick={() => handleCommitment("fixed")}
+                      className="rounded-full p-2 m-2 bg-blue-400"
+                    >
+                      I had fixed it
+                    </button>
+                    <button
+                      onClick={() => handleCommitment("not fixed")}
+                      className="rounded-full p-2 m-2 bg-purple-400"
+                    >
+                      I can't fix it
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleCommitment("verify")}
+                      className="rounded-full p-2 m-2 bg-blue-400"
+                    >
+                      I had verify it
+                    </button>
+                    <button
+                      onClick={() => handleCommitment("not verify")}
+                      className="rounded-full p-2 m-2 bg-purple-400"
+                    >
+                      I can't verify it
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

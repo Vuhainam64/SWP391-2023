@@ -301,19 +301,24 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
         let description, status;
 
         switch (employeeComment) {
-            case "check done":
+            case "verify":
                 description = `Verified feedback ${feedbackId}`;
                 status = "Verified";
                 break;
 
-            case "check not":
+            case "not verify":
                 description = `Not verified feedback ${feedbackId}`;
                 status = "Not Verify";
                 break;
 
-            case "nothing":
-                description = `Rejected feedback ${feedbackId}`;
-                status = "Rejected";
+            case "fixed":
+                description = `Fixed feedback ${feedbackId}`;
+                status = "Fixed";
+                break;
+
+            case "not fixed":
+                description = `Not fixed feedback ${feedbackId}`;
+                status = "Verified";
                 break;
 
             default:
