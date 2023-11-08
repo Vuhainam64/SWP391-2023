@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { countTasksByStatus } from "../../api";
+import Spinner from "../Spinner";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function DBHome() {
+  const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await countTasksByStatus();
+      setLoading(false);
       setChartData(result);
     };
 
@@ -54,15 +57,22 @@ function DBHome() {
   };
 
   return (
-    <div className="flex items-center justify-center flex-col mt-16">
-      <h2 className="text-center text-2xl font-bold mb-4 text-gray-800">
-        Tasks Status
-      </h2>
-
-      <div className="w-508">
-        <Pie data={data} options={options} />
-      </div>
-    </div>
+    <>
+      {loading ? (
+        <div className="flex items-center justify-center h-full">
+          <Spinner />
+        </div>
+      ) : (
+        <div className="flex items-center justify-center flex-col mt-16">
+          <h2 className="text-center text-2xl font-bold mb-4 text-gray-800">
+            Tasks Status
+          </h2>
+          <div className="w-508">
+            <Pie data={data} options={options} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

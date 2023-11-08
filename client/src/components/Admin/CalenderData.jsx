@@ -75,8 +75,6 @@ export default function CalenderData({ week, tasks }) {
     );
   });
 
-  console.log("Selected Day Meetings:", selectedDayMeetings);
-
   function handleYearChange(year) {
     setSelectedYear(year);
     // Cập nhật lại tháng và ngày

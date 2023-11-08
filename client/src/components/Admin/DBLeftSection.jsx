@@ -40,7 +40,7 @@ function DBLeftSection() {
       <div className="p-2 w-full mt-5">
         {/* home  */}
         <Link
-          to={"/admin/home"}
+          to={"/admin/"}
           className="flex items-center py-2 hover:bg-slate-200 p-2"
         >
           <div className="flex items-center">
