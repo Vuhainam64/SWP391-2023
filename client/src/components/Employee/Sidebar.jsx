@@ -1,4 +1,8 @@
-import { AiOutlineClose, AiOutlineFileDone } from "react-icons/ai";
+import {
+  AiFillCalendar,
+  AiOutlineClose,
+  AiOutlineFileDone,
+} from "react-icons/ai";
 import { MdFeed, MdPendingActions } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Link, NavLink } from "react-router-dom";
@@ -62,6 +66,20 @@ function Sidebar() {
           <div className="flex items-center">
             <AiOutlineFileDone className="text-xl" />
             <p className="px-1">Completes</p>
+          </div>
+        </NavLink>
+        {/* calendar  */}
+        <NavLink
+          to={"/employee/calendar"}
+          className={({ isActive }) =>
+            isActive
+              ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold flex`
+              : `${isNotActiveStyles} flex`
+          }
+        >
+          <div className="flex items-center">
+            <AiFillCalendar className="text-xl" />
+            <p className="px-1">Calendar</p>
           </div>
         </NavLink>
       </div>

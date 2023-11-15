@@ -161,29 +161,53 @@ router.get("/getAllTaskOfEmployee/:userId", async (req, res) => {
             .where("employeeId", "==", userId)
             .get();
 
-        const tasks = [];
+        const tasksWithDetails = [];
 
-        tasksSnapshot.forEach(doc => {
-            const taskData = doc.data();
-            const taskId = doc.id;
+        for (const taskDoc of tasksSnapshot.docs) {
+            const taskData = taskDoc.data();
+            const taskId = taskDoc.id;
 
-            tasks.push({
-                taskId, // Thêm taskId để biết ID của task
-                ...taskData
+            const feedbackDoc = await db.collection("feedbacks").doc(taskData.feedbackId).get();
+            const feedbackData = feedbackDoc.data();
+
+            // Retrieve campus name
+            const campusDoc = await db.collection("campus").doc(feedbackData.campusId).get();
+            const campusName = campusDoc.data().campusName;
+
+            // Retrieve room name
+            const roomDoc = await db.collection("room").doc(feedbackData.roomId).get();
+            const roomName = roomDoc.data().roomName;
+
+            // // Retrieve facility name
+            const facilityDoc = await db.collection("facility").doc(feedbackData.facilityId).get();
+            const facilityName = facilityDoc.data().facilityName;
+
+            // Retrieve admin name
+            const adminDoc = await db.collection("user").doc(taskData.adminId).get();
+            const adminName = adminDoc.data().displayName;
+
+            tasksWithDetails.push({
+                taskId,
+                taskData,
+                campusName,
+                roomName,
+                facilityName,
+                adminName,
             });
-        });
+        }
 
-        return res.status(200).send({
+        return res.status(200).json({
             success: true,
-            data: tasks,
+            data: tasksWithDetails,
         });
     } catch (err) {
-        return res.status(500).send({
+        return res.status(500).json({
             success: false,
             msg: `Error: ${err}`
         });
     }
 });
+
 
 // Thêm một route để huỷ các task quá 2 tiếng ở trạng thái "Pending"
 const cancelOverdueTasks = async () => {

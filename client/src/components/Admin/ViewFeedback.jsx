@@ -9,6 +9,7 @@ import moment from "moment-timezone";
 import Spinner from "../Spinner";
 import { Link } from "react-router-dom";
 import { BiRightArrow } from "react-icons/bi";
+import { toast } from "react-toastify";
 
 function ViewFeedback() {
   const allFeedbacks = useSelector(
@@ -98,6 +99,7 @@ function ViewFeedback() {
       const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
       const selectedDateTimestamp = moment
         .tz(dateTimeString, "Asia/Ho_Chi_Minh")
+        .add(7, "hours")
         .valueOf();
 
       // Gọi hàm API để tạo nhiệm vụ và gán cho người dùng
@@ -113,9 +115,11 @@ function ViewFeedback() {
           dispatch(setAllFeedbacks(data));
         });
         console.log("Task assigned successfully", taskResponse);
+        toast.success("Task assigned successfully ~");
       } else {
         // Xử lý lỗi nếu giao việc không thành công
-        console.error("Error assigning task");
+        console.error("Error assigning task ~");
+        toast.error("Error assigning task");
       }
     }
   };

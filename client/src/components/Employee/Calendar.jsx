@@ -15,6 +15,7 @@ function Calendar() {
   const [isWeek, setIsWeek] = useState(false);
 
   const tasks = useSelector((state) => state?.allTasks?.allTasks);
+  const user = useSelector((state) => state?.user?.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -23,7 +24,7 @@ function Calendar() {
         const taskData = await getAllTaskOfEmployee();
         const formattedTasks = taskData.map((task) => {
           setLoading(false);
-          const startedAt = new Date(task.startedAt);
+          const startedAt = new Date(task.taskData.startTimeAt);
           const formattedStartedAt = startedAt.toISOString().slice(0, 16);
 
           return {
@@ -131,7 +132,7 @@ function Calendar() {
             )}
             <div className="w-full">
               <div className="w-full bg-gray-200 pt-[1px] my-2"></div>
-              <CalenderData week={isWeek} tasks={tasks} />
+              <CalenderData week={isWeek} tasks={tasks} user={user} />
             </div>
           </div>
         </div>

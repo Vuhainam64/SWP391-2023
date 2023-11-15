@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createRoom, getAllCampuses, getAllRoomsInCampus } from "../../api";
+import { toast } from "react-toastify";
 
 function Room() {
   const [campuses, setCampuses] = useState([]);
@@ -21,6 +22,7 @@ function Room() {
   const handleCreateRoom = async () => {
     if (!selectedCampus || !roomName) {
       setMessage("Please select a campus and enter a room name.");
+      toast.warning("Please select a campus and enter a room name !");
       return;
     }
 
@@ -28,6 +30,7 @@ function Room() {
       const response = await createRoom(selectedCampus, roomName);
       if (response) {
         setMessage("Room created successfully.");
+        toast.success("Room created successfully ~");
         // After creating the room, fetch the updated list of rooms in the selected campus
         const roomsInCampus = await getAllRoomsInCampus(selectedCampus);
         if (roomsInCampus) {
@@ -35,9 +38,11 @@ function Room() {
         }
       } else {
         setMessage("Failed to create room.");
+        toast.error("Failed to create room.");
       }
     } catch (error) {
       setMessage("An error occurred while creating the room.");
+      toast.error("An error occurred while creating the room.");
     }
   };
 

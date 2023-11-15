@@ -5,6 +5,7 @@ import {
   getAllRoomsInCampus,
   getAllFacilityInRoom,
 } from "../../api";
+import { toast } from "react-toastify";
 
 function Facility() {
   const [campuses, setCampuses] = useState([]);
@@ -49,6 +50,9 @@ function Facility() {
   const handleCreateFacility = async () => {
     if (!selectedCampus || !selectedRoom || !facilityName) {
       setMessage("Please select a campus, room, and enter a facility name.");
+      toast.warning(
+        "Please select a campus, room, and enter a facility name !"
+      );
       return;
     }
 
@@ -56,13 +60,16 @@ function Facility() {
       const response = await createFacility(selectedRoom, facilityName);
       if (response) {
         setMessage("Facility created successfully.");
+        toast.success("Facility created successfully  ~");
         // Refresh the list of facilities
         handleRoomChange(selectedRoom);
       } else {
         setMessage("Failed to create facility.");
+        toast.error("Failed to create facility.");
       }
     } catch (error) {
       setMessage("An error occurred while creating the facility.");
+      toast.error("An error occurred while creating the facility.");
     }
   };
 

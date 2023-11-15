@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createCampus, getAllCampuses } from "../../api";
+import { toast } from "react-toastify";
 
 function Campus() {
   const [campusName, setCampusName] = useState("");
@@ -21,6 +22,7 @@ function Campus() {
 
   const handleCreateCampus = async () => {
     if (!campusName || !tag) {
+      toast.warning("Campus name and tag are required !");
       setMessage("Campus name and tag are required.");
       return;
     }
@@ -30,6 +32,7 @@ function Campus() {
       const response = await createCampus(campusName, tag);
       if (response) {
         setMessage("Campus created successfully.");
+        toast.success("Campus created successfully ~");
 
         // Fetch the updated list of campuses after creating a new campus
         const campusesData = await getAllCampuses();
@@ -38,9 +41,11 @@ function Campus() {
         }
       } else {
         setMessage("Failed to create campus.");
+        toast.error("Failed to create campus.");
       }
     } catch (error) {
       setMessage("An error occurred while creating the campus.");
+      toast.error("An error occurred while creating the campus.");
     }
   };
 

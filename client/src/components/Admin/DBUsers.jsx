@@ -5,6 +5,7 @@ import { getAllRolesAPI, getAllUserAPI, updateRole } from "../../api";
 import { Pagination } from "../Styles";
 import { setAllRoles } from "../../context/actions/allRolesAction";
 import Spinner from "../Spinner";
+import { toast } from "react-toastify";
 
 function DBUsers() {
   const allUsers = useSelector((state) => state?.allUsers?.allUsers);
@@ -67,6 +68,7 @@ function DBUsers() {
           "Vai trò của người dùng đã được cập nhật thành công:",
           updatedUser
         );
+        toast.success("Update User Successfully  ~");
         fetchAllUsers();
         setChosenID(0);
       } else {

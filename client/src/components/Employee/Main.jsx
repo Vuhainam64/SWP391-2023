@@ -4,6 +4,7 @@ import Completes from "./Completes";
 import Feedbacks from "./Feedbacks";
 import TaskDetails from "./TaskDetails";
 import Tasks from "./Tasks";
+import Calendar from "./Calendar";
 
 function Main() {
   return (
@@ -16,6 +17,7 @@ function Main() {
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/tasks/:feedbackId" element={<TaskDetails />} />
           <Route path="/completes" element={<Completes />} />
+          <Route path="/calendar" element={<Calendar />} />
         </Routes>
       </div>
     </div>

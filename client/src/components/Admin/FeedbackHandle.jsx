@@ -9,6 +9,7 @@ import moment from "moment-timezone";
 import Spinner from "../Spinner";
 import { Link } from "react-router-dom";
 import { BiLeftArrow } from "react-icons/bi";
+import { toast } from "react-toastify";
 
 function FeedbackHandle() {
   const allFeedbacks = useSelector(
@@ -112,9 +113,11 @@ function FeedbackHandle() {
         await getAllFeedbacks().then((data) => {
           dispatch(setAllFeedbacks(data));
         });
+        toast.success("Task assigned successfully ~");
         console.log("Task assigned successfully", taskResponse);
       } else {
         // Xử lý lỗi nếu giao việc không thành công
+        toast.error("Error assigning task");
         console.error("Error assigning task");
       }
     }

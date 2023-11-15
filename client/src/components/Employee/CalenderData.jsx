@@ -25,7 +25,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function CalenderData({ week, tasks }) {
+export default function CalenderData({ week, tasks, user }) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = useState(today);
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
@@ -99,7 +99,7 @@ export default function CalenderData({ week, tasks }) {
             <div className="flex bg-slate-600 px-2 py-1 rounded-md text-white">
               <div className="px-2">{task.campusName}</div>
               <div className="px-[0.25px] m-1 bg-white "></div>
-              <div className="px-2">{task.status}</div>
+              <div className="px-2">{task.taskData.status}</div>
             </div>
             <div className="hidden group-hover:block absolute top-8 left-0 w-full bg-blue-500 bg-opacity-90 rounded-t-sm rounded-b-md min-h-[200px] z-10">
               <div className="m-2">
@@ -114,9 +114,7 @@ export default function CalenderData({ week, tasks }) {
                     <MdOutlineRecordVoiceOver />
                     <p className="px-2">Employee</p>
                   </div>
-                  <p className="underline text-slate-700">
-                    {task.employeeName}
-                  </p>
+                  <p className="underline text-slate-700">{user.displayName}</p>
                   <div className="flex items-center w-full">
                     <AiOutlineStar />
                     <p className="px-2">Admin</p>

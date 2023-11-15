@@ -4,7 +4,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { setFeedback } from "../context/actions/feedbackActions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getFeedbackWithUser } from "../api";
 
 function Feedbacks() {
@@ -13,6 +13,8 @@ function Feedbacks() {
 
   const dispatch = useDispatch();
 
+  const [searchInput, setSearchInput] = useState("");
+
   useEffect(() => {
     if (!feedback) {
       getFeedbackWithUser(user?.uid).then((data) => {
@@ -20,6 +22,16 @@ function Feedbacks() {
       });
     }
   }, [dispatch, feedback, user?.uid]);
+
+  function handleInputChange(e) {
+    setSearchInput(e.target.value);
+  }
+
+  const filteredFeedbacks = feedback
+    ? feedback.filter((item) =>
+        item.title.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -61,13 +73,15 @@ function Feedbacks() {
                 <input
                   type="text"
                   placeholder="Name of feedback to search"
+                  value={searchInput}
+                  onChange={handleInputChange}
                   className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-sm"
                 />
               </div>
               {/* my form  */}
               <div className="mb-10">
-                {feedback && feedback.length > 0 ? (
-                  feedback.map((item) => (
+                {filteredFeedbacks && filteredFeedbacks.length > 0 ? (
+                  filteredFeedbacks.map((item) => (
                     <div key={item.feedbackId}>
                       <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
                         <div className="flex-grow items-center truncate cursor-pointer">

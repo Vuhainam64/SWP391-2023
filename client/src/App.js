@@ -18,6 +18,8 @@ import { SET_USER } from "./context/actions/userActions";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { SET_ROLE } from "./context/actions/roleActions";
 import { createDefaultRole, getRoleWithRoleID } from "./api";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const navigate = useNavigate();
@@ -95,6 +97,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={2000} />
       {isLoading ? (
         <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
           <Spinner />
