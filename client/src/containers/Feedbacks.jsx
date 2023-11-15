@@ -14,6 +14,9 @@ function Feedbacks() {
   const dispatch = useDispatch();
 
   const [searchInput, setSearchInput] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
+  const statusOptions = ["All", "Validating", "Processing", "Fixed"];
 
   useEffect(() => {
     if (!feedback) {
@@ -27,9 +30,15 @@ function Feedbacks() {
     setSearchInput(e.target.value);
   }
 
+  function handleStatusClick(status) {
+    setSelectedStatus(status === "All" ? null : status);
+  }
+
   const filteredFeedbacks = feedback
-    ? feedback.filter((item) =>
-        item.title.toLowerCase().includes(searchInput.toLowerCase())
+    ? feedback.filter(
+        (item) =>
+          (selectedStatus ? item.status.Status === selectedStatus : true) &&
+          item.title.toLowerCase().includes(searchInput.toLowerCase())
       )
     : [];
 
@@ -78,6 +87,25 @@ function Feedbacks() {
                   className="flex-1 w-full h-full py-2 outline-none border-none bg-transparent text-text555 text-sm"
                 />
               </div>
+              <div className="flex mt-4 mb-4 space-x-4">
+                {statusOptions.map((status) => (
+                  <button
+                    key={status}
+                    className={`py-2 px-4 bg-gray-200 hover:bg-gray-300 focus:ring-blue-500 focus:ring-offset-blue-200
+                   text-gray-500 transition ease-in duration-200 text-center text-base font-medium 
+                   focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg 
+                   ${
+                     selectedStatus === status
+                       ? "bg-blue-500 text-gray-950"
+                       : ""
+                   }`}
+                    onClick={() => handleStatusClick(status)}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+
               {/* my form  */}
               <div className="mb-10">
                 {filteredFeedbacks && filteredFeedbacks.length > 0 ? (

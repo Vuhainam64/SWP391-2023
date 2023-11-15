@@ -14,6 +14,9 @@ function Tasks() {
 
   const [searchText, setSearchText] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("All");
+
+  const statusOptions = ["All", "Canceled", "Verified", "Fixed"];
 
   useEffect(() => {
     async function fetchTasks() {
@@ -32,15 +35,20 @@ function Tasks() {
 
   // Hàm xử lý tìm kiếm
   const handleSearch = () => {
-    // Sử dụng searchText để lọc danh sách công việc và cập nhật filteredTasks
     const filtered = allTasks.filter((task) => {
       return (
-        task.facilityName.toLowerCase().includes(searchText.toLowerCase()) ||
-        task.taskData.status.toLowerCase().includes(searchText.toLowerCase())
+        (selectedStatus === "All" || task.taskData.status === selectedStatus) &&
+        (task.facilityName.toLowerCase().includes(searchText.toLowerCase()) ||
+          task.taskData.status.toLowerCase().includes(searchText.toLowerCase()))
       );
     });
 
     setFilteredTasks(filtered);
+  };
+
+  const handleStatusFilter = (status) => {
+    setSelectedStatus(status);
+    handleSearch(); // Gọi hàm handleSearch để lọc lại dữ liệu khi chọn trạng thái mới
   };
 
   return (
@@ -73,7 +81,19 @@ function Tasks() {
                 Search
               </button>
             </div>
-
+            <div className="mt-5 mb-5 flex">
+              {statusOptions.map((status) => (
+                <button
+                  key={status}
+                  className={`px-3 py-1 bg-blue-500 text-white ml-2 rounded-md ${
+                    selectedStatus === status ? "bg-blue-700" : ""
+                  }`}
+                  onClick={() => handleStatusFilter(status)}
+                >
+                  {status}
+                </button>
+              ))}
+            </div>
             <table className="table-auto w-full border-collapse">
               <thead className="text-white h-10 px-5 py-1 bg-gray-700">
                 <tr>
