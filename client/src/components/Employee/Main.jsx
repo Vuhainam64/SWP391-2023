@@ -5,6 +5,7 @@ import Feedbacks from "./Feedbacks";
 import TaskDetails from "./TaskDetails";
 import Tasks from "./Tasks";
 import Calendar from "./Calendar";
+import Home from "./Home";
 
 function Main() {
   return (
@@ -12,7 +13,7 @@ function Main() {
       <DBHeader />
       <div className="flex flex-col flex-1 overflow-y-scroll scrollbar-track-inherit ">
         <Routes>
-          <Route path="/" element={<Feedbacks />} />
+          <Route path="/" element={<Home />} />
           <Route path="/feedbacks" element={<Feedbacks />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/tasks/:feedbackId" element={<TaskDetails />} />

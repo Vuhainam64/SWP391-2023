@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { buttonClick } from "../../animations";
 import CalenderData from "./CalenderData";
 import Filter from "./Filter";
-import { getAllTaskOfEmployee } from "../../api";
+import { getAllTasksWithDetails } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllTasks } from "../../context/actions/allTasksActions";
 import Spinner from "../Spinner";
@@ -20,7 +20,7 @@ function Calendar() {
   useEffect(() => {
     async function fetchTasks() {
       try {
-        const taskData = await getAllTaskOfEmployee();
+        const taskData = await getAllTasksWithDetails();
         const formattedTasks = taskData.map((task) => {
           setLoading(false);
           const startedAt = new Date(task.startedAt);

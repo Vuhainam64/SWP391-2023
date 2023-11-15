@@ -53,7 +53,7 @@ function UserProfileDetails() {
             )}
             {role === "employee" && (
               <Link
-                to={"/employee/feedbacks"}
+                to={"/employee/"}
                 className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
               >
                 <div className="flex flex-row gap-5">

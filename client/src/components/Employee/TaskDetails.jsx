@@ -143,10 +143,10 @@ export default function TaskDetails() {
                       I had verify it
                     </button>
                     <button
-                      onClick={() => handleCommitment("not verify")}
+                      onClick={() => handleCommitment("reject")}
                       className="rounded-full p-2 m-2 bg-purple-400"
                     >
-                      I can't verify it
+                      Reject Feedback
                     </button>
                   </>
                 )}
