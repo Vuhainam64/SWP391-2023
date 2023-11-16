@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setFeedback } from "../context/actions/feedbackActions";
 import { useEffect, useState } from "react";
 import { getFeedbackWithUser } from "../api";
+import { Cloud } from "../assets";
 
 function Feedbacks() {
   const user = useSelector((state) => state?.user?.user);
@@ -142,11 +143,7 @@ function Feedbacks() {
                       <div className="w-full md:w-4/5 lg:w-3/5 md:mx-auto md:max-w-4xl px-4">
                         <div className="mt-8 pb-0">
                           <div className="flex flex-wrap justify-center max-w-4xl">
-                            <img
-                              src="https://d3ietpyl4f2d18.cloudfront.net/0c5c10e0-8bac-4312-b450-2ec2495f6035/img/pages/forms/search_notfound.png"
-                              alt="cloud"
-                              className="w-56"
-                            />
+                            <img src={Cloud} alt="cloud" className="w-56" />
                             <h3 className="w-full mt-4 text-center text-gray-900 font-semibold">
                               No feedback found
                             </h3>
