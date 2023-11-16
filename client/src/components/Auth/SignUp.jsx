@@ -11,6 +11,7 @@ import {
   updateProfile,
 } from "@firebase/auth";
 import { auth } from "../../config/firebase.config";
+import { toast } from "react-toastify";
 
 function SignUp(props) {
   const [name, setName] = useState("");
@@ -28,12 +29,14 @@ function SignUp(props) {
     if (!agreedToTerms) {
       setAlert(true);
       setAlertMessage("You must agree to the terms and conditions.");
+      toast.warning("You must agree to the terms and conditions.");
       return;
     }
     if (getEmailValidationStatus) {
       if (password !== confirmPassword) {
         setAlert(true);
         setAlertMessage("Passwords do not match.");
+        toast.warning("Passwords do not match.");
         return;
       }
       try {
@@ -50,6 +53,9 @@ function SignUp(props) {
           console.log(userCred);
           setAlert(true);
           setAlertMessage(
+            "Account created successfully. Please check your email for verification."
+          );
+          toast.success(
             "Account created successfully. Please check your email for verification."
           );
         }

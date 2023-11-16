@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { signInWithEmailAndPassword } from "@firebase/auth";
 import { auth } from "../../config/firebase.config";
 import ResetPassword from "./ResetPassword";
+import { toast } from "react-toastify";
 
 function Login(props) {
   const [email, setEmail] = useState("");
@@ -24,6 +25,7 @@ function Login(props) {
             console.log(userCred);
             props.setAlert(true);
             props.setAlertMessage("Login successful.");
+            toast.success("Login successful.");
           }
         })
         .catch((err) => {
@@ -31,14 +33,17 @@ function Login(props) {
           if (err.message.includes("user-not-found")) {
             props.setAlert(true);
             props.setAlertMessage("Invalid Id: User not found");
+            toast.warning("Invalid Id: User not found");
           } else if (err.message.includes("wrong-password")) {
             props.setAlert(true);
             props.setAlertMessage("Password is incorrect");
+            toast.warning("Password is incorrect");
           } else {
             props.setAlert(true);
             props.setAlertMessage(
               "Temporarily disabled due to many failed logins"
             );
+            toast.error("Temporarily disabled due to many failed logins");
           }
 
           setInterval(() => {

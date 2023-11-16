@@ -67,24 +67,36 @@ function Navbar() {
               <BsFillBellFill className="hover:text-blue-600" />
               <div className="hidden group-hover:block absolute top-10 -right-4 border rounded-2xl bg-white shadow-md z-10">
                 <div className="bg-white w-72 m-4">
-                  {recentNotifications.map((notification) => (
-                    <div key={notification.notifyId} className="border-b my-2">
-                      <div className="font-semibold flex items-center">
-                        <BsFillBellFill className="mx-2" />
-                        <div className="text-[14px]">
-                          {notification.description}
+                  {recentNotifications.length > 0 ? (
+                    recentNotifications.map((notification) => (
+                      <div
+                        key={notification.notifyId}
+                        className="border-b my-2"
+                      >
+                        <div className="font-semibold flex items-center">
+                          <BsFillBellFill className="mx-2" />
+                          <div className="text-[14px]">
+                            {notification.description}
+                          </div>
+                        </div>
+                        <div className="ml-8">{notification.feedbackName}</div>
+                        <div className="text-[12px] flex w-full flex-row-reverse opacity-70">
+                          Created At:{" "}
+                          {new Date(
+                            notification.createdAt
+                          ).toLocaleTimeString()}
                         </div>
                       </div>
-                      <div className="ml-8">{notification.feedbackName}</div>
-                      <div className="text-[12px] flex w-full flex-row-reverse opacity-70">
-                        Created At:{" "}
-                        {new Date(notification.createdAt).toLocaleTimeString()}
-                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-500">
+                      No notifications available.
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
+
             <div className="hidden md:block pl-5 border-gray-300 border-r h-5"></div>
             <div className="block">
               <div className="flex items-center">

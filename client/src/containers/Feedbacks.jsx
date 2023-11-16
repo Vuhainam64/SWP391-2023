@@ -17,7 +17,13 @@ function Feedbacks() {
   const [searchInput, setSearchInput] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
 
-  const statusOptions = ["All", "Validating", "Processing", "Fixed"];
+  const statusOptions = [
+    "All",
+    "Validating",
+    "Processing",
+    "Fixed",
+    "Not Verify",
+  ];
 
   useEffect(() => {
     if (!feedback) {

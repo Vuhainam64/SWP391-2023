@@ -16,7 +16,14 @@ function Tasks() {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("All");
 
-  const statusOptions = ["All", "Canceled", "Verified", "Fixed", "Pending"];
+  const statusOptions = [
+    "All",
+    "Canceled",
+    "Verified",
+    "Fixed",
+    "Pending",
+    "Not Verify",
+  ];
 
   useEffect(() => {
     async function fetchTasks() {

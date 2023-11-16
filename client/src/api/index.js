@@ -7,10 +7,14 @@ export {
   validateUserJWTToken,
   getAllUserAPI,
   getAllEmployeesWithStatus,
-} from "./user";
+}
+from "./user";
 
 //employee
-export { updateEmployeeStatus } from "./employee";
+export {
+  updateEmployeeStatus
+}
+from "./employee";
 
 //Role
 export {
@@ -19,7 +23,8 @@ export {
   getAllRolesAPI,
   getUserRole,
   updateRole,
-} from "./role";
+}
+from "./role";
 
 //feedbacks
 export {
@@ -29,7 +34,8 @@ export {
   getFeedbackWithId,
   getFeedbackWithUser,
   updateFeedbackStatus,
-} from "./feedback";
+}
+from "./feedback";
 
 //task
 export {
@@ -39,7 +45,8 @@ export {
   getAllTaskOfEmployee,
   getAllTasksWithDetails,
   countTaskStatusByEmployee,
-} from "./task";
+}
+from "./task";
 //facility
 export {
   createCampus,
@@ -48,7 +55,11 @@ export {
   getAllCampuses,
   getAllFacilityInRoom,
   getAllRoomsInCampus,
-} from "./facility";
+}
+from "./facility";
 
 //notify
-export { getNotifications } from "./notify";
+export {
+  getNotifications
+}
+from "./notify";

@@ -9,9 +9,10 @@ import { auth } from "../../config/firebase.config";
 import { motion } from "framer-motion";
 import { fadeInOut } from "../../animations";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function ResetPassword(props) {
-  const user = useSelector((state) => state?.user?.user);
+  const user = useSelector((state) => state?.user?.user) ?? { email: "" };
   const [email, setEmail] = useState(user.email || "");
   const setGetEmailValidationStatus = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
@@ -23,10 +24,12 @@ function ResetPassword(props) {
     try {
       await sendPasswordResetEmail(auth, email);
       setSendEmail(true);
+      toast.success("Email have been seen");
     } catch (err) {
       if (err.message.includes("missing-email")) {
         setAlert(true);
         setAlertMessage("Account not found");
+        toast.warning("Account not found");
       }
 
       setInterval(() => {
@@ -100,7 +103,7 @@ function ResetPassword(props) {
                         className="text-xs hover:underline text-gray-500 sm:text-sm hover:text-gray-700 cursor-pointer flex items-center justify-center mt-4 -mb-4"
                       >
                         <IoArrowBackOutline className="text-xl mr-2" />
-                        Back to log in
+                        Back to page
                       </div>
                     </div>
                   </div>

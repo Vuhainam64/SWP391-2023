@@ -30,6 +30,7 @@ import {
 } from "../api";
 import { MdDelete } from "react-icons/md";
 import { setFeedback } from "../context/actions/feedbackActions";
+import { toast } from "react-toastify";
 
 function CreateFeedback() {
   const user = useSelector((state) => state?.user?.user);
@@ -74,6 +75,8 @@ function CreateFeedback() {
           setisLoading(false);
           setProgress(null);
           dispatch(alertSuccess("Image Uploaded to the cloud"));
+          toast.success("Image Uploaded to the cloud ~");
+
           setTimeout(() => {
             dispatch(alertNULL());
           }, 3000);
@@ -90,6 +93,7 @@ function CreateFeedback() {
       setImageDownloadURL(null);
       setisLoading(false);
       dispatch(alertSuccess("Image removed from the cloud"));
+      toast.success("Image removed from the cloud~");
       setTimeout(() => {
         dispatch(alertNULL());
       }, 3000);
@@ -110,8 +114,10 @@ function CreateFeedback() {
 
     if (response) {
       console.log("Feedback created successfully:", response);
+      toast.success("Feedback created successfully");
     } else {
       console.error("Failed to create feedback.");
+      toast.error("Failed to create feedback");
     }
     getFeedbackWithUser(user?.uid).then((data) => {
       dispatch(setFeedback(data));

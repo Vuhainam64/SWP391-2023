@@ -4,6 +4,7 @@ import { sendEmailVerification } from "firebase/auth";
 import { motion } from "framer-motion";
 import { fadeInOut } from "../../animations";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 function VerifyPopup() {
   const [alert, setAlert] = useState(false);
@@ -18,6 +19,7 @@ function VerifyPopup() {
         console.log(user);
         setAlert(true);
         setAlertMessage("Verification email sent.");
+        toast.success("Verification email sent.");
       } else {
         console.error("No user is currently signed in.");
       }
@@ -25,6 +27,7 @@ function VerifyPopup() {
       if (err.message.includes("too-many-requests")) {
         setAlert(true);
         setAlertMessage("You have send too many request");
+        toast.error("You have send too many request");
       }
 
       setInterval(() => {

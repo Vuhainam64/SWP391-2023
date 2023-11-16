@@ -22,6 +22,7 @@ import { Avatar } from "../../assets";
 import { updateProfile } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { SET_USER } from "../../context/actions/userActions";
+import { toast } from "react-toastify";
 
 function Profile() {
   const user = useSelector((state) => state?.user?.user);
@@ -56,6 +57,7 @@ function Profile() {
           setisLoading(false);
           setProgress(null);
           dispatch(alertSuccess("Image Uploaded to the cloud"));
+          toast.success("Image Uploaded to the cloud.");
           setTimeout(() => {
             dispatch(alertNULL());
           }, 3000);
@@ -72,6 +74,7 @@ function Profile() {
       setImageDownloadURL(null);
       setisLoading(false);
       dispatch(alertSuccess("Image removed from the cloud"));
+      toast.success("Image removed from the cloud.");
       setTimeout(() => {
         dispatch(alertNULL());
       }, 3000);
@@ -98,11 +101,13 @@ function Profile() {
         })
       );
       dispatch(alertSuccess("User data updated successfully"));
+      toast.success("User data updated successfully.");
       setTimeout(() => {
         dispatch(alertNULL());
       }, 3000);
     } catch (error) {
       dispatch(alertDanger(`Error updating user data: ${error}`));
+      toast.error(`Error updating user data: ${error}`);
       setTimeout(() => {
         dispatch(alertNULL());
       }, 3000);
