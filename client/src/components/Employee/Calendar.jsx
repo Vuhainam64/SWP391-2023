@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { MdFilterList, MdSearch } from "react-icons/md";
 import { motion } from "framer-motion";
 import { buttonClick } from "../../animations";
 import CalenderData from "./CalenderData";
-import Filter from "./Filter";
 import { getAllTaskOfEmployee } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllTasks } from "../../context/actions/allTasksActions";
@@ -11,7 +9,6 @@ import Spinner from "../Spinner";
 
 function Calendar() {
   const [loading, setLoading] = useState(true);
-  const [isFilter, setIsFilter] = useState(false);
   const [isWeek, setIsWeek] = useState(false);
 
   const tasks = useSelector((state) => state?.allTasks?.allTasks);
@@ -63,34 +60,7 @@ function Calendar() {
               </div>
             </div>
           </div>
-          <div className="flex items-center w-full bg-white p-4">
-            {/* search  */}
-            <div className="relative ">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <MdSearch className="text-gray-900 text-2xl" />
-              </div>
-              <input
-                className="w-full border border-gray-900 rounded-md py-2 pl-10 pr-3 placeholder:italic placeholder:text-gray-900 min-w-350"
-                placeholder="Search by..."
-              />
-            </div>
-            {/* filter */}
-            <div className="flex items-center text-white bg-slate-700 p-1 pl-2 mx-2 rounded-md cursor-pointer relative">
-              <motion.div
-                {...buttonClick}
-                onClick={() => setIsFilter(!isFilter)}
-                className="flex"
-              >
-                <MdFilterList className="text-2xl" />
-                <p className="px-2">Filter</p>
-              </motion.div>
-              {isFilter && (
-                <div className="absolute top-10 left-0 bg-white text-slate-900 border border-gray-700 rounded-2xl">
-                  <Filter />
-                </div>
-              )}
-            </div>
-          </div>
+          <div className="flex items-center w-full bg-white p-4"></div>
           {/* calendar  */}
           <div className="w-full bg-white">
             {!isWeek ? (
