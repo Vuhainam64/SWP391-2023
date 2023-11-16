@@ -294,7 +294,8 @@ router.get('/countTasksByStatus', async (req, res) => {
         const taskStatusCounts = {
             Canceled: 0,
             Pending: 0,
-            Verified: 0
+            Verified: 0,
+            Fixed: 0,
         };
 
         const tasksSnapshot = await db.collection("task").get();
@@ -374,5 +375,44 @@ router.post("/getAllTasksWithDetails", checkAdminRole, async (req, res) => {
         });
     }
 });
+
+router.get("/countTaskStatusByEmployee/:employeeId", async (req, res) => {
+    try {
+        const employeeId = req.params.employeeId;
+
+        const tasksSnapshot = await db.collection("task")
+            .where("employeeId", "==", employeeId)
+            .get();
+
+        const taskStatusCounts = {
+            Fixed: 0,
+            Verified: 0,
+            Reject: 0,
+            Pending: 0,
+            Processing: 0,
+            Canceled: 0,
+        };
+
+        tasksSnapshot.forEach(taskDoc => {
+            const taskData = taskDoc.data();
+            const status = taskData.status;
+
+            if (taskStatusCounts.hasOwnProperty(status)) {
+                taskStatusCounts[status]++;
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: taskStatusCounts,
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            msg: `Error: ${err}`,
+        });
+    }
+});
+
 
 module.exports = router;

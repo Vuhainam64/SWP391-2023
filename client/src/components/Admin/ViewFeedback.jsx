@@ -62,11 +62,20 @@ function ViewFeedback() {
   };
 
   const handleFindEmployee = async () => {
+    if (!selectedHour) {
+      toast.warning("Please select an hour to find employees.");
+      return;
+    }
+
     // Chuyển ngày và giờ thành định dạng Moment.js hiểu
-    const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
+    const dateTimeString = moment(selectedDate)
+      .hour(selectedHour)
+      .toISOString();
+    console.log("dateTimeString: ", dateTimeString);
     const selectedDateTimestamp = moment
       .tz(dateTimeString, "Asia/Ho_Chi_Minh")
       .valueOf();
+
     // Gọi API để tìm nhân viên dựa trên selectedDateTimestamp
     const availableEmployees = await findAvailableEmployees(
       selectedDateTimestamp
@@ -96,10 +105,12 @@ function ViewFeedback() {
 
   const assignTaskToEmployee = async (feedbackStatus, feedbackId) => {
     if (selectedEmployee) {
-      const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
+      const dateTimeString = moment(selectedDate)
+        .hour(selectedHour)
+        .toISOString();
+      console.log("dateTimeString: ", dateTimeString);
       const selectedDateTimestamp = moment
         .tz(dateTimeString, "Asia/Ho_Chi_Minh")
-        .add(7, "hours")
         .valueOf();
 
       // Gọi hàm API để tạo nhiệm vụ và gán cho người dùng

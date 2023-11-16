@@ -306,9 +306,9 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
                 status = "Verified";
                 break;
 
-            case "not verify":
-                description = `Not verified feedback ${feedbackId}`;
-                status = "Not Verify";
+            case "reject":
+                description = `Reject feedback ${feedbackId}`;
+                status = "Reject";
                 break;
 
             case "fixed":

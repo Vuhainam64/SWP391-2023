@@ -25,6 +25,10 @@ function Calendar() {
         const formattedTasks = taskData.map((task) => {
           setLoading(false);
           const startedAt = new Date(task.taskData.startTimeAt);
+
+          // Add 7 hours to the startTimeAt
+          startedAt.setHours(startedAt.getHours() + 7);
+
           const formattedStartedAt = startedAt.toISOString().slice(0, 16);
 
           return {

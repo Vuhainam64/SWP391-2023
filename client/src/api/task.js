@@ -1,4 +1,6 @@
-import { baseURL } from ".";
+import {
+  baseURL
+} from ".";
 import axios from "axios";
 const adminId = localStorage.getItem("userId");
 const uid = localStorage.getItem("uid");
@@ -11,8 +13,7 @@ export const createTask = async (
 ) => {
   try {
     const res = await axios.post(
-      `${baseURL}/api/tasks/createTask/${employeeId}`,
-      {
+      `${baseURL}/api/tasks/createTask/${employeeId}`, {
         adminId: `${adminId}`,
         startTimeAt,
         feedbackStatus,
@@ -39,8 +40,7 @@ export const getAllTaskOfEmployee = async () => {
 export const findAvailableEmployees = async (startTimeAt) => {
   try {
     const res = await axios.post(
-      `${baseURL}/api/tasks/findAvailableEmployees`,
-      {
+      `${baseURL}/api/tasks/findAvailableEmployees`, {
         adminId: `${adminId}`,
         startTimeAt,
       }
@@ -63,12 +63,21 @@ export const countTasksByStatus = async () => {
 export const getAllTasksWithDetails = async () => {
   try {
     const res = await axios.post(
-      `${baseURL}/api/tasks/getAllTasksWithDetails`,
-      {
+      `${baseURL}/api/tasks/getAllTasksWithDetails`, {
         adminId: `${adminId}`,
       }
     );
     console.log("data: ", res.data.data);
+    return res.data.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const countTaskStatusByEmployee = async () => {
+  try {
+    const res = await axios.get(
+      `${baseURL}/api/tasks/countTaskStatusByEmployee/${uid}`
+    );
     return res.data.data;
   } catch (err) {
     return null;

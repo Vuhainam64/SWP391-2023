@@ -63,10 +63,14 @@ function FeedbackHandle() {
 
   const handleFindEmployee = async () => {
     // Chuyển ngày và giờ thành định dạng Moment.js hiểu
-    const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
+    const dateTimeString = moment(selectedDate)
+      .hour(selectedHour)
+      .toISOString();
+    console.log("dateTimeString: ", dateTimeString);
     const selectedDateTimestamp = moment
       .tz(dateTimeString, "Asia/Ho_Chi_Minh")
       .valueOf();
+
     // Gọi API để tìm nhân viên dựa trên selectedDateTimestamp
     const availableEmployees = await findAvailableEmployees(
       selectedDateTimestamp
@@ -96,7 +100,10 @@ function FeedbackHandle() {
 
   const assignTaskToEmployee = async (feedbackStatus, feedbackId) => {
     if (selectedEmployee) {
-      const dateTimeString = `${selectedDate}T${selectedHour}:00:00`;
+      const dateTimeString = moment(selectedDate)
+        .hour(selectedHour)
+        .toISOString();
+      console.log("dateTimeString: ", dateTimeString);
       const selectedDateTimestamp = moment
         .tz(dateTimeString, "Asia/Ho_Chi_Minh")
         .valueOf();

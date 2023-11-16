@@ -49,13 +49,13 @@ function Navbar() {
               </Link>
             </div>
             <div className="hidden md:block ml-auto relative">
-              <Link
+              {/* <Link
                 to={"/templates"}
                 className="text-sm text-gray-600 hover:text-gray-800 cursor-pointer mt-1 mr-8"
               >
                 {" "}
                 Templates{" "}
-              </Link>
+              </Link> */}
               <Link
                 to={"/help"}
                 className="text-sm text-gray-600 hover:text-gray-800 cursor-pointer mt-1"
