@@ -12,6 +12,7 @@ import Facility from "./Facility";
 import Room from "./Room";
 import Campus from "./Campus";
 import FeedbackHandle from "./FeedbackHandle";
+import CreateUser from "./CreateUser";
 
 function DBRightSection() {
   return (
@@ -21,6 +22,7 @@ function DBRightSection() {
         <Routes>
           <Route path="/" element={<DBHome />} />
           <Route path="/users" element={<DBUsers />} />
+          <Route path="/create-user" element={<CreateUser />} />
           <Route path="/employee" element={<Employee />} />
           <Route path="/roles" element={<DBRoles />} />
           <Route path="/verify-feedback" element={<ViewFeedback />} />

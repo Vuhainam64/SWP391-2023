@@ -20,6 +20,7 @@ import { SET_ROLE } from "./context/actions/roleActions";
 import { createDefaultRole, getRoleWithRoleID } from "./api";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CreateAccount from "./containers/CreateAccount";
 
 function App() {
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ function App() {
             setIsEmailVerified(true);
           } else {
             setIsEmailVerified(false);
-            navigate("/auth", { replace: true });
           }
         });
         const getRole = async () => {
@@ -81,7 +81,6 @@ function App() {
           setIsLogin(true);
           getUserDataAndRole(userCred);
         } else {
-          navigate("/auth", { replace: true });
         }
 
         setInterval(() => {
@@ -107,11 +106,11 @@ function App() {
           <Routes>
             <Route path="/404" element={<PageNotFound />} />
             <Route path="/home/*" element={<Home />} />
+            <Route path="/signup/*" element={<CreateAccount />} />
 
             {!isLogin && (
               <>
                 <Route path="/auth" element={<Auth />} />
-                <Route path="*" element={<Navigate to="/auth" />} />
               </>
             )}
 
@@ -137,7 +136,6 @@ function App() {
                 )}
               </>
             )}
-
             <Route path="*" element={<Navigate to="/home" />} />
           </Routes>
         </div>

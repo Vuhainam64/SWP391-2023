@@ -1,6 +1,8 @@
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const nodemailer = require("nodemailer");
 db.settings({
     ignoreUndefinedProperties: true
 });
@@ -188,4 +190,66 @@ router.post('/updateEmployeeStatus/:empId', async (req, res) => {
     }
 });
 
+// Route to create users and send signup link emails
+router.post("/createUsers", checkAdminRole, async (req, res) => {
+    const usersData = req.body.users;
+
+    try {
+        const signupPromises = usersData.map(async (user) => {
+            const {
+                role,
+                email
+            } = user;
+
+            // Create user in the 'signup' collection
+            const signupRef = await db.collection("signup").add({
+                role,
+                email,
+                status: "Not used",
+            });
+
+            // Send signup link email
+            const signupId = signupRef.id;
+            const signupLink = `http://localhost:3000/signup?signupId=${signupId}`;
+            await sendSignupEmail(email, signupLink);
+
+            return signupId;
+        });
+
+        const signupIds = await Promise.all(signupPromises);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                signupIds
+            },
+        });
+    } catch (error) {
+        console.error("Error creating users:", error);
+        res.status(500).json({
+            success: false,
+            msg: "Error creating users",
+        });
+    }
+});
+
+// Function to send the signup link email
+const sendSignupEmail = async (email, signupLink) => {
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: "vuhainam272@gmail.com",
+            pass: "obck fdrj bmlf wwjd",
+        },
+    });
+
+    const mailOptions = {
+        from: "vuhainam272@gmail.com",
+        to: email,
+        subject: "Signup Link",
+        text: `Click the following link to create your account: ${signupLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+};
 module.exports = router;

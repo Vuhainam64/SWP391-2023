@@ -1,4 +1,6 @@
-import { baseURL } from ".";
+import {
+  baseURL
+} from ".";
 import axios from "axios";
 const adminId = localStorage.getItem("userId");
 
@@ -25,8 +27,7 @@ export const getAllRolesAPI = async () => {
 export const updateRole = async (userId, newRoleID) => {
   try {
     const res = await axios.post(
-      `${baseURL}/api/roles/updateUserRole/${userId}`,
-      {
+      `${baseURL}/api/roles/updateUserRole/${userId}`, {
         adminId: `${adminId}`,
         newRoleId: newRoleID,
       }

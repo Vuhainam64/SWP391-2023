@@ -26,12 +26,9 @@ function ResetPassword(props) {
       setSendEmail(true);
       toast.success("Email have been seen");
     } catch (err) {
-      if (err.message.includes("missing-email")) {
-        setAlert(true);
-        setAlertMessage("Account not found");
-        toast.warning("Account not found");
-      }
-
+      setAlert(true);
+      setAlertMessage("Account not found");
+      toast.warning("Account not found");
       setInterval(() => {
         setAlert(false);
       }, 4000);

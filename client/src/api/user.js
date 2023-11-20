@@ -1,4 +1,6 @@
-import { baseURL } from ".";
+import {
+  baseURL
+} from ".";
 import axios from "axios";
 const adminId = localStorage.getItem("userId");
 
@@ -31,13 +33,24 @@ export const getAllUserAPI = async () => {
 export const getAllEmployeesWithStatus = async () => {
   try {
     const res = await axios.get(
-      `${baseURL}/api/users/getAllEmployeesWithStatus`,
-      {
+      `${baseURL}/api/users/getAllEmployeesWithStatus`, {
         adminId: `${adminId}`,
       }
     );
     return res.data.data;
   } catch (err) {
     return null;
+  }
+};
+
+export const createUserAPI = async (userData) => {
+  try {
+    const res = await axios.post(`${baseURL}/api/users/createUsers`, {
+      adminId: `${adminId}`,
+      users: userData,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
   }
 };

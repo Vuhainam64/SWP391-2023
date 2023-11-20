@@ -5,7 +5,8 @@ import { AnimatePresence } from "framer-motion";
 import { fadeInOut } from "../animations";
 import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
-import { signInWithGoogle } from "../ultils/helpers";
+import { signInWithGoogleCustom } from "../ultils/helpers";
+import { Link } from "react-router-dom";
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -75,9 +76,9 @@ function Auth() {
                     <p className="text-sm text-[rgba(15,6,6,0.2)] m-5">OR</p>
                     <div className="h-[1px] bg-[rgba(15,6,6,0.2)] rounded-md w-24 m-5"></div>
                   </div>
-
+                  {console.log("login google ne")}
                   <motion.div
-                    onClick={signInWithGoogle}
+                    onClick={signInWithGoogleCustom}
                     whileTap={{ scale: 0.9 }}
                     className="flex items-center justify-center gap-3 bg-[rgba(2566,256,256,0.2)] backdrop-blur-md w-full py-3 rounded-xl hover:bg-[rgba(2566,256,256,0.4)] cursor-pointer border border-gray-500"
                   >
@@ -89,12 +90,12 @@ function Auth() {
                     <p className="text-gray-500 mt-4">
                       {" "}
                       Doesn't have an account?{" "}
-                      <span
-                        onClick={() => setIsLogin(!isLogin)}
+                      <Link
+                        to={"https://fpt.edu.vn/"}
                         className="font-semibold ml-1 text-blue-500 text-base cursor-pointer"
                       >
-                        Sign Up
-                      </span>
+                        Contact with FPT edu
+                      </Link>
                     </p>
                   ) : (
                     <p className="text-gray-500 mt-4">
