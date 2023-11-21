@@ -112,15 +112,36 @@ router.post('/createFeedback/:userId', async (req, res) => {
     if (!title || !content || !campusId || !roomId || !facilityId) {
         return res.status(400).json({
             message: 'Title and content,... are required'
-        })
+        });
     }
 
     try {
+        // Check if there is existing feedback for the same facility in the same room in the same campus
+        const existingFeedbacksSnapshot = await db.collection("feedbacks")
+            .where("campusId", "==", campusId)
+            .where("roomId", "==", roomId)
+            .where("facilityId", "==", facilityId)
+            .get();
+
+        // If there are existing feedbacks, check their status
+        if (!existingFeedbacksSnapshot.empty) {
+            const hasUnresolvedFeedback = existingFeedbacksSnapshot.docs.some(doc => {
+                const feedbackData = doc.data();
+                return feedbackData.status !== "Fixed" && feedbackData.status !== "Reject";
+            });
+
+            if (hasUnresolvedFeedback) {
+                return res.status(400).json({
+                    message: 'Cannot provide feedback for the same facility in the same room in the same campus if there is unresolved feedback.'
+                });
+            }
+        }
+
         // Create the status document first
         const newStatus = {
             Status: "Not Verify",
             updatedAt: Date.now()
-        }
+        };
         const docStatusRef = await db.collection('feedbackstatus').add(newStatus);
 
         // Create the feedback document with the status reference
@@ -134,7 +155,7 @@ router.post('/createFeedback/:userId', async (req, res) => {
             statusId: docStatusRef.id,
             createdBy: userId,
             createdAt: Date.now()
-        }
+        };
         const docFeedbackRef = await db.collection('feedbacks').add(newFeedback);
 
         // Tạo thông báo (notify)
@@ -142,9 +163,9 @@ router.post('/createFeedback/:userId', async (req, res) => {
             userId: userId,
             feedbackId: docFeedbackRef.id,
             feedbackName: title,
-            description: "New Feedback had been creeated",
+            description: "New Feedback had been created",
             createdAt: Date.now()
-        }
+        };
         const notifyDocRef = await db.collection('notifies').add(notify);
 
         res.status(201).json({
@@ -153,14 +174,13 @@ router.post('/createFeedback/:userId', async (req, res) => {
             notifyId: notifyDocRef.id, // Trả về notifyId
             message: 'Feedback created successfully'
         });
-
-
     } catch (error) {
         res.status(500).json({
             message: error.message
         });
     }
 });
+
 
 // Hàm để lấy danh sách phản hồi của một người dùng dựa trên userId và kèm theo trạng thái
 router.get("/getFeedback/:userId", async (req, res) => {

@@ -252,4 +252,82 @@ const sendSignupEmail = async (email, signupLink) => {
 
     await transporter.sendMail(mailOptions);
 };
+
+const checkSignupStatus = async (req, res, next) => {
+    const signupId = req.query.signupId;
+
+    if (!signupId) {
+        return res.status(400).json({
+            success: false,
+            msg: "signupId is missing in the query parameters.",
+        });
+    }
+
+    try {
+        const signupDoc = await db.collection("signup").doc(signupId).get();
+
+        if (!signupDoc.exists) {
+            return res.status(404).json({
+                success: false,
+                msg: "Signup link not found.",
+            });
+        }
+
+        const signupData = signupDoc.data();
+
+        if (signupData.status !== "Not used") {
+            return res.status(403).json({
+                success: false,
+                msg: "Signup link has already been used.",
+            });
+        }
+
+        // Nếu signupId hợp lệ và chưa sử dụng, tiếp tục xử lý
+        req.signupData = signupData;
+        next();
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: `Error checking signup status: ${error}`,
+        });
+    }
+};
+
+router.get("/signup", checkSignupStatus, async (req, res) => {
+    const signupData = req.signupData;
+
+    // Lấy rolename từ signupData
+    const rolename = signupData.role;
+
+    try {
+        // Tìm roleId từ bảng roles dựa trên rolename
+        const rolesSnapshot = await db.collection("roles").where("role_name", "==", rolename).get();
+
+        if (rolesSnapshot.empty) {
+            return res.status(404).json({
+                success: false,
+                msg: "Role not found.",
+            });
+        }
+
+        // Lấy roleId từ tài liệu role đầu tiên (giả sử mỗi rolename là duy nhất)
+        const roleId = rolesSnapshot.docs[0].data().roleId;
+
+        // Thực hiện các bước cần thiết, ví dụ hiển thị form đăng ký
+        res.status(200).json({
+            success: true,
+            data: {
+                ...signupData,
+                roleId
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: `Error getting roleId: ${error}`,
+        });
+    }
+});
+
+
 module.exports = router;

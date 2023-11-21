@@ -117,7 +117,9 @@ function CreateFeedback() {
       toast.success("Feedback created successfully");
     } else {
       console.error("Failed to create feedback.");
-      toast.error("Failed to create feedback");
+      toast.warning(
+        "Cannot provide feedback for the same facility because have a user feedback the same"
+      );
     }
     getFeedbackWithUser(user?.uid).then((data) => {
       dispatch(setFeedback(data));

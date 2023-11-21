@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { fadeInOut } from "../animations";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 function CreateAccount() {
+  const { signupId } = useParams();
+
   const [isLogin] = useState(true);
   const [alert, setAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -39,6 +41,7 @@ function CreateAccount() {
                   <SignUp
                     setAlert={setAlert}
                     setAlertMessage={setAlertMessage}
+                    signupId={signupId}
                   />
                   <AnimatePresence>
                     {alert && (
