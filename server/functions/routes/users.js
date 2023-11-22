@@ -208,7 +208,8 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
             let roleId;
 
             if (!roleSnapshot.empty) {
-                roleId = roleSnapshot.docs[0].id;
+                // Convert roleId to a number
+                roleId = parseInt(roleSnapshot.docs[0].id, 10);
             } else {
                 console.error(`Role '${role}' not found`);
                 continue; // Skip creating the user if the role is not found
@@ -233,7 +234,7 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
             await db.collection("user").doc(authUser.uid).set({
                 displayName,
                 email,
-                roleId: roleId,
+                roleId: roleId, // Save roleId as a number
                 creationTime: authUser.metadata.creationTime,
             });
 
@@ -263,6 +264,7 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
         });
     }
 });
+
 
 
 // Function to generate a random password

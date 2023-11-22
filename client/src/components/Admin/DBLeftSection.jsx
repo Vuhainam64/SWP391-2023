@@ -146,6 +146,16 @@ function DBLeftSection() {
             >
               Handle Feedback
             </NavLink>
+            {/* <NavLink
+              to={"/admin/feedback-handle"}
+              className={({ isActive }) =>
+                isActive
+                  ? `${isActiveStyles} px-4 py-2 border-l-8  border-slate-600 hover:bg-slate-200  pl-16 p-2w-full font-semibold`
+                  : isNotActiveStyles
+              }
+            >
+              Handle Feedback
+            </NavLink> */}
           </motion.div>
         </div>
         {/* facility  */}

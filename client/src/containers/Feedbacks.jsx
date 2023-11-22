@@ -19,11 +19,11 @@ function Feedbacks() {
   const [selectedStatus, setSelectedStatus] = useState(null);
 
   const statusOptions = [
-    "All",
+    "Not Verify",
     "Validating",
+    "Verified",
     "Processing",
     "Fixed",
-    "Not Verify",
   ];
 
   useEffect(() => {
@@ -121,7 +121,7 @@ function Feedbacks() {
                     <div key={item.feedbackId}>
                       <div className="mt-4 p-4 flex group bg-white hover:bg-gray-50">
                         <div className="flex-grow items-center truncate cursor-pointer">
-                          <span className="font-semibold text-gray-900">
+                          <span className="font-semibold text-gray-900 text-xl">
                             {item.title}
                           </span>
                           <div className="flex items-center justify-between">
@@ -147,39 +147,57 @@ function Feedbacks() {
                         >
                           <Steps.Item
                             title="Send Feedback"
-                            description="Feedback have been send"
-                            status="finish"
+                            description={statusOptions.indexOf(
+                              item.status.Status
+                            )}
+                            status={
+                              statusOptions.indexOf(item.status.Status) >= -1
+                                ? "finish"
+                                : "wait"
+                            }
                           />
                           <Steps.Item
-                            title="Validating"
+                            title={
+                              item.status.Status === "Reject"
+                                ? "Reject"
+                                : "Validating"
+                            }
                             status={
                               item.status.Status === "Validating"
-                                ? "finish"
-                                : item.status.Status === "reject"
+                                ? "process"
+                                : item.status.Status === "Reject"
                                 ? "error"
+                                : statusOptions.indexOf(item.status.Status) >= 1
+                                ? "finish"
                                 : "wait"
                             }
                           />
                           <Steps.Item
                             title="Verified"
                             status={
-                              item.status.Status === "Verified"
+                              statusOptions.indexOf(item.status.Status) >= 2
                                 ? "finish"
                                 : "wait"
                             }
                           />
                           <Steps.Item
-                            title="Process"
+                            title="Processing"
                             status={
-                              item.status.Status === "Process"
-                                ? "finish"
+                              item.status.Status === "Processing"
+                                ? statusOptions.indexOf(item.status.Status) >= 4
+                                  ? "finish"
+                                  : "process"
                                 : "wait"
                             }
                           />
                           <Steps.Item
                             title="Fixed"
                             status={
-                              item.status.Status === "Fixed" ? "finish" : "wait"
+                              item.status.Status === "Fixed"
+                                ? statusOptions.indexOf(item.status.Status) >= 5
+                                  ? "finish"
+                                  : "process"
+                                : "wait"
                             }
                           />
                         </Steps>
