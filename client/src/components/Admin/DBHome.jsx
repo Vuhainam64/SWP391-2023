@@ -63,12 +63,57 @@ function DBHome() {
           <Spinner />
         </div>
       ) : (
-        <div className="flex items-center justify-center flex-col mt-16">
-          <h2 className="text-center text-2xl font-bold mb-4 text-gray-800">
-            Tasks Status
-          </h2>
-          <div className="w-508">
-            <Pie data={data} options={options} />
+        <div>
+          <h1 className="text-2xl p-2 font-semibold">Home Dashboard</h1>
+          <div class="grid grid-cols-2 gap-4">
+            <div className="flex items-center justify-center flex-col border border-gray-400">
+              <div className="m-4">
+                <h2 className="text-center text-2xl font-bold text-gray-800">
+                  Tasks Status
+                </h2>
+                <div className="">
+                  <Pie data={data} options={options} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-400 bg-red-400 h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">100</p>
+                      <p className="text-md text-white ">Feedback Total</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border border-gray-400 bg-sky-300 justify-center text-center h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">10</p>
+                      <p className="text-md text-white ">Feedback In Month </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="border border-gray-400 bg-sky-300 justify-center text-center h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">40</p>
+                      <p className="text-md text-white ">User</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border border-gray-400 bg-red-400 justify-center text-center h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">20</p>
+                      <p className="text-md text-white ">Employee</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

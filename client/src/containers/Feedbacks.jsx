@@ -7,6 +7,7 @@ import { setFeedback } from "../context/actions/feedbackActions";
 import { useEffect, useState } from "react";
 import { getFeedbackWithUser } from "../api";
 import { Cloud } from "../assets";
+import { Steps } from "rsuite";
 
 function Feedbacks() {
   const user = useSelector((state) => state?.user?.user);
@@ -139,6 +140,49 @@ function Feedbacks() {
                             </div>
                           </div>
                         </div>
+                      </div>
+                      <div className="mx-4">
+                        <Steps
+                          current={statusOptions.indexOf(item.status.Status)}
+                        >
+                          <Steps.Item
+                            title="Send Feedback"
+                            description="Feedback have been send"
+                            status="finish"
+                          />
+                          <Steps.Item
+                            title="Validating"
+                            status={
+                              item.status.Status === "Validating"
+                                ? "finish"
+                                : item.status.Status === "reject"
+                                ? "error"
+                                : "wait"
+                            }
+                          />
+                          <Steps.Item
+                            title="Verified"
+                            status={
+                              item.status.Status === "Verified"
+                                ? "finish"
+                                : "wait"
+                            }
+                          />
+                          <Steps.Item
+                            title="Process"
+                            status={
+                              item.status.Status === "Process"
+                                ? "finish"
+                                : "wait"
+                            }
+                          />
+                          <Steps.Item
+                            title="Fixed"
+                            status={
+                              item.status.Status === "Fixed" ? "finish" : "wait"
+                            }
+                          />
+                        </Steps>
                       </div>
                     </div>
                   ))

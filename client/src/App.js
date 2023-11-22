@@ -19,8 +19,9 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { SET_ROLE } from "./context/actions/roleActions";
 import { createDefaultRole, getRoleWithRoleID } from "./api";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import CreateAccount from "./containers/CreateAccount";
+import "react-toastify/dist/ReactToastify.css";
+import "rsuite/dist/rsuite.min.css";
 
 function App() {
   const navigate = useNavigate();

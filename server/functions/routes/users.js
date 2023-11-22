@@ -195,33 +195,64 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
     const usersData = req.body.users;
 
     try {
-        const signupPromises = usersData.map(async (user) => {
+        const createdUsers = [];
+
+        for (const user of usersData) {
             const {
-                role,
-                email
+                email,
+                role
             } = user;
 
-            // Create user in the 'signup' collection
-            const signupRef = await db.collection("signup").add({
-                role,
+            // Map role name to roleId (assuming roles are stored in a separate collection)
+            const roleSnapshot = await db.collection("roles").where("role_name", "==", role).get();
+            let roleId;
+
+            if (!roleSnapshot.empty) {
+                roleId = roleSnapshot.docs[0].id;
+            } else {
+                console.error(`Role '${role}' not found`);
+                continue; // Skip creating the user if the role is not found
+            }
+
+            // Generate a random password
+            const password = generateRandomPassword();
+
+            // Extract the characters before '@' in the email as displayName
+            const displayName = email.split('@')[0];
+
+            // Create user in Firebase Authentication
+            const authUser = await admin.auth().createUser({
                 email,
-                status: "Not used",
+                emailVerified: false,
+                password,
+                displayName,
+                disabled: false,
+            });
+
+            // Save user information to Firestore
+            await db.collection("user").doc(authUser.uid).set({
+                displayName,
+                email,
+                roleId: roleId,
+                creationTime: authUser.metadata.creationTime,
             });
 
             // Send signup link email
-            const signupId = signupRef.id;
-            const signupLink = `http://localhost:3000/signup?signupId=${signupId}`;
-            await sendSignupEmail(email, signupLink);
+            await sendSignupEmail(email, password, role);
 
-            return signupId;
-        });
-
-        const signupIds = await Promise.all(signupPromises);
+            createdUsers.push({
+                uid: authUser.uid,
+                email: authUser.email,
+                password,
+                displayName,
+                // Add other relevant user information if needed
+            });
+        }
 
         res.status(200).json({
             success: true,
             data: {
-                signupIds
+                createdUsers,
             },
         });
     } catch (error) {
@@ -233,8 +264,23 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
     }
 });
 
+
+// Function to generate a random password
+const generateRandomPassword = () => {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "";
+
+    for (let i = 0; i < 8; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+    }
+
+    return password;
+};
+
+
 // Function to send the signup link email
-const sendSignupEmail = async (email, signupLink) => {
+const sendSignupEmail = async (email, password, roleName) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -243,91 +289,16 @@ const sendSignupEmail = async (email, signupLink) => {
         },
     });
 
+    const loginLink = "http://localhost:3000/auth";
     const mailOptions = {
-        from: "vuhainam272@gmail.com",
+        from: "getfeedback@gmail.com",
         to: email,
-        subject: "Signup Link",
-        text: `Click the following link to create your account: ${signupLink}`,
+        subject: "Account Information",
+        text: `Your account has been created.\n\nEmail: ${email}\nPassword: ${password}\nRole: ${roleName}\n\nYou can use these credentials to log in.\nLogin Link: ${loginLink}`,
     };
 
     await transporter.sendMail(mailOptions);
 };
-
-const checkSignupStatus = async (req, res, next) => {
-    const signupId = req.query.signupId;
-
-    if (!signupId) {
-        return res.status(400).json({
-            success: false,
-            msg: "signupId is missing in the query parameters.",
-        });
-    }
-
-    try {
-        const signupDoc = await db.collection("signup").doc(signupId).get();
-
-        if (!signupDoc.exists) {
-            return res.status(404).json({
-                success: false,
-                msg: "Signup link not found.",
-            });
-        }
-
-        const signupData = signupDoc.data();
-
-        if (signupData.status !== "Not used") {
-            return res.status(403).json({
-                success: false,
-                msg: "Signup link has already been used.",
-            });
-        }
-
-        // Nếu signupId hợp lệ và chưa sử dụng, tiếp tục xử lý
-        req.signupData = signupData;
-        next();
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            msg: `Error checking signup status: ${error}`,
-        });
-    }
-};
-
-router.get("/signup", checkSignupStatus, async (req, res) => {
-    const signupData = req.signupData;
-
-    // Lấy rolename từ signupData
-    const rolename = signupData.role;
-
-    try {
-        // Tìm roleId từ bảng roles dựa trên rolename
-        const rolesSnapshot = await db.collection("roles").where("role_name", "==", rolename).get();
-
-        if (rolesSnapshot.empty) {
-            return res.status(404).json({
-                success: false,
-                msg: "Role not found.",
-            });
-        }
-
-        // Lấy roleId từ tài liệu role đầu tiên (giả sử mỗi rolename là duy nhất)
-        const roleId = rolesSnapshot.docs[0].data().roleId;
-
-        // Thực hiện các bước cần thiết, ví dụ hiển thị form đăng ký
-        res.status(200).json({
-            success: true,
-            data: {
-                ...signupData,
-                roleId
-            },
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            msg: `Error getting roleId: ${error}`,
-        });
-    }
-});
 
 
 module.exports = router;

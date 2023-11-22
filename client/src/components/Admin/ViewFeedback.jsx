@@ -7,8 +7,6 @@ import { Logo } from "../../assets";
 import { buttonClick } from "../../animations";
 import moment from "moment-timezone";
 import Spinner from "../Spinner";
-import { Link } from "react-router-dom";
-import { BiRightArrow } from "react-icons/bi";
 import { toast } from "react-toastify";
 
 function ViewFeedback() {
@@ -48,6 +46,9 @@ function ViewFeedback() {
 
   useEffect(() => {
     getAllFeedbacks().then((data) => {
+      // Sort feedbacks by time in ascending order
+      data.sort((a, b) => a.createdAt - b.createdAt);
+
       setLoading(false);
       dispatch(setAllFeedbacks(data));
     });
@@ -59,6 +60,9 @@ function ViewFeedback() {
 
   const closeDeliveryTask = () => {
     setOpenDeliveryTaskForFeedbackId(null);
+
+    // Clear the list of available employees
+    setAvailableEmployees([]);
   };
 
   const handleFindEmployee = async () => {
@@ -133,6 +137,8 @@ function ViewFeedback() {
         toast.error("Error assigning task");
       }
     }
+    // Clear the list of available employees
+    setAvailableEmployees([]);
   };
 
   return (
@@ -146,18 +152,7 @@ function ViewFeedback() {
       ) : (
         <>
           <div className="mt-10">
-            <motion.div
-              {...buttonClick}
-              className="w-full flex flex-row-reverse"
-            >
-              <Link
-                to={"/admin/feedback-handle"}
-                className="px-2 py-1 bg-blue-500 rounded-md hover:bg-blue-600 text-white flex items-center text-center"
-              >
-                Feedback Handle
-                <BiRightArrow />
-              </Link>
-            </motion.div>
+            <p className="font-semibold text-2xl">Feedback Handle</p>
             {notVerifiedFeedbacks && notVerifiedFeedbacks.length > 0 ? (
               notVerifiedFeedbacks.map((item) => (
                 <div className="bg-blue-400 rounded-md" key={item.feedbackId}>
