@@ -66,6 +66,27 @@ router.post("/createCampus", checkAdminRole, async (req, res) => {
     }
 });
 
+router.post('/updateCampus/:campusId', async (req, res) => {
+    try {
+        const {
+            newData
+        } = req.body;
+        const campusId = req.params.campusId;
+
+        await db.collection('campus').doc(campusId).update(newData);
+
+        res.status(200).json({
+            success: true,
+            message: 'Campus updated successfully',
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+
 // Create a New Room
 router.post("/createRoom", checkAdminRole, async (req, res) => {
     try {
@@ -100,6 +121,7 @@ router.post("/createRoom", checkAdminRole, async (req, res) => {
         });
     }
 });
+
 
 // Create a New Facility
 router.post("/createFacility", checkAdminRole, async (req, res) => {
@@ -196,6 +218,28 @@ router.get("/getAllRoomsInCampus/:campusId", async (req, res) => {
     }
 });
 
+// Update Room
+router.post('/updateRoom/:roomId', checkAdminRole, async (req, res) => {
+    try {
+        const {
+            newData
+        } = req.body;
+        const roomId = req.params.roomId;
+
+        await db.collection('room').doc(roomId).update(newData);
+
+        res.status(200).json({
+            success: true,
+            message: 'Room updated successfully',
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+
 router.get("/getAllFacilityInRoom/:roomId", async (req, res) => {
     try {
         const roomId = req.params.roomId;
@@ -224,6 +268,28 @@ router.get("/getAllFacilityInRoom/:roomId", async (req, res) => {
         res.status(500).json({
             success: false,
             msg: error.message,
+        });
+    }
+});
+
+// Update Facility
+router.post('/updateFacility/:facilityId', checkAdminRole, async (req, res) => {
+    try {
+        const {
+            newData
+        } = req.body;
+        const facilityId = req.params.facilityId;
+
+        await db.collection('facility').doc(facilityId).update(newData);
+
+        res.status(200).json({
+            success: true,
+            message: 'Facility updated successfully',
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
         });
     }
 });

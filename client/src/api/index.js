@@ -56,6 +56,9 @@ export {
   getAllCampuses,
   getAllFacilityInRoom,
   getAllRoomsInCampus,
+  updateCampus,
+  updateRoom,
+  updateFacility
 }
 from "./facility";
 

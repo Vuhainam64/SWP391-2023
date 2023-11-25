@@ -4,6 +4,7 @@ import {
   getAllCampuses,
   getAllRoomsInCampus,
   getAllFacilityInRoom,
+  updateFacility,
 } from "../../api";
 import { toast } from "react-toastify";
 
@@ -15,6 +16,9 @@ function Facility() {
   const [facilityName, setFacilityName] = useState("");
   const [facilities, setFacilities] = useState([]);
   const [message, setMessage] = useState("");
+  const [editFacilityId, setEditFacilityId] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [newFacilityName, setNewFacilityName] = useState("");
 
   useEffect(() => {
     async function fetchCampuses() {
@@ -73,6 +77,39 @@ function Facility() {
     }
   };
 
+  const handleEditFacility = (facilityId) => {
+    setShowEditForm(true);
+    setEditFacilityId(facilityId);
+    const facilityToEdit = facilities.find(
+      (facility) => facility.facilityId === facilityId
+    );
+    if (facilityToEdit) {
+      setNewFacilityName(facilityToEdit.facilityName);
+    }
+  };
+
+  const handleSaveFacilityEdit = async () => {
+    try {
+      await updateFacility(editFacilityId, { facilityName: newFacilityName });
+      toast.success("Facility updated successfully ~");
+
+      // Fetch the updated list of facilities after updating a facility
+      handleRoomChange(selectedRoom);
+
+      setShowEditForm(false);
+      setEditFacilityId(null);
+      setNewFacilityName("");
+    } catch (error) {
+      toast.error("Failed to update facility.");
+      console.error("Error updating facility:", error);
+    }
+  };
+
+  const handleCancelFacilityEdit = () => {
+    setShowEditForm(false);
+    setEditFacilityId(null);
+    setNewFacilityName("");
+  };
   return (
     <div className="max-w-md mx-auto mt-10 p-4 bg-white rounded-lg shadow-md">
       <h1 className="text-2xl font-semibold mb-4">Create Facility</h1>
@@ -136,9 +173,51 @@ function Facility() {
           </h2>
           <ul>
             {facilities.map((facility) => (
-              <li key={facility.facilityId}>{facility.facilityName}</li>
+              <li
+                key={facility.facilityId}
+                className="flex items-center justify-between border-b py-2"
+              >
+                <span className="text-lg">{facility.facilityName}</span>
+                <button
+                  className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                  onClick={() => handleEditFacility(facility.facilityId)}
+                >
+                  Edit
+                </button>
+              </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Edit Facility Form */}
+      {showEditForm && (
+        <div className="mt-4">
+          <h2 className="text-lg font-semibold mb-2">Edit Facility</h2>
+          <label className="block mb-2 text-sm font-medium text-gray-900">
+            New Facility Name
+          </label>
+          <input
+            type="text"
+            className="w-full border rounded-md py-2 px-3 mb-3 focus:outline-none focus:ring focus:border-blue-300"
+            placeholder="New Facility Name"
+            value={newFacilityName}
+            onChange={(e) => setNewFacilityName(e.target.value)}
+          />
+          <div className="flex space-x-2">
+            <button
+              className="flex-grow bg-green-500 text-white rounded-md py-2 px-4 hover:bg-green-600 focus:outline-none focus:ring focus:border-green-300"
+              onClick={handleSaveFacilityEdit}
+            >
+              Save
+            </button>
+            <button
+              className="flex-grow bg-red-500 text-white rounded-md py-2 px-4 hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
+              onClick={handleCancelFacilityEdit}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </div>

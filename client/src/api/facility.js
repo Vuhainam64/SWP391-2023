@@ -1,4 +1,6 @@
-import { baseURL } from ".";
+import {
+  baseURL
+} from ".";
 import axios from "axios";
 const adminId = localStorage.getItem("userId");
 
@@ -24,12 +26,36 @@ export const getAllCampuses = async () => {
   }
 };
 
+export const updateCampus = async (campusId, newData) => {
+  try {
+    const res = await axios.post(`${baseURL}/api/facility/updateCampus/${campusId}`, {
+      newData
+    });
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+
 export const createRoom = async (campusId, roomName) => {
   try {
     const res = await axios.post(`${baseURL}/api/facility/createRoom`, {
       adminId: `${adminId}`,
       campusId,
       roomName,
+    });
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const updateRoom = async (roomId, newData) => {
+  try {
+    const res = await axios.post(`${baseURL}/api/facility/updateRoom/${roomId}`, {
+      adminId: `${adminId}`,
+      newData,
     });
     return res.data;
   } catch (err) {
@@ -67,6 +93,18 @@ export const getAllFacilityInRoom = async (roomId) => {
       `${baseURL}/api/facility/getAllFacilityInRoom/${roomId}`
     );
     return res.data.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const updateFacility = async (facilityId, newData) => {
+  try {
+    const res = await axios.post(`${baseURL}/api/facility/updateFacility/${facilityId}`, {
+      adminId: `${adminId}`,
+      newData,
+    });
+    return res.data;
   } catch (err) {
     return null;
   }
