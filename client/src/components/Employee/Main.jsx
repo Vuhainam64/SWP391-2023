@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { DBHeader } from "../Admin";
 import Completes from "./Completes";
-import Feedbacks from "./Feedbacks";
 import TaskDetails from "./TaskDetails";
 import Tasks from "./Tasks";
 import Calendar from "./Calendar";
@@ -14,7 +13,6 @@ function Main() {
       <div className="flex flex-col flex-1 overflow-y-scroll scrollbar-track-inherit ">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/feedbacks" element={<Feedbacks />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/tasks/:feedbackId" element={<TaskDetails />} />
           <Route path="/completes" element={<Completes />} />

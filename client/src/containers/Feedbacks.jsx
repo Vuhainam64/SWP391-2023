@@ -147,9 +147,7 @@ function Feedbacks() {
                         >
                           <Steps.Item
                             title="Send Feedback"
-                            description={statusOptions.indexOf(
-                              item.status.Status
-                            )}
+                            description="Feedback have been send"
                             status={
                               statusOptions.indexOf(item.status.Status) >= -1
                                 ? "finish"
@@ -161,6 +159,15 @@ function Feedbacks() {
                               item.status.Status === "Reject"
                                 ? "Reject"
                                 : "Validating"
+                            }
+                            description={
+                              item.status.Status === "Validating"
+                                ? "We are validating"
+                                : item.status.Status === "Reject"
+                                ? "We are sorry, your request has been rejected."
+                                : statusOptions.indexOf(item.status.Status) >= 1
+                                ? "We are validating"
+                                : null
                             }
                             status={
                               item.status.Status === "Validating"
@@ -174,6 +181,11 @@ function Feedbacks() {
                           />
                           <Steps.Item
                             title="Verified"
+                            description={
+                              statusOptions.indexOf(item.status.Status) >= 2
+                                ? "We are validated"
+                                : null
+                            }
                             status={
                               statusOptions.indexOf(item.status.Status) >= 2
                                 ? "finish"
@@ -182,6 +194,11 @@ function Feedbacks() {
                           />
                           <Steps.Item
                             title="Processing"
+                            description={
+                              statusOptions.indexOf(item.status.Status) >= 3
+                                ? "We are processing"
+                                : null
+                            }
                             status={
                               item.status.Status === "Processing"
                                 ? statusOptions.indexOf(item.status.Status) >= 4
@@ -192,6 +209,11 @@ function Feedbacks() {
                           />
                           <Steps.Item
                             title="Fixed"
+                            description={
+                              statusOptions.indexOf(item.status.Status) >= 5
+                                ? "We are Fixed"
+                                : null
+                            }
                             status={
                               item.status.Status === "Fixed"
                                 ? statusOptions.indexOf(item.status.Status) >= 5

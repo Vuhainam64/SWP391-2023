@@ -1,6 +1,7 @@
 import { baseURL } from ".";
 import axios from "axios";
 const adminId = localStorage.getItem("userId");
+const uid = localStorage.getItem("uid");
 
 export const createFeedback = async (userId, feedbackData) => {
   try {
@@ -68,6 +69,7 @@ export const feedbackHandle = async (feedbackId, employeeComment) => {
       `${baseURL}/api/feedbacks/feedbackHandle/${feedbackId}`,
       {
         employeeComment,
+        uid,
       }
     );
     return res.data.data;

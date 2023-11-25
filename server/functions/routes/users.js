@@ -248,6 +248,12 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
                 displayName,
                 // Add other relevant user information if needed
             });
+
+            // Check if the user has the "employee" role
+            if (role === "employee") {
+                // Create an entry in the employeeStatus collection
+                await createEmployeeStatusEntry(authUser.uid, email);
+            }
         }
 
         res.status(200).json({
@@ -264,6 +270,26 @@ router.post("/createUsers", checkAdminRole, async (req, res) => {
         });
     }
 });
+
+// Function to create an entry in the employeeStatus collection
+const createEmployeeStatusEntry = async (uid, email) => {
+    try {
+        const employeeStatusRef = db.collection("employeeStatus").doc(email);
+        const employeeStatusData = {
+            lastUpdate: Date.now(),
+            status: "Ready",
+            userID: uid,
+        };
+
+        await employeeStatusRef.set(employeeStatusData, {
+            merge: true
+        });
+    } catch (error) {
+        console.error("Error creating employee status entry:", error);
+        throw error;
+    }
+};
+
 
 
 

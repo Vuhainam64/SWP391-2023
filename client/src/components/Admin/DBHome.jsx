@@ -9,12 +9,16 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 function DBHome() {
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState({});
+  const [statistics, setStatistics] = useState({});
+  const [latestFeedbacks, setLatestFeedbacks] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await countTasksByStatus();
       setLoading(false);
-      setChartData(result);
+      setChartData(result.taskStatusCounts);
+      setLatestFeedbacks(result.latestFeedbacks);
+      setStatistics(result);
     };
 
     fetchData();
@@ -81,7 +85,9 @@ function DBHome() {
                 <div class="border border-gray-400 bg-red-400 h-44">
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center w-full">
-                      <p className="text-xl text-white font-semibold">100</p>
+                      <p className="text-xl text-white font-semibold">
+                        {statistics.totalFeedbacks}
+                      </p>
                       <p className="text-md text-white ">Feedback Total</p>
                     </div>
                   </div>
@@ -89,7 +95,9 @@ function DBHome() {
                 <div class="border border-gray-400 bg-sky-300 justify-center text-center h-44">
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center w-full">
-                      <p className="text-xl text-white font-semibold">10</p>
+                      <p className="text-xl text-white font-semibold">
+                        {statistics.feedbacksInMonth}
+                      </p>
                       <p className="text-md text-white ">Feedback In Month </p>
                     </div>
                   </div>
@@ -99,7 +107,9 @@ function DBHome() {
                 <div class="border border-gray-400 bg-sky-300 justify-center text-center h-44">
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center w-full">
-                      <p className="text-xl text-white font-semibold">40</p>
+                      <p className="text-xl text-white font-semibold">
+                        {statistics.totalUsers}
+                      </p>
                       <p className="text-md text-white ">User</p>
                     </div>
                   </div>
@@ -107,12 +117,74 @@ function DBHome() {
                 <div class="border border-gray-400 bg-red-400 justify-center text-center h-44">
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center w-full">
-                      <p className="text-xl text-white font-semibold">20</p>
+                      <p className="text-xl text-white font-semibold">
+                        {statistics.totalEmployees}
+                      </p>
                       <p className="text-md text-white ">Employee</p>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 mt-4">
+            <div class="border border-gray-400">
+              <div className="m-4">
+                <p className="text-xl mb-4">Top room feedback:</p>
+              </div>
+              <ul className="list-disc pl-6">
+                {statistics.topRooms.map((room, index) => (
+                  <li key={index} className="mb-4">
+                    <p className="text-lg font-semibold">
+                      Room: {room.roomName}
+                    </p>
+                    <p className="text-md">Campus: {room.campusName}</p>
+                    <p className="text-md">
+                      Feedback Count: {room.feedbackCount}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="border border-gray-400 p-4">
+              <p className="text-xl mb-4">New Feedback:</p>
+              <ul className="list-disc pl-6">
+                {latestFeedbacks.map((feedback, index) => (
+                  <li key={index} className="mb-4">
+                    <p className="text-lg font-semibold">{feedback.title}</p>
+                    <div
+                      className="text-gray-700 break-words"
+                      dangerouslySetInnerHTML={{ __html: feedback.content }}
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      {new Date(feedback.createdAt).toLocaleString()}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="border border-gray-400">
+              <div className="m-4">
+                <p className="text-xl">Top Cancel:</p>
+              </div>
+              <ul className="list-disc pl-6">
+                {statistics.employeeStatusList.map((employee, index) => (
+                  <li key={index} className="mb-4">
+                    <p className="text-lg font-semibold">
+                      {employee.displayName}
+                    </p>
+                    <p className="text-md">
+                      Total Cancelled Tasks: {employee.taskCancel}
+                    </p>
+                    <p className="text-md">
+                      Total Tasks Assigned: {employee.totalTasksAssigned}
+                    </p>
+                    <p className="text-md">Status: {employee.status}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

@@ -306,6 +306,7 @@ router.get("/getFeedbackWithId/:feedbackId", async (req, res) => {
 router.post("/feedbackHandle/:feedbackId", async (req, res) => {
     const feedbackId = req.params.feedbackId;
     const {
+        uid,
         employeeComment
     } = req.body;
 
@@ -318,7 +319,7 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
             });
         }
 
-        let description, status;
+        let description, status, employeeId;
 
         switch (employeeComment) {
             case "verify":
@@ -339,6 +340,30 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
             case "not fixed":
                 description = `Not fixed feedback ${feedbackId}`;
                 status = "Verified";
+                break;
+
+            case "cancel":
+                description = `Canceled feedback ${feedbackId}`;
+                status = "Canceled";
+
+                employeeId = uid;
+                // Increment taskCancel count in employeeStatus
+                const employeeStatusDoc = await db.collection('employeeStatus').doc(employeeId).get();
+                let employeeStatusData = {};
+
+                if (employeeStatusDoc.exists) {
+                    employeeStatusData = employeeStatusDoc.data();
+                    // Increment taskCancel count if the field exists
+                    employeeStatusData.taskCancel = (employeeStatusData.taskCancel || 0) + 1;
+                } else {
+                    // If not, create a new entry with initial values
+                    employeeStatusData = {
+                        taskCancel: 1,
+                    };
+                    await db.collection('employeeStatus').doc(employeeId).set(employeeStatusData);
+                }
+                // Update the employeeStatus entry
+                await db.collection('employeeStatus').doc(employeeId).update(employeeStatusData);
                 break;
 
             default:
@@ -363,6 +388,11 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
                         status: status,
                         updatedAt: Date.now()
                     });
+
+                    // Decrement tasksInProgress count if the status is "Working"
+                    if (employeeStatusData && employeeStatusData.status === "Working" && status !== "Working") {
+                        employeeStatusData.tasksInProgress = (employeeStatusData.tasksInProgress || 0) - 1;
+                    }
                 });
             });
 
@@ -377,10 +407,15 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
             userId: feedbackDoc.data().createdBy,
             feedbackId: feedbackId,
             feedbackName: feedbackDoc.data().title,
-            description: "The Feedback had been updated",
+            description: `The Feedback has been ${status.toLowerCase()}`,
             createdAt: Date.now()
-        }
+        };
         await db.collection('notifies').add(notify);
+
+        // Update the employeeStatus entry
+        if (employeeStatusData) {
+            await db.collection('employeeStatus').doc(employeeId).update(employeeStatusData);
+        }
 
         res.send({
             success: true,
@@ -393,6 +428,7 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
         });
     }
 });
+
 
 
 module.exports = router;

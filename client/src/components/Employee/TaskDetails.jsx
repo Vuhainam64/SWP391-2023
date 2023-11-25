@@ -73,9 +73,10 @@ export default function TaskDetails() {
                 <hr />
                 <div className="grid grid-cols-6 p-5 hover-bg-green-300">
                   <div className="col-span-2 font-semibold">Description:</div>
-                  <div className="col-span-4 text-left">
-                    {taskDetails.content}
-                  </div>
+                  <div
+                    className="col-span-4 text-left"
+                    dangerouslySetInnerHTML={{ __html: taskDetails.content }}
+                  ></div>
                 </div>
                 <hr />
                 <div className="grid grid-cols-6 p-5 hover-bg-blue-300">
@@ -115,12 +116,12 @@ export default function TaskDetails() {
               </div>
             </div>
             <div className="mt-10">
-              <div className="grid grid-cols-2">
-                <div className="col-span-6 font-bold text-3xl">
-                  Your commitment:
-                </div>
-                {taskDetails.feedbackstatus.Status === "Processing" ? (
+              <div className="grid grid-cols-3">
+                {taskDetails.feedbackstatus.Status === "Processing" && (
                   <>
+                    <div className="col-span-6 font-bold text-3xl">
+                      Your commitment:
+                    </div>
                     <button
                       onClick={() => handleCommitment("fixed")}
                       className="rounded-full p-2 m-2 bg-blue-400"
@@ -134,8 +135,12 @@ export default function TaskDetails() {
                       I can't fix it
                     </button>
                   </>
-                ) : (
+                )}
+                {taskDetails.feedbackstatus.Status === "Validating" && (
                   <>
+                    <div className="col-span-6 font-bold text-3xl">
+                      Your commitment:
+                    </div>
                     <button
                       onClick={() => handleCommitment("verify")}
                       className="rounded-full p-2 m-2 bg-blue-400"
@@ -147,6 +152,12 @@ export default function TaskDetails() {
                       className="rounded-full p-2 m-2 bg-purple-400"
                     >
                       Reject Feedback
+                    </button>
+                    <button
+                      onClick={() => handleCommitment("cancel")}
+                      className="rounded-full p-2 m-2 bg-yellow-300"
+                    >
+                      Cancel
                     </button>
                   </>
                 )}
