@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createUserAPI, getAllRolesAPI } from "../../api";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 function CreateUser() {
   const [userRoles, setUserRoles] = useState([{ role: "", email: "" }]);
@@ -308,6 +309,13 @@ function CreateUser() {
             Import Excel
           </label>
         </div>
+        <Link
+          to={
+            "https://firebasestorage.googleapis.com/v0/b/get-feedback-a0119.appspot.com/o/Images%2Fusers.xlsx?alt=media&token=470c0f1e-613d-4b83-98b4-7d6befe7ccd4"
+          }
+        >
+          Download Template
+        </Link>
       </div>
       <div className="mt-8">
         <button

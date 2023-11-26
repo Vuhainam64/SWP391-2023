@@ -81,19 +81,12 @@ router.post("/createCampus", checkAdminRole, async (req, res) => {
 });
 
 
-router.post('/updateCampus/:campusId', checkAdminRole, async (req, res) => {
+router.post('/updateCampus/:campusId', async (req, res) => {
     try {
         const {
             newData
         } = req.body;
         const campusId = req.params.campusId;
-
-        // Validate input
-        if (newData.campusName && !isValidName(newData.campusName)) {
-            return res.status(400).json({
-                message: "Invalid input. Campus name must not contain whitespace or special characters.",
-            });
-        }
 
         await db.collection('campus').doc(campusId).update(newData);
 
@@ -264,13 +257,6 @@ router.post('/updateRoom/:roomId', checkAdminRole, async (req, res) => {
         } = req.body;
         const roomId = req.params.roomId;
 
-        // Validate input
-        if (newData.roomName && !isValidName(newData.roomName)) {
-            return res.status(400).json({
-                message: "Invalid input. Room name must not contain whitespace or special characters.",
-            });
-        }
-
         await db.collection('room').doc(roomId).update(newData);
 
         res.status(200).json({
@@ -325,13 +311,6 @@ router.post('/updateFacility/:facilityId', checkAdminRole, async (req, res) => {
         } = req.body;
         const facilityId = req.params.facilityId;
 
-        // Validate input
-        if (newData.facilityName && !isValidName(newData.facilityName)) {
-            return res.status(400).json({
-                message: "Invalid input. Facility name must not contain whitespace or special characters.",
-            });
-        }
-
         await db.collection('facility').doc(facilityId).update(newData);
 
         res.status(200).json({
@@ -345,5 +324,6 @@ router.post('/updateFacility/:facilityId', checkAdminRole, async (req, res) => {
         });
     }
 });
+
 
 module.exports = router;
