@@ -540,8 +540,6 @@ router.get("/countTaskStatusByEmployee/:employeeId", async (req, res) => {
             Verified: 0,
             Reject: 0,
             Pending: 0,
-            Processing: 0,
-            Canceled: 0,
         };
 
         tasksSnapshot.forEach(taskDoc => {

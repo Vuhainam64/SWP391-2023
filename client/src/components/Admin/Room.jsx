@@ -138,7 +138,6 @@ function Room() {
         Create Room
       </button>
       <p className="text-red-600 text-sm mt-2">{message}</p>
-
       {/* Display the list of rooms in the selected campus */}
       {rooms.length > 0 && (
         <div className="mt-4">
@@ -146,24 +145,27 @@ function Room() {
             Rooms in {selectedCampus}
           </h2>
           <ul>
-            {rooms.map((room) => (
-              <li
-                key={room.roomId}
-                className="flex items-center justify-between border-b py-2"
-              >
-                <span className="text-lg">Room no: {room.roomName}</span>
-                <button
-                  className="text-blue-500 hover:text-blue-700 cursor-pointer"
-                  onClick={() => handleEditRoom(room.roomId)}
+            {rooms
+              .sort((roomA, roomB) =>
+                roomA.roomName.localeCompare(roomB.roomName)
+              )
+              .map((room) => (
+                <li
+                  key={room.roomId}
+                  className="flex items-center justify-between border-b py-2"
                 >
-                  Edit
-                </button>
-              </li>
-            ))}
+                  <span className="text-lg">Room no: {room.roomName}</span>
+                  <button
+                    className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                    onClick={() => handleEditRoom(room.roomId)}
+                  >
+                    Edit
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
       )}
-
       {/* Edit Form */}
       {showEditForm && (
         <div className="mt-4">

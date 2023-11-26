@@ -33,11 +33,16 @@ function Facility() {
   const handleCampusChange = async (campusId) => {
     setSelectedCampus(campusId);
     const roomsData = await getAllRoomsInCampus(campusId);
+
     if (roomsData) {
-      setRooms(roomsData);
+      const sortedRooms = roomsData.sort((roomA, roomB) =>
+        roomA.roomName.localeCompare(roomB.roomName)
+      );
+      setRooms(sortedRooms);
     } else {
       setRooms([]);
     }
+
     setFacilities([]); // Reset facilities when campus changes
   };
 

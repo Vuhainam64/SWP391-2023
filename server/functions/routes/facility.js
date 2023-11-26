@@ -46,9 +46,17 @@ router.post("/createCampus", checkAdminRole, async (req, res) => {
             });
         }
 
+        // Check if campus with the same name already exists
+        const existingCampus = await db.collection("campus").where("campusName", "==", campusName).get();
+        if (!existingCampus.empty) {
+            return res.status(400).json({
+                message: "Campus with the same name already exists",
+            });
+        }
+
         const campusData = {
             campusName,
-            tag
+            tag,
         };
 
         // Add a new campus document
@@ -65,6 +73,7 @@ router.post("/createCampus", checkAdminRole, async (req, res) => {
         });
     }
 });
+
 
 router.post('/updateCampus/:campusId', async (req, res) => {
     try {
@@ -102,6 +111,14 @@ router.post("/createRoom", checkAdminRole, async (req, res) => {
             });
         }
 
+        // Check if room with the same name in the same campus already exists
+        const existingRoom = await db.collection("room").where("campusId", "==", campusId).where("roomName", "==", roomName).get();
+        if (!existingRoom.empty) {
+            return res.status(400).json({
+                message: "Room with the same name in the same campus already exists",
+            });
+        }
+
         const roomData = {
             campusId,
             roomName,
@@ -122,7 +139,6 @@ router.post("/createRoom", checkAdminRole, async (req, res) => {
     }
 });
 
-
 // Create a New Facility
 router.post("/createFacility", checkAdminRole, async (req, res) => {
     try {
@@ -135,6 +151,14 @@ router.post("/createFacility", checkAdminRole, async (req, res) => {
         if (!roomId || !facilityName) {
             return res.status(400).json({
                 message: "Room ID and facility name are required",
+            });
+        }
+
+        // Check if facility with the same name in the same room already exists
+        const existingFacility = await db.collection("facility").where("roomId", "==", roomId).where("facilityName", "==", facilityName).get();
+        if (!existingFacility.empty) {
+            return res.status(400).json({
+                message: "Facility with the same name in the same room already exists",
             });
         }
 
@@ -157,6 +181,7 @@ router.post("/createFacility", checkAdminRole, async (req, res) => {
         });
     }
 });
+
 
 // Get All Campuses
 router.get("/getAllCampuses", async (req, res) => {

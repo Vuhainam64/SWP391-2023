@@ -127,6 +127,39 @@ function DBHome() {
               </div>
             </div>
           </div>
+          <div class="mt-4 border border-gray-400">
+            <p className="mt-4 ml-4 text-xl">Total facility has problem:</p>
+            <div className="grid grid-cols-7 gap-4 m-4 text-center">
+              <div className="rounded-full bg-red-400 text-white py-10">
+                <p>20</p>
+                <p>Bàn Học Sinh</p>
+              </div>
+              <div className="rounded-full bg-orange-400 text-white py-10">
+                <p>20</p>
+                <p>Bàn Giáo Viên</p>
+              </div>
+              <div className="rounded-full bg-yellow-400 text-white py-10">
+                <p>20</p>
+                <p>Camera</p>
+              </div>
+              <div className="rounded-full bg-green-400 text-white py-10">
+                <p>20</p>
+                <p>Máy Lạnh</p>
+              </div>
+              <div className="rounded-full bg-blue-400 text-white py-10">
+                <p>20</p>
+                <p>Tivi</p>
+              </div>
+              <div className="rounded-full bg-indigo-400 text-white py-10">
+                <p>20</p>
+                <p>Máy Chiếu</p>
+              </div>
+              <div className="rounded-full bg-violet-400 text-white py-10">
+                <p>20</p>
+                <p>Bảng Học</p>
+              </div>
+            </div>
+          </div>
           <div class="grid grid-cols-3 gap-4 mt-4">
             <div class="border border-gray-400">
               <div className="m-4">
