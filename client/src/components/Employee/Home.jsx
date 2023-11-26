@@ -24,12 +24,13 @@ ChartJS.register(
 function Home() {
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState({});
-
+  const [employeeStatus, setEmployeeStatus] = useState({});
   useEffect(() => {
     const fetchData = async () => {
       const result = await countTaskStatusByEmployee();
       setLoading(false);
-      setChartData(result);
+      setChartData(result.taskStatusCounts);
+      setEmployeeStatus(result.employeeStatus);
     };
 
     fetchData();
@@ -92,11 +93,65 @@ function Home() {
         </div>
       ) : (
         <div className="flex items-center justify-center flex-col mt-16">
-          <h2 className="text-center text-2xl font-bold mb-4 text-gray-800">
-            Tasks Status
-          </h2>
-          <div className="w-508">
-            <Bar data={data} options={options} />
+          <div class="grid grid-cols-2 gap-4 w-full">
+            <div className="border border-gray-400">
+              <div className="m-4">
+                <h2 className="text-center text-2xl font-bold mb-4 text-gray-800">
+                  Tasks Status
+                </h2>
+                <div className="w-508">
+                  <Bar data={data} options={options} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="border border-gray-400 bg-red-400 h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">
+                        {employeeStatus.totalTasksAssigned}
+                      </p>
+                      <p className="text-md text-white ">Task Total</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border border-gray-400 bg-sky-300 justify-center text-center h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">
+                        {employeeStatus.totalTasksAssigned -
+                          employeeStatus.tasksInProgress -
+                          employeeStatus.taskCancel}
+                      </p>
+                      <p className="text-md text-white ">Finish Task</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="border border-gray-400 bg-sky-300 justify-center text-center h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">
+                        {employeeStatus.tasksInProgress}
+                      </p>
+                      <p className="text-md text-white ">Task In Progress</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border border-gray-400 bg-red-400 justify-center text-center h-44">
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center w-full">
+                      <p className="text-xl text-white font-semibold">
+                        {employeeStatus.taskCancel}
+                      </p>
+                      <p className="text-md text-white ">Task Cancel</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

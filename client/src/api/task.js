@@ -78,7 +78,7 @@ export const countTaskStatusByEmployee = async () => {
     const res = await axios.get(
       `${baseURL}/api/tasks/countTaskStatusByEmployee/${uid}`
     );
-    return res.data.data;
+    return res.data;
   } catch (err) {
     return null;
   }

@@ -127,7 +127,7 @@ function DBHome() {
               </div>
             </div>
           </div>
-          <div class="mt-4 border border-gray-400">
+          {/* <div class="mt-4 border border-gray-400">
             <p className="mt-4 ml-4 text-xl">Total facility has problem:</p>
             <div className="grid grid-cols-7 gap-4 m-4 text-center">
               <div className="rounded-full bg-red-400 text-white py-10">
@@ -159,7 +159,7 @@ function DBHome() {
                 <p>Bảng Học</p>
               </div>
             </div>
-          </div>
+          </div> */}
           <div class="grid grid-cols-3 gap-4 mt-4">
             <div class="border border-gray-400">
               <div className="m-4">

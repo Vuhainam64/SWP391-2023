@@ -551,14 +551,42 @@ router.get("/countTaskStatusByEmployee/:employeeId", async (req, res) => {
             }
         });
 
-        return res.status(200).json({
-            success: true,
-            data: taskStatusCounts,
-        });
-    } catch (err) {
-        return res.status(500).json({
+        // Get employee status
+        const employeeStatusDoc = await db.collection('employeeStatus').doc(employeeId).get();
+
+        if (employeeStatusDoc.exists) {
+            const employeeStatusData = employeeStatusDoc.data();
+            const userId = employeeStatusDoc.data().userID
+            // Get user display name
+            const userDoc = await db.collection('user').doc(userId).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                const displayName = userData.displayName;
+
+                return res.status(200).json({
+                    success: true,
+                    userId,
+                    displayName,
+                    employeeStatus: employeeStatusData,
+                    taskStatusCounts,
+                });
+            } else {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'User not found.',
+                });
+            }
+        } else {
+            return res.status(404).json({
+                success: false,
+                msg: 'Employee status not found.',
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
             success: false,
-            msg: `Error: ${err}`,
+            msg: `Error: ${error}`,
         });
     }
 });
