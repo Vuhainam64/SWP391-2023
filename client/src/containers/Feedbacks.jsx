@@ -26,13 +26,18 @@ function Feedbacks() {
     "Fixed",
   ];
 
-  useEffect(() => {
-    if (!feedback) {
-      getFeedbackWithUser(user?.uid).then((data) => {
-        dispatch(setFeedback(data));
-      });
+  const loadData = async () => {
+    try {
+      const data = await getFeedbackWithUser(user?.uid);
+      dispatch(setFeedback(data));
+    } catch (error) {
+      console.error("Error loading feedback:", error);
     }
-  }, [dispatch, feedback, user?.uid]);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [dispatch, user?.uid]);
 
   function handleInputChange(e) {
     setSearchInput(e.target.value);

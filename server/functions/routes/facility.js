@@ -32,6 +32,12 @@ const checkAdminRole = async (req, res, next) => {
     }
 };
 
+// Utility function to check for whitespace or special characters
+const isValidName = (name) => {
+    // Check if the name contains only letters, numbers, and underscores
+    return /^[a-zA-Z0-9_]+$/.test(name.trim());
+};
+
 router.post("/createCampus", checkAdminRole, async (req, res) => {
     try {
         const {
@@ -40,9 +46,9 @@ router.post("/createCampus", checkAdminRole, async (req, res) => {
         } = req.body;
 
         // Validate input
-        if (!campusName || !tag) {
+        if (!campusName || !tag || !isValidName(campusName) || !isValidName(tag)) {
             return res.status(400).json({
-                message: "Campus or tag name is required",
+                message: "Invalid input. Campus and tag names must not contain whitespace or special characters.",
             });
         }
 
@@ -105,9 +111,9 @@ router.post("/createRoom", checkAdminRole, async (req, res) => {
         } = req.body;
 
         // Validate input
-        if (!campusId || !roomName) {
+        if (!campusId || !roomName || !isValidName(roomName)) {
             return res.status(400).json({
-                message: "Campus ID and room name are required",
+                message: "Invalid input. Room name must not contain whitespace or special characters.",
             });
         }
 
@@ -148,9 +154,9 @@ router.post("/createFacility", checkAdminRole, async (req, res) => {
         } = req.body;
 
         // Validate input
-        if (!roomId || !facilityName) {
+        if (!roomId || !facilityName || !isValidName(facilityName)) {
             return res.status(400).json({
-                message: "Room ID and facility name are required",
+                message: "Invalid input. Facility name must not contain whitespace or special characters.",
             });
         }
 

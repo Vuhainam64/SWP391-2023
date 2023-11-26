@@ -161,6 +161,32 @@ function CreateFeedback() {
     }
     fetchCampuses();
   }, []);
+
+  useEffect(() => {
+    async function fetchRoomsAndFacilities() {
+      const roomsData = await getAllRoomsInCampus(selectedCampus);
+      if (roomsData) {
+        const sortedRooms = roomsData.sort((roomA, roomB) =>
+          roomA.roomName.localeCompare(roomB.roomName)
+        );
+        setRooms(sortedRooms);
+      } else {
+        setRooms([]);
+      }
+
+      const facilitiesData = await getAllFacilityInRoom(selectedRoom);
+      if (facilitiesData) {
+        const sortedFacilities = facilitiesData.sort((facilityA, facilityB) =>
+          facilityA.facilityName.localeCompare(facilityB.facilityName)
+        );
+        setFacilities(sortedFacilities);
+      } else {
+        setFacilities([]);
+      }
+    }
+
+    fetchRoomsAndFacilities();
+  }, [selectedCampus, selectedRoom]);
   return (
     <div className="flex flex-col">
       <Navbar />
