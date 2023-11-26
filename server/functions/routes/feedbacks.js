@@ -306,7 +306,8 @@ router.get("/getFeedbackWithId/:feedbackId", async (req, res) => {
 router.post("/feedbackHandle/:feedbackId", async (req, res) => {
     const feedbackId = req.params.feedbackId;
     const {
-        employeeComment
+        employeeComment,
+        uid
     } = req.body;
 
     try {
@@ -318,68 +319,115 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
             });
         }
 
-        let description, status;
+        // Fetch employeeStatus document
+        const employeeStatusDoc = await db.collection("employeeStatus").doc(uid).get();
+
+        // Default values for updateData
+        let description, status, updateData;
 
         switch (employeeComment) {
             case "verify":
                 description = `Verified feedback ${feedbackId}`;
                 status = "Verified";
+                updateData = {
+                    Status: status,
+                    updatedAt: Date.now()
+                };
                 break;
-
             case "reject":
                 description = `Reject feedback ${feedbackId}`;
                 status = "Reject";
+                updateData = {
+                    Status: status,
+                    updatedAt: Date.now()
+                };
                 break;
-
             case "fixed":
                 description = `Fixed feedback ${feedbackId}`;
                 status = "Fixed";
+                updateData = {
+                    Status: status,
+                    updatedAt: Date.now()
+                };
                 break;
-
             case "not fixed":
                 description = `Not fixed feedback ${feedbackId}`;
-                status = "Verified";
+                status = "Not Verify";
+                updateData = {
+                    Status: status,
+                    updatedAt: Date.now()
+                };
                 break;
+            case "cancel":
+                description = `Cancel feedback ${feedbackId}`;
+                status = "Not Verify";
+                updateData = {
+                    Status: status,
+                    updatedAt: Date.now()
+                };
 
+                let taskCancel = 1;
+
+                if (employeeStatusDoc.exists) {
+                    const currentTaskCancel = employeeStatusDoc.data().taskCancel;
+
+                    if (!isNaN(currentTaskCancel)) {
+                        taskCancel = currentTaskCancel + 1;
+                    }
+                }
+
+                // Update employeeStatus
+                await db.collection("employeeStatus").doc(uid).update({
+                    taskCancel: taskCancel,
+                    tasksInProgress: employeeStatusDoc.exists ? employeeStatusDoc.data().tasksInProgress - 1 : 0,
+                    status: (employeeStatusDoc.data().tasksInProgress - 1 === 0) ? "Ready" : employeeStatusDoc.data().status,
+                });
+
+                break;
             default:
                 return res.status(400).send({
                     error: "Invalid employee comment"
                 });
         }
 
-        // Cập nhật trạng thái của phản hồi
+        // Update employeeStatus
+        if (employeeComment !== "verify") {
+            await db.collection("employeeStatus").doc(uid).update({
+                tasksInProgress: employeeStatusDoc.exists ? employeeStatusDoc.data().tasksInProgress - 1 : 0,
+            });
+        }
+
+        // Update feedbackstatus
+        await db.collection("feedbackstatus").doc(feedbackDoc.data().statusId).update(updateData);
+
+        // Update feedbacks
         await db.collection("feedbacks").doc(feedbackId).update({
-            description: description,
+            description,
             updatedAt: Date.now()
         });
 
+        // Update tasks associated with the feedback
         await db.collection("task")
             .where("feedbackId", "==", feedbackId)
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     doc.ref.update({
-                        description: description,
+                        description,
                         status: status,
                         updatedAt: Date.now()
                     });
                 });
             });
 
-        // Cập nhật trạng thái của phản hồi trong collection "feedbackstatus"
-        await db.collection("feedbackstatus").doc(feedbackDoc.data().statusId).update({
-            Status: status,
-            updatedAt: Date.now()
-        });
-
-        // Tạo thông báo (notify)
+        // Notify user
         const notify = {
             userId: feedbackDoc.data().createdBy,
             feedbackId: feedbackId,
             feedbackName: feedbackDoc.data().title,
-            description: "The Feedback had been updated",
+            description: "The Feedback has been updated",
             createdAt: Date.now()
-        }
+        };
         await db.collection('notifies').add(notify);
 
         res.send({
@@ -388,11 +436,14 @@ router.post("/feedbackHandle/:feedbackId", async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Error updating feedback:", error);
         res.status(500).send({
             error: "Error updating feedback"
         });
     }
 });
+
+
 
 
 module.exports = router;

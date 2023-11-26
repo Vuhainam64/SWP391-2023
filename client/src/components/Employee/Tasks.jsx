@@ -133,40 +133,48 @@ function Tasks() {
               </thead>
               <tbody>
                 {filteredTasks.length > 0 ? (
-                  filteredTasks.map((task, index) => (
-                    <tr
-                      key={task.taskId}
-                      className="border-b hover:bg-orange-100 bg-white shadow-lg text-center"
-                    >
-                      <td className="text-gray-700 font-medium">{index + 1}</td>
-                      <td className="text-gray-700">{task.facilityName}</td>
-                      <td className="text-gray-700">
-                        {new Date(task.taskData.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="text-gray-700">
-                        {task.taskData.status === "Canceled" ? (
-                          <>
-                            <button className="rounded-lg border-2 bg-gray-500 text-blue-50 items-center p-2 cursor-none">
-                              <div>
-                                <BsFillEyeSlashFill className="text-xl" />
-                              </div>
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button className="rounded-lg border-2 bg-blue-500 text-blue-50 items-center p-2">
-                              <Link
-                                to={`/employee/tasks/${task.taskData.feedbackId}`}
-                              >
-                                <BsEyeFill className="text-xl" />
-                              </Link>
-                            </button>
-                          </>
-                        )}
-                      </td>
-                      <td className="text-gray-700">{task.taskData.status}</td>
-                    </tr>
-                  ))
+                  filteredTasks
+                    .sort((a, b) => b.taskData.createdAt - a.taskData.createdAt) // Sort tasks by createdAt in descending order
+                    .map((task, index) => (
+                      <tr
+                        key={task.taskId}
+                        className="border-b hover:bg-orange-100 bg-white shadow-lg text-center"
+                      >
+                        <td className="text-gray-700 font-medium">
+                          {index + 1}
+                        </td>
+                        <td className="text-gray-700">{task.facilityName}</td>
+                        <td className="text-gray-700">
+                          {new Date(
+                            task.taskData.createdAt
+                          ).toLocaleDateString()}
+                        </td>
+                        <td className="text-gray-700">
+                          {task.taskData.status === "Canceled" ? (
+                            <>
+                              <button className="rounded-lg border-2 bg-gray-500 text-blue-50 items-center p-2 cursor-none">
+                                <div>
+                                  <BsFillEyeSlashFill className="text-xl" />
+                                </div>
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button className="rounded-lg border-2 bg-blue-500 text-blue-50 items-center p-2">
+                                <Link
+                                  to={`/employee/tasks/${task.taskData.feedbackId}`}
+                                >
+                                  <BsEyeFill className="text-xl" />
+                                </Link>
+                              </button>
+                            </>
+                          )}
+                        </td>
+                        <td className="text-gray-700">
+                          {task.taskData.status}
+                        </td>
+                      </tr>
+                    ))
                 ) : (
                   <tr>
                     <td colSpan="5" className="text-center">

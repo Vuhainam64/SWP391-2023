@@ -200,23 +200,21 @@ function Feedbacks() {
                                 : null
                             }
                             status={
-                              item.status.Status === "Processing"
-                                ? statusOptions.indexOf(item.status.Status) >= 4
-                                  ? "finish"
-                                  : "process"
+                              statusOptions.indexOf(item.status.Status) >= 3
+                                ? "finish"
                                 : "wait"
                             }
                           />
                           <Steps.Item
                             title="Fixed"
                             description={
-                              statusOptions.indexOf(item.status.Status) >= 5
+                              statusOptions.indexOf(item.status.Status) >= 4
                                 ? "We are Fixed"
                                 : null
                             }
                             status={
                               item.status.Status === "Fixed"
-                                ? statusOptions.indexOf(item.status.Status) >= 5
+                                ? statusOptions.indexOf(item.status.Status) >= 4
                                   ? "finish"
                                   : "process"
                                 : "wait"

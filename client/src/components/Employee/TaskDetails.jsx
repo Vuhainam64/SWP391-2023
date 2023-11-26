@@ -17,15 +17,22 @@ export default function TaskDetails() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Thêm useEffect để tự động cập nhật taskDetails khi feedbackId thay đổi
   useEffect(() => {
-    if (!taskDetails || taskDetails.feedbackId !== feedbackId) {
-      // Lấy dữ liệu taskDetails nếu taskDetails chưa tồn tại hoặc feedbackId đã thay đổi
-      getFeedbackWithId(feedbackId).then((data) => {
-        dispatch(setTaskDetails(data));
-      });
+    async function fetchFeedbackDetails() {
+      try {
+        const feedbackDetails = await getFeedbackWithId(feedbackId);
+        const formattedFeedbackDetails = {
+          ...feedbackDetails,
+        };
+        dispatch(setTaskDetails(formattedFeedbackDetails));
+      } catch (error) {
+        console.log("Error fetching feedback details:", error);
+      }
     }
-  }, [dispatch, feedbackId, taskDetails]);
+
+    // Call the fetchFeedbackDetails function
+    fetchFeedbackDetails();
+  }, [dispatch, feedbackId]);
 
   const handleCommitment = (employeeComment) => {
     feedbackHandle(feedbackId, employeeComment);
@@ -116,8 +123,8 @@ export default function TaskDetails() {
               </div>
             </div>
             <div className="mt-10">
-              <div className="grid grid-cols-3">
-                {taskDetails.feedbackstatus.Status === "Processing" && (
+              <div className="grid grid-cols-2">
+                {taskDetails.feedbackstatus.Status === "Verified" && (
                   <>
                     <div className="col-span-6 font-bold text-3xl">
                       Your commitment:
@@ -129,13 +136,16 @@ export default function TaskDetails() {
                       I had fixed it
                     </button>
                     <button
-                      onClick={() => handleCommitment("not fixed")}
-                      className="rounded-full p-2 m-2 bg-purple-400"
+                      onClick={() => handleCommitment("cancel")}
+                      className="rounded-full p-2 m-2 bg-yellow-300"
                     >
-                      I can't fix it
+                      Cancel
                     </button>
                   </>
                 )}
+              </div>
+
+              <div className="grid grid-cols-3">
                 {taskDetails.feedbackstatus.Status === "Validating" && (
                   <>
                     <div className="col-span-6 font-bold text-3xl">
