@@ -166,12 +166,18 @@ function ViewFeedback() {
                     <div className="flex-col ml-10 text-white relative w-full my-4">
                       <div className="flex items-center m-2">
                         <img
-                          src={item.user[0].photoURL}
+                          src={
+                            (item.user &&
+                              item.user[0] &&
+                              item.user[0].photoURL) ||
+                            Logo
+                          }
                           alt="user avatar"
                           className="w-8 h-8 border rounded-full mr-4"
                         />
-                        {item.user[0].displayName}
+                        {item.user && item.user[0] && item.user[0].displayName}
                       </div>
+
                       <div>Title: {item.title}</div>
                       <div>
                         Location: {item.campusName} - Room: {item.roomName} -{" "}

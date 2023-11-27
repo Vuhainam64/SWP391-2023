@@ -18,10 +18,10 @@ function Tasks() {
 
   const statusOptions = [
     "All",
-    "Canceled",
     "Verified",
     "Fixed",
     "Pending",
+    "Reject",
     "Not Verify",
   ];
 
@@ -126,7 +126,7 @@ function Tasks() {
                   </th>
                   <th className="border-2">
                     <div className="h-full pl-5 items-center whitespace-nowrap">
-                      <label className="font-bold">Status</label>
+                      <label className="font-bold">Status - Processing</label>
                     </div>
                   </th>
                 </tr>
@@ -171,7 +171,8 @@ function Tasks() {
                           )}
                         </td>
                         <td className="text-gray-700">
-                          {task.taskData.status}
+                          {task.taskData.status} -{" "}
+                          {task.taskData.description.split(" ")[0]}
                         </td>
                       </tr>
                     ))
